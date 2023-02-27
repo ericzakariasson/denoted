@@ -1,0 +1,11 @@
+type Profile @createModel(accountRelation: SINGLE, description: "Simple user profile") {
+  address: String! @string(minLength: 42, maxLength: 42)
+  name: String @string(maxLength: 32)
+}
+
+type Note @createModel(accountRelation: LIST, description: "Simple text note") {
+  author: DID! @documentAccount
+  version: CommitID! @documentVersion
+  title: String! @string(minLength: 1, maxLength: 100)
+  content: String! @string(maxLength: 2000)
+}

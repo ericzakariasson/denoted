@@ -1,0 +1,4 @@
+{
+  "prettier.configPath": "./packages/lint/prettier.config.js",
+  "typescript.tsdk": "node_modules/typescript/lib",
+}

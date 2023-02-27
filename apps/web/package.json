@@ -9,8 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ceramicnetwork/http-client": "^2.17.0",
+    "@composedb/client": "^0.4.0",
+    "@didtools/pkh-ethereum": "^0.1.0",
     "@rainbow-me/rainbowkit": "^0.5.1",
     "axios": "^0.27.2",
+    "did-session": "^2.0.0",
     "next": "12.2.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",

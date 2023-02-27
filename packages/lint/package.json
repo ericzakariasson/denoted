@@ -4,7 +4,7 @@
   "private": true,
   "main": "eslint-preset.js",
   "files": [
-    "prettierrc.js",
+    "prettier.config.js",
     "eslint-preset.js"
   ],
   "dependencies": {

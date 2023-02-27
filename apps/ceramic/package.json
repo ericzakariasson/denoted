@@ -1,0 +1,33 @@
+{
+  "name": "ceramic",
+  "version": "1.0.0",
+  "main": "generated/*",
+  "types": "generated/*",
+  "license": "MIT",
+  "scripts": {
+    "node:local": "CERAMIC_ENABLE_EXPERIMENTAL_SYNC='true' CERAMIC_ENABLE_EXPERIMENTAL_COMPOSE_DB='true' npx @ceramicnetwork/cli daemon",
+    "node:testnet": "CERAMIC_ENABLE_EXPERIMENTAL_COMPOSE_DB=true npx @ceramicnetwork/cli daemon --network=testnet-clay",
+    "definitions": "composedb composite:compile denoted-composite.json ../web/src/composedb/definition.ts",
+    "definitions:local": "composedb composite:compile ./generated/denoted-composite.json ../web/src/composedb/definition.ts -c http://0.0.0.0:7007",
+    "schema": "source .env.local && composedb composite:create generated/denoted.graphql --did-private-key=$DID_PRIVATE_KEY --output=denoted-composite.json -c http://0.0.0.0:7007",
+    "schema:view": "composedb graphql:schema runtime-composite.json --output=./generated/schema.graphql",
+    "deploy": "source .env.local && composedb composite:deploy denoted-composite.json --did-private-key=$DID_PRIVATE_KEY",
+    "deploy:local": "source .env.local && composedb composite:deploy ./generated/denoted-composite.json --did-private-key=$DID_PRIVATE_KEY -c http://0.0.0.0:7007",
+    "compile": "source .env.local && composedb composite:compile denoted-composite.json ./generated/runtime-composite.json --did-private-key=$DID_PRIVATE_KEY",
+    "compile:local": "source .env.local && composedb composite:compile ./generated/denoted-composite.json runtime-composite.json --did-private-key=$DID_PRIVATE_KEY -c http://0.0.0.0:7007",
+    "graphql": "source .env.local && composedb graphql:server --graphiql --port=5001 runtime-composite.json --did-private-key=$DID_PRIVATE_KEY -c http://0.0.0.0:7007",
+    "update": "source .env.local && yarn schema && yarn deploy && yarn compile && yarn definitions",
+    "update:local": "source .env.local && yarn schema && yarn deploy:local && yarn compile:local && yarn definitions:local"
+  },
+  "devDependencies": {
+    "@ceramicnetwork/cli": "^2.22.0",
+    "@composedb/devtools": "^0.4.0",
+    "@composedb/devtools-node": "^0.4.0",
+    "@composedb/types": "^0.4.0"
+  },
+  "dependencies": {
+    "@composedb/cli": "^0.4.0",
+    "@didtools/pkh-ethereum": "^0.1.0",
+    "did-session": "^2.0.0"
+  }
+}
