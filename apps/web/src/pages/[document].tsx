@@ -1,5 +1,5 @@
 import { GetServerSideProps, NextPage } from "next/types";
-import { ReactNode, useState } from "react";
+import { ReactNode, useRef, useState } from "react";
 import { TextMatcher } from "../components/TextMatcher";
 
 import { serialize } from "next-mdx-remote/serialize";
@@ -7,9 +7,12 @@ import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
 import { TokenHoldersWidget } from "../components/widgets/Token";
 
 type Props = {
-  id: string;
-  title: string;
-  mdx: MDXRemoteSerializeResult;
+  doc: {
+    id: string;
+    title: string;
+    mdx: MDXRemoteSerializeResult;
+  };
+  isEditor: boolean;
 };
 
 const components = { TokenHoldersWidget };
@@ -30,26 +33,61 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 
   return {
     props: {
-      id: documentId,
-      title: "foo",
-      mdx: mdxSource,
+      isEditor: true,
+      doc: {
+        id: documentId,
+        title: "foo",
+        mdx: mdxSource,
+      },
     },
   };
 };
 
-const DocumentPage: NextPage<Props> = ({ id, title, mdx }) => {
-  const [value, setValue] = useState("");
+const DocumentPage: NextPage<Props> = ({ doc, isEditor }) => {
+  const [title, setTitle] = useState(doc.title);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const titleInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div>
-      <input
-        className="border"
-        onChange={(e) => setValue(e.target.value)}
-        value={value}
-      />
+    <div className="p-32">
+      <div className="flex justify-between">
+        {isEditing ? (
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              setIsEditing(false);
+            }}
+          >
+            <input
+              placeholder="Untitled"
+              className="text-8xl"
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              required
+              ref={titleInputRef}
+            />
+          </form>
+        ) : (
+          <h1
+            className="text-8xl"
+            onDoubleClick={() => {
+              setIsEditing(true);
+              setTimeout(() => titleInputRef.current?.focus(), 0);
+            }}
+          >
+            {title}
+          </h1>
+        )}
+        {isEditor && !isEditing && (
+          <button onClick={() => setIsEditing(true)}>edit</button>
+        )}
+        {isEditor && isEditing && (
+          <button onClick={() => setIsEditing(false)}>save</button>
+        )}
+      </div>
       <div className="bg-slate-100 p-4">
-        <TextMatcher text={value} />
-        <MDXRemote {...mdx} components={components} />
+        <MDXRemote {...doc.mdx} components={components} />
       </div>
     </div>
   );
