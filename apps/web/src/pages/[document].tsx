@@ -1,4 +1,6 @@
 import { GetServerSideProps, NextPage } from "next/types";
+import { ReactNode, useState } from "react";
+import { TextMatcher } from "../components/TextMatcher";
 
 type Props = {
   id: string;
@@ -23,10 +25,18 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 };
 
 const DocumentPage: NextPage<Props> = ({ id, title }) => {
+  const [value, setValue] = useState("");
+
   return (
     <div>
-      {id}
-      {title}
+      <input
+        className="border"
+        onChange={(e) => setValue(e.target.value)}
+        value={value}
+      />
+      <div className="bg-slate-100 p-4">
+        <TextMatcher text={value} />
+      </div>
     </div>
   );
 };
