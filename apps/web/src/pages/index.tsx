@@ -2,6 +2,7 @@ import { Card } from "ui";
 import Header from "../components/Header";
 import { useAccount } from "wagmi";
 import { authenticateCompose } from "../lib/compose";
+import { DocumentList } from "../components/DocumentList";
 
 const draftData = [
   {
@@ -34,6 +35,8 @@ const draftData = [
 
 export default function Web() {
   const { isConnected } = useAccount();
+  const isAuthenticated =
+    typeof localStorage === "undefined" ? false : localStorage.getItem("did");
   return (
     <>
       <Header />

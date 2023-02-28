@@ -31,8 +31,33 @@ export async function createNote(title: string, content: string) {
     `);
 }
 
-export async function getNotes() {
-  return await composeClient.executeQuery<Note>(`
+export type GetNotesQuery = {
+  edges: {
+    node: Note;
+  }[];
+};
+
+export async function getNotesQuery() {
+  return await composeClient.executeQuery<GetNotesQuery>(`
+    query {
+      noteIndex(first: 100) {
+        edges {
+          node {
+            id
+            title
+            content
+            author {
+              id
+            }
+          }
+        }
+      }
+    }
+    `);
+}
+
+export async function getNoteQuery(id: string) {
+  return await composeClient.executeQuery<GetNotesQuery>(`
     query {
       noteIndex(first: 100) {
         edges {
