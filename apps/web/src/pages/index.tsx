@@ -1,4 +1,5 @@
-import { Card, Navbar } from "ui";
+import { Navbar } from "ui";
+import { Card } from "../components/Card";
 import { useAccount } from "wagmi";
 import { authenticateCompose } from "../lib/compose";
 import { DocumentList } from "../components/DocumentList";
@@ -7,11 +8,21 @@ const draftData = [
   {
     id: 1,
     title: "some random titles",
-    author: "0xA0Cf798816D4b9b9866b5330EEa46a18382f251e",
+    author: "0xBD5CEb146588230AAa5e9f70C2d867591BDea122",
     timestamp: 1677538898,
   },
-  { id: 2, title: "some titles", author: "yanneth.eth", timestamp: 1677534398 },
-  { id: 3, title: "some ", author: "yanneth.eth", timestamp: 1677538538 },
+  {
+    id: 2,
+    title: "some titles",
+    author: "0xBD5CEb146588230AAa5e9f70C2d867591BDea122",
+    timestamp: 1677534398,
+  },
+  {
+    id: 3,
+    title: "some ",
+    author: "0x3731e4c9D191b5fEBFa1435686ffe2c6b5B25a29",
+    timestamp: 1677538538,
+  },
   {
     id: 4,
     title: "some random titles",
@@ -21,7 +32,7 @@ const draftData = [
   {
     id: 5,
     title: "some random titles",
-    author: "0xA0Cf798816D4b9b9866b5330EEa46a18382f251e",
+    author: "0x3731e4c9D191b5fEBFa1435686ffe2c6b5B25a29",
     timestamp: 1677538898,
   },
   {
