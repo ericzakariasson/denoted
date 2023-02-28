@@ -25,7 +25,7 @@ const wagmiClient = createClient({
   provider,
 });
 
-const Web3Provider = ({ children }: PropsWithChildren<never>) => {
+const Web3Provider = ({ children }: PropsWithChildren<unknown>) => {
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider
