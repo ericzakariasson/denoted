@@ -2,10 +2,17 @@ import { GetServerSideProps, NextPage } from "next/types";
 import { ReactNode, useState } from "react";
 import { TextMatcher } from "../components/TextMatcher";
 
+import { serialize } from "next-mdx-remote/serialize";
+import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
+import { TokenHoldersWidget } from "../components/widgets/Token";
+
 type Props = {
   id: string;
   title: string;
+  mdx: MDXRemoteSerializeResult;
 };
+
+const components = { TokenHoldersWidget };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const documentId = ctx.params?.document?.toString();
@@ -16,15 +23,21 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     };
   }
 
+  const source = `
+  We currently have **<TokenHoldersWidget address="0x0" chain="1" />** holders for our token.
+  `;
+  const mdxSource = await serialize(source);
+
   return {
     props: {
       id: documentId,
       title: "foo",
+      mdx: mdxSource,
     },
   };
 };
 
-const DocumentPage: NextPage<Props> = ({ id, title }) => {
+const DocumentPage: NextPage<Props> = ({ id, title, mdx }) => {
   const [value, setValue] = useState("");
 
   return (
@@ -36,6 +49,7 @@ const DocumentPage: NextPage<Props> = ({ id, title }) => {
       />
       <div className="bg-slate-100 p-4">
         <TextMatcher text={value} />
+        <MDXRemote {...mdx} components={components} />
       </div>
     </div>
   );
