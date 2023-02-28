@@ -4,6 +4,7 @@ import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
+import { PropsWithChildren } from "react";
 
 const { chains, provider } = configureChains(
   [chain.mainnet, chain.rinkeby],
@@ -14,7 +15,7 @@ const { chains, provider } = configureChains(
 );
 
 const { connectors } = getDefaultWallets({
-  appName: "anotherblock-allowlist",
+  appName: "denoted",
   chains,
 });
 
@@ -24,13 +25,13 @@ const wagmiClient = createClient({
   provider,
 });
 
-const Web3Provider = ({ children }) => {
+const Web3Provider = ({ children }: PropsWithChildren<never>) => {
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider
         chains={chains}
         appInfo={{
-          appName: "My App",
+          appName: "denoted",
         }}
       >
         {children}
