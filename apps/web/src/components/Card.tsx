@@ -2,6 +2,7 @@ import { formatEthAddress } from "../utils/index";
 import { timeConverter } from "../utils/index";
 import TimeAgo from "react-timeago";
 import { useEnsName } from "wagmi";
+import Blockies from "react-blockies";
 
 type CardProps = {
   title: string;
@@ -26,13 +27,13 @@ export const Card = (props: CardProps) => {
       </div>
       {!isLoading && !isError && (
         <div className="flex pb-5 pl-5">
-          <img
-            src="me.png"
-            alt="Picture of the author"
-            width={30}
-            height={30}
+          <Blockies
+            seed={props.author}
+            size={8}
+            scale={3}
+            className="rounded-xl"
           />
-          <p className="pb-5 pl-5">
+          <p className="items-center pb-5 pl-2">
             {data ? data : formatEthAddress(props.author, 5, 36)}
           </p>
         </div>
