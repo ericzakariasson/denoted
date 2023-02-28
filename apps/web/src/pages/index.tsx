@@ -60,6 +60,7 @@ export default function Web() {
           {draftData.map((data) => (
             <div key={data.id} className="mb-4 w-full px-2 sm:w-1/2 lg:w-1/3">
               <Card
+                id={data.id}
                 title={data.title}
                 timeStamp={data.timestamp}
                 author={data.author}

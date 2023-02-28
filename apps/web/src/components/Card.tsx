@@ -3,20 +3,33 @@ import { timeConverter } from "../utils/index";
 import TimeAgo from "react-timeago";
 import { useEnsName } from "wagmi";
 import Blockies from "react-blockies";
+import { useRouter } from "next/router";
 
 type CardProps = {
+  id: number;
   title: string;
   timeStamp: number;
   author: string;
 };
 
 export const Card = (props: CardProps) => {
+  const router = useRouter();
+
   const { data, isError, isLoading } = useEnsName({
     address: props.author,
   });
 
+  const handleNavigation = (e) => {
+    e.preventDefault();
+    router.push(`/document/${props.id}`);
+  };
+
   return (
-    <div className="w-full max-w-sm rounded-xl border border-gray-200 bg-white shadow">
+    <div
+      key={props.id}
+      onClick={handleNavigation}
+      className="w-full max-w-sm rounded-xl border border-gray-200 bg-white shadow"
+    >
       <div className="flex flex-col items-start	pl-5 pt-3 pb-5">
         <h5 className="mb-1 text-xl font-medium">{props.title}</h5>
 
