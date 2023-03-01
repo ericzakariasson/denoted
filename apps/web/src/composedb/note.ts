@@ -56,7 +56,13 @@ export async function getNotesQuery() {
     `);
 }
 
-export async function getNoteQuery(id: string) {
+type GetNoteQuery = {
+  edges: {
+    node: Note;
+  }[];
+};
+
+export async function getNoteQuery<GetNoteQuery>(id: string) {
   return await composeClient.executeQuery<GetNotesQuery>(`
     query {
       noteIndex(first: 100) {

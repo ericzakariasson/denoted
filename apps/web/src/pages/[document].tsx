@@ -1,21 +1,18 @@
 import { GetServerSideProps, NextPage } from "next/types";
-import { ReactNode, useRef, useState } from "react";
-import { TextMatcher } from "../components/TextMatcher";
+import { useRef, useState } from "react";
 
-import { serialize } from "next-mdx-remote/serialize";
-import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
-import { WalletBalanceWidget } from "../components/widgets/Token";
+import { Editor } from "../components/Editor";
+import { Viewer } from "../components/Viewer";
+import { getNoteQuery } from "../composedb/note";
 
 type Props = {
   doc: {
     id: string;
     title: string;
-    mdx: MDXRemoteSerializeResult;
+    content: string;
   };
   isEditor: boolean;
 };
-
-const components = { WalletBalanceWidget };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const documentId = ctx.params?.document?.toString();
@@ -26,19 +23,22 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     };
   }
 
-  const source = `
- The total value of my token holding is **<WalletBalanceWidget address="0xBD5CEb146588230AAa5e9f70C2d867591BDea122" chain="eth-mainnet" />**$.
-  `;
-  const mdxSource = await serialize(source);
+  const query = await getNoteQuery(documentId);
+
+  const edge = query.data?.edges?.at(0);
+
+  if (!edge) {
+    return {
+      notFound: true,
+    };
+  }
+
+  const doc = edge.node;
 
   return {
     props: {
       isEditor: true,
-      doc: {
-        id: documentId,
-        title: "foo",
-        mdx: mdxSource,
-      },
+      doc,
     },
   };
 };
@@ -50,7 +50,7 @@ const DocumentPage: NextPage<Props> = ({ doc, isEditor }) => {
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="p-32">
+    <div className="p-16">
       <div className="flex justify-between">
         {isEditing ? (
           <form
@@ -86,9 +86,13 @@ const DocumentPage: NextPage<Props> = ({ doc, isEditor }) => {
           <button onClick={() => setIsEditing(false)}>save</button>
         )}
       </div>
-      <div className="bg-slate-100 p-4">
-        <MDXRemote {...doc.mdx} components={components} />
-      </div>
+      {isEditing ? (
+        <div className="border">
+          <Editor initialContent={JSON.parse(doc.content)} />
+        </div>
+      ) : (
+        <Viewer json={JSON.parse(doc.content)} />
+      )}
     </div>
   );
 };
