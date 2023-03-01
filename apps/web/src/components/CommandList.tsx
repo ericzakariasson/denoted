@@ -38,7 +38,7 @@ export const CommandList = forwardRef((props: any, ref) => {
   useEffect(() => setSelectedIndex(0), [props.items]);
 
   useImperativeHandle(ref, () => ({
-    onKeyDown: ({ event }) => {
+    onKeyDown: ({ event }: any) => {
       if (event.key === "ArrowUp") {
         upHandler();
         return true;
@@ -61,7 +61,7 @@ export const CommandList = forwardRef((props: any, ref) => {
   return (
     <div className="rounded-xl border bg-white">
       {props.items.length ? (
-        props.items.map((item, index) => (
+        props.items.map((item: any, index: number) => (
           <button
             className={`w-full px-2 py-1 text-left ${
               index === selectedIndex ? "bg-slate-200" : ""
