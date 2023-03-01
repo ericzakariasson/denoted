@@ -2,14 +2,14 @@ import "@rainbow-me/rainbowkit/styles.css";
 
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
-import { alchemyProvider } from "wagmi/providers/alchemy";
+import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
 import { PropsWithChildren } from "react";
 
 const { chains, provider } = configureChains(
   [chain.mainnet, chain.rinkeby],
   [
-    alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY }),
+    infuraProvider({ apiKey: process.env.NEXT_PUBLIC_INFURA_KEY }),
     publicProvider(),
   ]
 );
