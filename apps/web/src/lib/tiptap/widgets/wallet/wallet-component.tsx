@@ -11,16 +11,25 @@ type WalletComponentProps = {
 };
 
 export const WalletComponent = (props: WalletComponentProps) => {
-  const [address, setAddress] = useState<string>(
-    "0x9768cead8f28bd7aA5e095D4402B8911b8484e7E"
-  );
+  const [address, setAddress] = useState<string | null>(null);
   const [chain, setChain] = useState(1);
+
+  const isConfigured = address !== null;
 
   return (
     <NodeViewWrapper as="span">
       <Popover.Root>
         <Popover.Trigger>
-          <WalletBalanceWidget address={address} chain={chain} />
+          {isConfigured ? (
+            <WalletBalanceWidget address={address} chain={chain} />
+          ) : (
+            <button
+              className="rounded-full border border-gray-400 py-0 px-1"
+              type="button"
+            >
+              config
+            </button>
+          )}
         </Popover.Trigger>
         <Popover.Portal>
           <Popover.Content
@@ -39,7 +48,7 @@ export const WalletComponent = (props: WalletComponentProps) => {
               <input
                 name="address"
                 placeholder={"0xdbe2aff176d2896858f0e34f0a652bf9f4bf0848"}
-                defaultValue={address}
+                defaultValue={address ?? ""}
               />
               <input name="chain" type="number" defaultValue={chain} />
               <button type="submit">save</button>

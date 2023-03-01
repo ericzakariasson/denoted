@@ -10,6 +10,10 @@ const COVALENT_CHAIN_NAME_MAP: Record<number, string> = {
   1: "eth-mainnet",
 };
 
+const formatBalance = (balance: string) => {
+  return parseInt(balance).toFixed(0);
+};
+
 export const WalletBalanceWidget = ({
   address,
   chain,
@@ -34,5 +38,9 @@ export const WalletBalanceWidget = ({
     return <span>an error has occured...</span>;
   }
 
-  return <span className="rounded-full bg-gray-200 px-1 py-0">{data}</span>;
+  return (
+    <span className="rounded-full bg-gray-200 px-1 py-0">
+      {formatBalance(data)}
+    </span>
+  );
 };
