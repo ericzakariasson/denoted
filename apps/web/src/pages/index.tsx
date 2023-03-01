@@ -1,4 +1,3 @@
-import { Navbar } from "ui";
 import { Card } from "../components/Card";
 import { useAccount } from "wagmi";
 import { authenticateCompose } from "../lib/compose";
@@ -49,7 +48,6 @@ export default function Web() {
     typeof localStorage === "undefined" ? false : localStorage.getItem("did");
   return (
     <>
-      <Navbar />
       <main className="p-20">
         {isConnected && (
           <button onClick={() => authenticateCompose()} type="button">
