@@ -9,17 +9,17 @@ export type TokenWidgetProps = {
 export const TokenWidget = ({ address, chain, type }: TokenWidgetProps) => {
   switch (type) {
     case "holders":
-      return <TokenHoldersWidget address={address} chain={chain} />;
+      return <WalletBalanceWidget address={address} chain={chain} />;
     default:
       return address;
   }
 };
 
-type TokenHoldersWidgetProps = Omit<TokenWidgetProps, "type">;
-export const TokenHoldersWidget = ({
+type WalletBalanceWidgetProps = Omit<TokenWidgetProps, "type">;
+export const WalletBalanceWidget = ({
   address,
   chain,
-}: TokenHoldersWidgetProps) => {
+}: WalletBalanceWidgetProps) => {
   const { isLoading, data, isError } = useQuery(
     ["TOKEN", "HOLDERS", address, chain],
     async () => {

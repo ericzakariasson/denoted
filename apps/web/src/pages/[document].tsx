@@ -4,7 +4,7 @@ import { TextMatcher } from "../components/TextMatcher";
 
 import { serialize } from "next-mdx-remote/serialize";
 import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
-import { TokenHoldersWidget } from "../components/widgets/Token";
+import { WalletBalanceWidget } from "../components/widgets/Token";
 
 type Props = {
   doc: {
@@ -15,7 +15,7 @@ type Props = {
   isEditor: boolean;
 };
 
-const components = { TokenHoldersWidget };
+const components = { WalletBalanceWidget };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const documentId = ctx.params?.document?.toString();
@@ -27,7 +27,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   }
 
   const source = `
-  We currently have **<TokenHoldersWidget address="0xBD5CEb146588230AAa5e9f70C2d867591BDea122" chain="eth-mainnet" />** holders for our token.
+ The total value of my token holding is **<WalletBalanceWidget address="0xBD5CEb146588230AAa5e9f70C2d867591BDea122" chain="eth-mainnet" />**$.
   `;
   const mdxSource = await serialize(source);
 
