@@ -3435,6 +3435,13 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-typography/-/extension-typography-2.0.0-beta.220.tgz#9d2a6e4c3299d6238c8e12b3b9722ba7a8007982"
   integrity sha512-MsQ5WFPUzoC/l8kxnUEYc2dR2eWgve0Ga8+qAJ/s0CLcf7UYGGoFGGobSYwjk++fgNUJMPKEvTpZU2eqjTYAPA==
 
+"@tiptap/html@^2.0.0-beta.220":
+  version "2.0.0-beta.220"
+  resolved "https://registry.yarnpkg.com/@tiptap/html/-/html-2.0.0-beta.220.tgz#75150e59f9b6282f0d1e73f8c4636fb1c4f0c577"
+  integrity sha512-DinTUPtSpj1ZMKAa4sbPHWzNvua2Gy/NEy8r6Lnw5d5/4+Hexf4Ux1UZ1j8uOFvMzIZ9IZu25rQc3gH2HhMDeQ==
+  dependencies:
+    zeed-dom "^0.9.19"
+
 "@tiptap/pm@^2.0.0-beta.220":
   version "2.0.0-beta.220"
   resolved "https://registry.yarnpkg.com/@tiptap/pm/-/pm-2.0.0-beta.220.tgz#04e4c98e4d042ea8d67148ec6676f7078c6bac5a"
@@ -7210,6 +7217,11 @@ css-what@^5.0.1:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/css-what/-/css-what-5.1.0.tgz#3f7b707aadf633baf62c2ceb8579b545bb40f7fe"
   integrity sha512-arSMRWIIFY0hV8pIxZMEfmMI47Wj3R/aWpZDDxWYCPEiOMv6tfOrnpDtgxBYPEQD4V0Y/958+1TdC3iWTFcUPw==
+
+css-what@^6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/css-what/-/css-what-6.1.0.tgz#fb5effcf76f1ddea2c81bdfaa4de44e79bac70f4"
+  integrity sha512-HTUrgRJ7r4dsZKU6GjmpfRK1O76h97Z8MfS1G0FozR+oF2kG6Vfe8JE6zwrkbxigziPHinCJ+gCPjA9EaBDtRw==
 
 cssesc@^3.0.0:
   version "3.0.0"
@@ -20383,6 +20395,13 @@ yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+
+zeed-dom@^0.9.19:
+  version "0.9.26"
+  resolved "https://registry.yarnpkg.com/zeed-dom/-/zeed-dom-0.9.26.tgz#f0127d1024b34a1233a321bd6d0275b3ba998b30"
+  integrity sha512-HWjX8rA3Y/RI32zby3KIN1D+mgskce+She4K7kRyyx62OiVxJ5FnYm8vWq0YVAja3Tf2S1M0XAc6O2lRFcMgcQ==
+  dependencies:
+    css-what "^6.1.0"
 
 zksync-web3@^0.8.1:
   version "0.8.1"
