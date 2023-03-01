@@ -5,7 +5,7 @@ import { CommandList } from "../../../components/CommandList";
 
 export const commandSuggestions = {
   items: ({ query }: any) => {
-    return [
+    const COMMANDS = [
       {
         title: "wallet",
         command: ({ editor, range }: { editor: Editor; range: any }) => {
@@ -20,12 +20,17 @@ export const commandSuggestions = {
       {
         title: "me",
         command: ({ editor, range }: { editor: Editor; range: any }) => {
+          const { connectedAddress } = editor.storage;
+          if (!connectedAddress) {
+            return null;
+          }
+
           editor
             .chain()
             .focus()
             .deleteRange(range)
             .insertContent(
-              `<wallet-component address="${editor.storage.connectedAddress}"></wallet-component>`
+              `<wallet-component address="${connectedAddress}"></wallet-component>`
             )
             .run();
         },
@@ -41,11 +46,13 @@ export const commandSuggestions = {
             .run();
         },
       },
-    ]
-      .filter((item) =>
+    ];
+
+    return COMMANDS.filter(
+      (item) =>
+        item !== null &&
         item.title.toLowerCase().startsWith(query.toLowerCase())
-      )
-      .slice(0, 10);
+    ).slice(0, 10);
   },
 
   render: () => {

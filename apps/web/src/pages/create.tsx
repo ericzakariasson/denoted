@@ -10,7 +10,6 @@ const CreatePage: NextPage = () => {
       onSubmit={(event) => {
         event.preventDefault();
       }}
-      className="m-auto max-w-2xl"
     >
       <input
         placeholder="Untitled"

@@ -15,7 +15,9 @@ function MyApp({ Component, pageProps }: AppProps) {
       <Hydrate state={pageProps.dehydratedState}>
         <WagmiProvider>
           <Navbar />
-          <Component {...pageProps} />
+          <main className="m-auto max-w-2xl">
+            <Component {...pageProps} />
+          </main>
         </WagmiProvider>
       </Hydrate>
     </QueryClientProvider>
