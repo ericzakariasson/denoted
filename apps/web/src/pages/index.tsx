@@ -21,13 +21,13 @@ const draftData = [
     id: 3,
     title: "some ",
     author: "0x3731e4c9D191b5fEBFa1435686ffe2c6b5B25a29",
-    timestamp: 1677538538,
+    timestamp: 1675495390,
   },
   {
     id: 4,
     title: "some random titles",
     author: "0xA0Cf798816D4b9b9866b5330EEa46a18382f251e",
-    timestamp: 332937464923,
+    timestamp: 1675495390,
   },
   {
     id: 5,
@@ -39,7 +39,7 @@ const draftData = [
     id: 6,
     title: "some random titles",
     author: "0xA0Cf798816D4b9b9866b5330EEa46a18382f251e",
-    timestamp: 1677538898,
+    timestamp: 1675495390,
   },
 ];
 

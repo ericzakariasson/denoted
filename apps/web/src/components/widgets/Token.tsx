@@ -16,24 +16,27 @@ export const TokenWidget = ({ address, chain, type }: TokenWidgetProps) => {
 };
 
 type TokenHoldersWidgetProps = Omit<TokenWidgetProps, "type">;
-
 export const TokenHoldersWidget = ({
   address,
   chain,
 }: TokenHoldersWidgetProps) => {
-  const { isLoading, data } = useQuery(
+  const { isLoading, data, isError } = useQuery(
     ["TOKEN", "HOLDERS", address, chain],
     async () => {
-      const holders = await new Promise<number>((resolve) =>
-        setTimeout(() => resolve(10), 2000)
+      const response = await fetch(
+        `https://api.covalenthq.com/v1/${chain}/address/${address}/balances_v2/?key=ckey_c633081f38f548b1ac3789fa70f`
       );
-
-      return holders;
+      const holders = await response.json();
+      return holders.data.items[0].quote;
     }
   );
 
   if (isLoading) {
     return <span>loading...</span>;
+  }
+
+  if (isError) {
+    return <span>an error has occured...</span>;
   }
 
   return <span>{data}</span>;

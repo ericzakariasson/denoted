@@ -27,7 +27,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   }
 
   const source = `
-  We currently have **<TokenHoldersWidget address="0x0" chain="1" />** holders for our token.
+  We currently have **<TokenHoldersWidget address="0xBD5CEb146588230AAa5e9f70C2d867591BDea122" chain="eth-mainnet" />** holders for our token.
   `;
   const mdxSource = await serialize(source);
 
