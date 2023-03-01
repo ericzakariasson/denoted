@@ -20,7 +20,9 @@ const CreatePage: NextPage = () => {
         required
       />
       <div>
-        <Editor />
+        <Editor
+          initialContent={`<div><wallet-component>asd</wallet-component></div>`}
+        />
       </div>
       <button>save</button>
     </form>

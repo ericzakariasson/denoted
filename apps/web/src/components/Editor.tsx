@@ -6,6 +6,10 @@ import Placeholder from "@tiptap/extension-placeholder";
 import { PropsWithChildren } from "react";
 import { Content } from "@tiptap/core";
 
+import { Command } from "../lib/tiptap/command/command-extension";
+import { commandSuggestions } from "../lib/tiptap/command/command-suggestions";
+import { Wallet } from "../lib/tiptap/widgets/wallet/wallet-extension";
+
 type BubbleMenuButtonProps = {
   onClick: () => void;
   isActive: boolean;
@@ -35,7 +39,19 @@ type EditorProps = {
 
 export const Editor = ({ initialContent }: EditorProps) => {
   const editor = useEditor({
-    extensions: [StarterKit, Highlight, Typography, Placeholder],
+    extensions: [
+      StarterKit,
+      Highlight,
+      Typography,
+      Placeholder,
+      Command.configure({
+        HTMLAttributes: {
+          class: "command",
+        },
+        suggestion: commandSuggestions,
+      }),
+      Wallet,
+    ],
     content: initialContent,
     editorProps: {
       attributes: {
