@@ -9,6 +9,7 @@ import { Content } from "@tiptap/core";
 import { Command } from "../lib/tiptap/command/command-extension";
 import { commandSuggestions } from "../lib/tiptap/command/command-suggestions";
 import { Wallet } from "../lib/tiptap/widgets/wallet/wallet-extension";
+import { useAccount } from "wagmi";
 
 type BubbleMenuButtonProps = {
   onClick: () => void;
@@ -38,6 +39,7 @@ type EditorProps = {
 };
 
 export const Editor = ({ initialContent }: EditorProps) => {
+  const { address } = useAccount();
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -59,6 +61,10 @@ export const Editor = ({ initialContent }: EditorProps) => {
       },
     },
   });
+
+  if (editor) {
+    editor.storage.connectedAddress = address;
+  }
 
   return (
     <>

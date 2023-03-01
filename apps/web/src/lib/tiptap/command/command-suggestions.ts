@@ -18,6 +18,19 @@ export const commandSuggestions = {
         },
       },
       {
+        title: "me",
+        command: ({ editor, range }: { editor: Editor; range: any }) => {
+          editor
+            .chain()
+            .focus()
+            .deleteRange(range)
+            .insertContent(
+              `<wallet-component address="${editor.storage.connectedAddress}"></wallet-component>`
+            )
+            .run();
+        },
+      },
+      {
         title: "token",
         command: ({ editor, range }: any) => {
           editor

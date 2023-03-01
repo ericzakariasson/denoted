@@ -6,15 +6,29 @@ import { useState } from "react";
 import * as Popover from "@radix-ui/react-popover";
 
 type WalletComponentProps = {
-  updateAttributes: any;
-  node: any;
+  updateAttributes: (attributes: Record<string, string>) => void;
+  node: {
+    attrs: {
+      address: string | undefined;
+      chain: string;
+    };
+  };
 };
 
 export const WalletComponent = (props: WalletComponentProps) => {
-  const [address, setAddress] = useState<string | null>(null);
-  const [chain, setChain] = useState(1);
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    props.updateAttributes({
+      address: formData.get("address")?.toString() ?? "",
+      chain: formData.get("chain")?.toString() ?? "",
+    });
+  }
 
-  const isConfigured = address !== null;
+  const address = props.node.attrs.address;
+  const chain = Number(props.node.attrs.chain);
+
+  const isConfigured = address !== undefined;
 
   return (
     <NodeViewWrapper as="span">
@@ -24,7 +38,7 @@ export const WalletComponent = (props: WalletComponentProps) => {
             <WalletBalanceWidget address={address} chain={chain} />
           ) : (
             <button
-              className="rounded-full border border-gray-400 py-0 px-1"
+              className="rounded-full border border-gray-400 py-0 px-1 leading-normal"
               type="button"
             >
               config
@@ -36,15 +50,7 @@ export const WalletComponent = (props: WalletComponentProps) => {
             sideOffset={5}
             className="data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 data-[side=right]:slide-in-from-left-2 data-[side=left]:slide-in-from-right-2 s z-50 w-72 rounded-md border border-black bg-white p-4 outline-none dark:border-slate-800 dark:bg-slate-800"
           >
-            <form
-              onSubmit={(event) => {
-                event.preventDefault();
-                const formData = new FormData(event.currentTarget);
-                setAddress(formData.get("address")?.toString() ?? "");
-                setChain(Number(formData.get("chain")?.toString()));
-              }}
-              className="flex flex-col gap-2"
-            >
+            <form onSubmit={handleSubmit} className="flex flex-col gap-2">
               <input
                 name="address"
                 placeholder={"0xdbe2aff176d2896858f0e34f0a652bf9f4bf0848"}

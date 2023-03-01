@@ -11,6 +11,16 @@ export const Wallet = Node.create({
 
   selectable: true,
 
+  addAttributes() {
+    return {
+      address: {
+        default: undefined,
+      },
+      chain: {
+        default: 1,
+      },
+    };
+  },
   parseHTML() {
     return [
       {
