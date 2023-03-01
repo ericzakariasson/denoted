@@ -4,8 +4,12 @@ import { WalletComponent } from "./wallet-component";
 
 export const Wallet = Node.create({
   name: "walletComponent",
-  group: "block",
-  atom: true,
+
+  group: "inline",
+
+  inline: true,
+
+  selectable: true,
 
   parseHTML() {
     return [

@@ -66,7 +66,7 @@ export const Editor = ({ initialContent }: EditorProps) => {
         <BubbleMenu
           editor={editor}
           tippyOptions={{ duration: 100 }}
-          className="flex gap-2"
+          className="flex gap-1"
         >
           <BubbleMenuButton
             onClick={() => editor.chain().focus().toggleBold().run()}

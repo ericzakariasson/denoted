@@ -1,4 +1,5 @@
 import { ReactRenderer } from "@tiptap/react";
+import { Editor } from "@tiptap/core";
 import tippy from "tippy.js";
 import { CommandList } from "../../../components/CommandList";
 
@@ -7,12 +8,12 @@ export const commandSuggestions = {
     return [
       {
         title: "wallet",
-        command: ({ editor, range }: any) => {
+        command: ({ editor, range }: { editor: Editor; range: any }) => {
           editor
             .chain()
             .focus()
             .deleteRange(range)
-            .setNode("heading", { level: 1 })
+            .insertContent("<wallet-component></wallet-component>")
             .run();
         },
       },
