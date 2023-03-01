@@ -6,8 +6,6 @@ import Placeholder from "@tiptap/extension-placeholder";
 import { PropsWithChildren } from "react";
 import { Content } from "@tiptap/core";
 
-import "./Editor.module.css";
-
 type BubbleMenuButtonProps = {
   onClick: () => void;
   isActive: boolean;

@@ -10,6 +10,7 @@ const CreatePage: NextPage = () => {
       onSubmit={(event) => {
         event.preventDefault();
       }}
+      className="m-auto max-w-2xl"
     >
       <input
         placeholder="Untitled"
@@ -18,7 +19,7 @@ const CreatePage: NextPage = () => {
         onChange={(event) => setTitle(event.target.value)}
         required
       />
-      <div className="border">
+      <div>
         <Editor />
       </div>
       <button>save</button>
