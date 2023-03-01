@@ -34,5 +34,5 @@ export const WalletBalanceWidget = ({
     return <span>an error has occured...</span>;
   }
 
-  return <span>{data}</span>;
+  return <span className="rounded-full bg-gray-200 px-1 py-0">{data}</span>;
 };
