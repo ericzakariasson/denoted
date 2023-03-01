@@ -2,8 +2,11 @@ import { useEditor, EditorContent, BubbleMenu } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Highlight from "@tiptap/extension-highlight";
 import Typography from "@tiptap/extension-typography";
+import Placeholder from "@tiptap/extension-placeholder";
 import { PropsWithChildren } from "react";
-import { JSONContent } from "@tiptap/core";
+import { Content } from "@tiptap/core";
+
+import "./Editor.module.css";
 
 type BubbleMenuButtonProps = {
   onClick: () => void;
@@ -29,18 +32,16 @@ const BubbleMenuButton = ({
 };
 
 type EditorProps = {
-  initialContent: JSONContent;
+  initialContent?: Content;
 };
 
 export const Editor = ({ initialContent }: EditorProps) => {
   const editor = useEditor({
-    editable: false,
-    extensions: [StarterKit, Highlight, Typography],
+    extensions: [StarterKit, Highlight, Typography, Placeholder],
     content: initialContent,
     editorProps: {
       attributes: {
-        class:
-          "prose dark:prose-invert prose-sm sm:prose lg:prose-lg xl:prose-2xl m-5 focus:outline-none",
+        class: "prose dark:prose-invert focus:outline-none",
       },
     },
   });
