@@ -35,17 +35,6 @@ export const commandSuggestions = {
             .run();
         },
       },
-      {
-        title: "token",
-        command: ({ editor, range }: any) => {
-          editor
-            .chain()
-            .focus()
-            .deleteRange(range)
-            .setNode("heading", { level: 2 })
-            .run();
-        },
-      },
     ];
 
     return COMMANDS.filter(
