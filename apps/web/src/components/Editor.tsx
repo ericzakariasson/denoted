@@ -4,7 +4,7 @@ import Highlight from "@tiptap/extension-highlight";
 import Typography from "@tiptap/extension-typography";
 import Placeholder from "@tiptap/extension-placeholder";
 import { PropsWithChildren } from "react";
-import { Content } from "@tiptap/core";
+import { Content, JSONContent } from "@tiptap/core";
 
 import { Command } from "../lib/tiptap/command/command-extension";
 import { commandSuggestions } from "../lib/tiptap/command/command-suggestions";
@@ -36,9 +36,10 @@ const BubbleMenuButton = ({
 
 type EditorProps = {
   initialContent?: Content;
+  onUpdate?: (json: JSONContent) => void;
 };
 
-export const Editor = ({ initialContent }: EditorProps) => {
+export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
   const { address } = useAccount();
   const editor = useEditor({
     extensions: [
@@ -60,6 +61,7 @@ export const Editor = ({ initialContent }: EditorProps) => {
         class: "prose dark:prose-invert focus:outline-none",
       },
     },
+    onUpdate: (data) => onUpdate?.(data.editor.getJSON()),
   });
 
   if (editor) {

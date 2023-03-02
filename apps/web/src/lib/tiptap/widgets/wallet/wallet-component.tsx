@@ -37,12 +37,9 @@ export const WalletComponent = (props: WalletComponentProps) => {
           {isConfigured ? (
             <WalletBalanceWidget address={address} chain={chain} />
           ) : (
-            <button
-              className="rounded-full border border-gray-400 py-0 px-1 leading-normal"
-              type="button"
-            >
-              config
-            </button>
+            <span className="rounded-full border border-gray-300 py-0 px-1 leading-normal text-gray-500">
+              setup
+            </span>
           )}
         </Popover.Trigger>
         <Popover.Portal>
