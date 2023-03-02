@@ -27,7 +27,7 @@ export const Card = (props: CardProps) => {
     <Link href={`/${props.id}`}>
       <div className="flex flex-col justify-between gap-4 rounded-xl border border-gray-700 bg-white p-5">
         <div className="flex flex-col items-start">
-          <p className="mb-1 text-xl font-medium">{props.title}</p>
+          <p className="mb-1 text-lg font-medium">{props.title}</p>
           <p className="text-gray-400">
             <TimeAgo date={timeConverter(props.timeStamp)} />
           </p>
