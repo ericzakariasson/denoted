@@ -16,6 +16,9 @@ export const Wallet = Node.create({
       address: {
         default: undefined,
       },
+      symbol: {
+        default: undefined,
+      },
       chain: {
         default: 1,
       },

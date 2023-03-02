@@ -1,6 +1,6 @@
 import { NextPage } from "next/types";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useMutation } from "react-query";
 import { useAccount } from "wagmi";
 import { Editor } from "../components/Editor";
@@ -19,13 +19,12 @@ const CreatePage: NextPage = () => {
     console.log({ title, content });
   });
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = () => {
     mutate();
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <div>
       {isConnected && !isAuthenticated && (
         <button onClick={() => authenticateCompose()} type="button">
           authenticate composedb
@@ -39,8 +38,8 @@ const CreatePage: NextPage = () => {
         required
       />
       <Editor onUpdate={(json) => setContent(JSON.stringify(json))} />
-      <button>{isLoading ? "loading" : "save"}</button>
-    </form>
+      <button onClick={handleSubmit}>{isLoading ? "loading" : "save"}</button>
+    </div>
   );
 };
 
