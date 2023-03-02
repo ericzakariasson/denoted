@@ -35,6 +35,17 @@ export const commandSuggestions = {
             .run();
         },
       },
+      {
+        title: "lens",
+        command: ({ editor, range }: { editor: Editor; range: any }) => {
+          editor
+            .chain()
+            .focus()
+            .deleteRange(range)
+            .insertContent(`<lens-component></lens-component>`)
+            .run();
+        },
+      },
     ];
 
     return COMMANDS.filter(

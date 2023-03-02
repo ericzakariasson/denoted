@@ -10,6 +10,7 @@ import { Command } from "../lib/tiptap/command/command-extension";
 import { commandSuggestions } from "../lib/tiptap/command/command-suggestions";
 import { Wallet } from "../lib/tiptap/widgets/wallet/wallet-extension";
 import { useAccount } from "wagmi";
+import { Lens } from "../lib/tiptap/widgets/lens/lens-extension";
 
 type BubbleMenuButtonProps = {
   onClick: () => void;
@@ -54,6 +55,7 @@ export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
         suggestion: commandSuggestions,
       }),
       Wallet,
+      Lens,
     ],
     content: initialContent,
     editorProps: {
