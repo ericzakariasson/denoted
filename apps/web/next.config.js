@@ -3,17 +3,7 @@ module.exports = {
   transpilePackages: ["@web3auth/web3auth-wagmi-connector"],
   // next.config.js
   experimental: {
-    transpilePackages: [
-      "@web3auth/web3auth-wagmi-connector",
-      "ui",
-      "web3-config",
-      "merkle",
-      "ab-types",
-      "subgraph-api",
-      "cms-api",
-      "locale",
-      "utils",
-    ],
+    transpilePackages: ["@web3auth/web3auth-wagmi-connector"],
     esmExternals: "loose",
   },
 
@@ -33,4 +23,5 @@ module.exports = {
 
     return config;
   },
+  transpilePackages: ["ui"],
 };

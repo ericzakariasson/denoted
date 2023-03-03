@@ -25,25 +25,23 @@ export const Card = (props: CardProps) => {
 
   return (
     <Link href={`/${props.id}`}>
-      <div className="mb-4 w-full px-2 sm:w-1/2 lg:w-1/3">
-        <div className="w-full max-w-sm cursor-pointer rounded-xl border border-gray-200 bg-white shadow">
-          <div className="flex flex-col items-start	pl-5 pt-3 pb-5">
-            <p className="mb-1 text-xl font-medium">{props.title}</p>
-            <p className="text-gray-400">
-              <TimeAgo date={timeConverter(props.timeStamp)} />
-            </p>
-          </div>
-          <div className="flex pb-5 pl-5">
-            <Blockies
-              seed={props.author}
-              size={8}
-              scale={3}
-              className="rounded-xl"
-            />
-            <p className="items-center pb-3 pl-2">
-              {add ? add : formatEthAddress(props.author, 5, 36)}
-            </p>
-          </div>
+      <div className="flex flex-col justify-between gap-4 rounded-xl border border-gray-700 bg-white p-5">
+        <div className="flex flex-col items-start">
+          <p className="mb-1 text-lg font-medium">{props.title}</p>
+          <p className="text-gray-400">
+            <TimeAgo date={timeConverter(props.timeStamp)} />
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Blockies
+            seed={props.author}
+            size={8}
+            scale={3}
+            className="rounded-full"
+          />
+          <p className="items-center">
+            {add ? add : formatEthAddress(props.author, 5, 36)}
+          </p>
         </div>
       </div>
     </Link>

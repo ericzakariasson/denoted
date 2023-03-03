@@ -4,9 +4,13 @@ import Highlight from "@tiptap/extension-highlight";
 import Typography from "@tiptap/extension-typography";
 import Placeholder from "@tiptap/extension-placeholder";
 import { PropsWithChildren } from "react";
-import { Content } from "@tiptap/core";
+import { Content, JSONContent } from "@tiptap/core";
 
-import "./Editor.module.css";
+import { Command } from "../lib/tiptap/command/command-extension";
+import { commandSuggestions } from "../lib/tiptap/command/command-suggestions";
+import { Wallet } from "../lib/tiptap/widgets/wallet/wallet-extension";
+import { useAccount } from "wagmi";
+import { Lens } from "../lib/tiptap/widgets/lens/lens-extension";
 
 type BubbleMenuButtonProps = {
   onClick: () => void;
@@ -33,18 +37,38 @@ const BubbleMenuButton = ({
 
 type EditorProps = {
   initialContent?: Content;
+  onUpdate?: (json: JSONContent) => void;
 };
 
-export const Editor = ({ initialContent }: EditorProps) => {
+export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
+  const { address } = useAccount();
   const editor = useEditor({
-    extensions: [StarterKit, Highlight, Typography, Placeholder],
+    extensions: [
+      StarterKit,
+      Highlight,
+      Typography,
+      Placeholder,
+      Command.configure({
+        HTMLAttributes: {
+          class: "command",
+        },
+        suggestion: commandSuggestions,
+      }),
+      Wallet,
+      Lens,
+    ],
     content: initialContent,
     editorProps: {
       attributes: {
         class: "prose dark:prose-invert focus:outline-none",
       },
     },
+    onUpdate: (data) => onUpdate?.(data.editor.getJSON()),
   });
+
+  if (editor) {
+    editor.storage.connectedAddress = address;
+  }
 
   return (
     <>
@@ -52,7 +76,7 @@ export const Editor = ({ initialContent }: EditorProps) => {
         <BubbleMenu
           editor={editor}
           tippyOptions={{ duration: 100 }}
-          className="flex gap-2"
+          className="flex gap-1"
         >
           <BubbleMenuButton
             onClick={() => editor.chain().focus().toggleBold().run()}

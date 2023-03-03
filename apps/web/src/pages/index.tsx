@@ -1,7 +1,4 @@
 import { Card } from "../components/Card";
-import { useAccount } from "wagmi";
-import { authenticateCompose } from "../lib/compose";
-import { DocumentList } from "../components/DocumentList";
 
 const draftData = [
   {
@@ -43,29 +40,17 @@ const draftData = [
 ];
 
 export default function Web() {
-  const { isConnected } = useAccount();
-  const isAuthenticated =
-    typeof localStorage === "undefined" ? false : localStorage.getItem("did");
   return (
-    <>
-      <main className="p-20">
-        {isConnected && (
-          <button onClick={() => authenticateCompose()} type="button">
-            authenticate composedb
-          </button>
-        )}
-        <div className="flex flex-wrap justify-between">
-          {draftData.map((data) => (
-            <Card
-              key={data.id}
-              id={data.id}
-              title={data.title}
-              timeStamp={data.timestamp}
-              author={data.author}
-            />
-          ))}
-        </div>
-      </main>
-    </>
+    <div className="grid gap-4 md:grid-cols-3">
+      {draftData.map((data) => (
+        <Card
+          key={data.id}
+          id={data.id}
+          title={data.title}
+          timeStamp={data.timestamp}
+          author={data.author}
+        />
+      ))}
+    </div>
   );
 }
