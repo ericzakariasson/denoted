@@ -1,12 +1,9 @@
 module.exports = {
   reactStrictMode: true,
-  transpilePackages: ["@web3auth/web3auth-wagmi-connector"],
-  // next.config.js
   experimental: {
-    transpilePackages: ["@web3auth/web3auth-wagmi-connector"],
+    transpilePackages: ["@web3auth/web3auth-wagmi-connector", "ui"],
     esmExternals: "loose",
   },
-
   externals: {
     "@wagmi/core": "@wagmi/core",
   },

@@ -1,8 +1,9 @@
+import { PropsWithChildren } from "react";
 import { WagmiConfig, createClient, configureChains } from "wagmi";
 import { arbitrum, mainnet, polygon } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 
-import Web3AuthConnectorInstance from "../index";
+import Web3AuthConnectorInstance from "../lib/web3auth";
 
 const { chains, provider, webSocketProvider } = configureChains(
   [mainnet, arbitrum, polygon],
