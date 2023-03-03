@@ -1,43 +1,24 @@
-import "@rainbow-me/rainbowkit/styles.css";
-
-import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
-import { infuraProvider } from "wagmi/providers/infura";
+import { WagmiConfig, createClient, configureChains } from "wagmi";
+import { arbitrum, mainnet, polygon } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
-import { PropsWithChildren } from "react";
 
-const { chains, provider } = configureChains(
-  [chain.mainnet, chain.rinkeby],
-  [
-    infuraProvider({ apiKey: process.env.NEXT_PUBLIC_INFURA_KEY }),
-    publicProvider(),
-  ]
+import Web3AuthConnectorInstance from "../index";
+
+const { chains, provider, webSocketProvider } = configureChains(
+  [mainnet, arbitrum, polygon],
+  [publicProvider()]
 );
 
-const { connectors } = getDefaultWallets({
-  appName: "denoted",
-  chains,
-});
-
-const wagmiClient = createClient({
+// Set up client
+const client = createClient({
   autoConnect: true,
-  connectors,
+  connectors: [Web3AuthConnectorInstance(chains)],
   provider,
+  webSocketProvider,
 });
 
 const Web3Provider = ({ children }: PropsWithChildren<unknown>) => {
-  return (
-    <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider
-        chains={chains}
-        appInfo={{
-          appName: "denoted",
-        }}
-      >
-        {children}
-      </RainbowKitProvider>
-    </WagmiConfig>
-  );
+  return <WagmiConfig client={client}>{children}</WagmiConfig>;
 };
 
 export default Web3Provider;

@@ -1,6 +1,11 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-
+import { useAccount, useConnect, useDisconnect } from "wagmi";
 export const Navbar = () => {
+  const { address, connector, isConnected } = useAccount();
+  const { connect, connectors, error, isLoading, pendingConnector } =
+    useConnect();
+  console.log(isConnected);
+
+  console.log(connector)
   return (
     <nav className="rounded border-gray-200 bg-white px-2 py-2.5 dark:bg-gray-900 sm:px-4">
       <div className="container mx-auto flex flex-wrap items-center justify-between">
@@ -15,7 +20,23 @@ export const Navbar = () => {
                 className="block rounded bg-blue-700 py-2 pl-3 pr-4 text-white dark:text-white md:bg-transparent md:p-0 md:text-blue-700"
                 aria-current="page"
               >
-                Create
+                <div className="main">
+                  {connectors.map((connector) => (
+                    <button
+                      className="card"
+                      disabled={!connector?.ready}
+                      key={connector?.id}
+                      onClick={() => connect({ connector })}
+                    >
+                      {connector?.name}
+                      {!connector?.ready && " (unsupported)"}
+                      {isLoading &&
+                        connector.id === pendingConnector?.id &&
+                        " (connecting)"}
+                    </button>
+                  ))}
+                  {error && <div>{error.message}</div>}
+                </div>
               </a>
             </li>
             <li>
@@ -23,9 +44,7 @@ export const Navbar = () => {
                 href="#"
                 className="block rounded bg-blue-700 py-2 pl-3 pr-4 text-white dark:text-white md:bg-transparent md:p-0 md:text-blue-700"
                 aria-current="page"
-              >
-                <ConnectButton showBalance={false} />
-              </a>
+              ></a>
             </li>
           </ul>
         </div>
