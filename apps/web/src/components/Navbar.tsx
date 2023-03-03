@@ -1,6 +1,7 @@
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
+
 export const Navbar = () => {
-  const { address, connector, isConnected } = useAccount();
+  const { isConnected } = useAccount();
   const { connect, connectors, error, isLoading, pendingConnector } =
     useConnect();
 
@@ -26,23 +27,16 @@ export const Navbar = () => {
                       key={connector?.id}
                       onClick={() => connect({ connector })}
                     >
-                      {connector?.name}
-                      {!connector?.ready && " (unsupported)"}
-                      {isLoading &&
-                        connector.id === pendingConnector?.id &&
-                        " (connecting)"}
+                      {isConnected && <p>connected</p>}
+                      {!isConnected && <p>{connector?.name}</p>}
+                      {isLoading && connector.id === pendingConnector?.id && (
+                        <p>connecting...</p>
+                      )}
                     </button>
                   ))}
                   {error && <div>{error.message}</div>}
                 </div>
               </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="block rounded bg-blue-700 py-2 pl-3 pr-4 text-white dark:text-white md:bg-transparent md:p-0 md:text-blue-700"
-                aria-current="page"
-              ></a>
             </li>
           </ul>
         </div>
