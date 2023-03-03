@@ -65,7 +65,7 @@ const CreatePage: NextPage = () => {
         />
       </div>
       <button
-        className="rounded-full border border-black px-2"
+        className="rounded-full border border-black bg-black px-2 text-white disabled:opacity-50"
         onClick={handleSubmit}
         disabled={!isEnabled}
       >

@@ -27,8 +27,8 @@ const BubbleMenuButton = ({
     <button
       onClick={onClick}
       className={
-        "rounded-full border px-2 " +
-        (isActive ? "bg-black text-white" : "border-black bg-white")
+        "border border-r-0 border-black px-2 first:rounded-tl-full first:rounded-bl-full last:rounded-tr-full last:rounded-br-full last:border-r " +
+        (isActive ? "bg-black text-white" : "bg-white")
       }
     >
       {children}
@@ -82,7 +82,7 @@ export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
         <BubbleMenu
           editor={editor}
           tippyOptions={{ duration: 100 }}
-          className="flex gap-1"
+          className="flex"
         >
           <BubbleMenuButton
             onClick={() => editor.chain().focus().toggleBold().run()}
