@@ -1,5 +1,8 @@
 import "../styles/globals.css";
 
+import { Inter } from "next/font/google";
+const inter = Inter({ subsets: ["latin"] });
+
 import type { AppProps } from "next/app";
 import React from "react";
 import { Hydrate } from "react-query";
@@ -14,8 +17,10 @@ function MyApp({ Component, pageProps }: AppProps) {
     <QueryClientProvider client={queryClient}>
       <Hydrate state={pageProps.dehydratedState}>
         <WagmiProvider>
-          <Navbar />
-          <main className="m-auto max-w-3xl px-4">
+          <Navbar className={inter.className} />
+          <main
+            className={"m-auto max-w-3xl px-4 py-8" + " " + inter.className}
+          >
             <Component {...pageProps} />
           </main>
         </WagmiProvider>

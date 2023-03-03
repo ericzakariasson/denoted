@@ -54,9 +54,9 @@ export const GraphComponent = (props: GraphComponentProps) => {
               className="flex flex-col gap-2"
               name="graph-setup"
             >
-              <input name="url" type="url" />
-              <textarea name="query"></textarea>
-              <input name="path" placeholder="foo.bar" />
+              <input name="url" type="url" defaultValue={url} />
+              <textarea name="query" defaultValue={query}></textarea>
+              <input name="path" defaultValue={path} placeholder="foo.bar" />
               <button type="submit">save</button>
             </form>
           </Popover.Content>
