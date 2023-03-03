@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-.ProseMirror p.is-editor-empty:first-child::before {
+.ProseMirror p.is-empty::before {
   color: #adb5bd;
   content: attr(data-placeholder);
   float: left;

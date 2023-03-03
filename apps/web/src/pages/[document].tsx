@@ -44,7 +44,7 @@ const DocumentPage: NextPage<Props> = ({ doc, isEditor }) => {
   return (
     <div>
       <div className="flex items-start justify-between">
-        <h1 className="mb-8 text-6xl font-bold">{doc.title}</h1>
+        <h1 className="mb-8 text-5xl font-bold">{doc.title}</h1>
         {isEditor && (
           <span className="mb-1 inline-block rounded-full border px-2 py-0">
             owner
