@@ -24,16 +24,13 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   }
 
   const query = await getNoteQuery(documentId);
+  const doc = query.data?.node;
 
-  const edge = query.data?.edges?.at(0);
-
-  if (!edge) {
+  if (!doc) {
     return {
       notFound: true,
     };
   }
-
-  const doc = edge.node;
 
   return {
     props: {
@@ -44,55 +41,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 };
 
 const DocumentPage: NextPage<Props> = ({ doc, isEditor }) => {
-  const [title, setTitle] = useState(doc.title);
-  const [isEditing, setIsEditing] = useState(false);
-
-  const titleInputRef = useRef<HTMLInputElement>(null);
-
   return (
-    <div className="p-16">
-      <div className="flex justify-between">
-        {isEditing ? (
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              setIsEditing(false);
-            }}
-          >
-            <input
-              placeholder="Untitled"
-              className="text-8xl"
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              required
-              ref={titleInputRef}
-            />
-          </form>
-        ) : (
-          <h1
-            className="text-8xl"
-            onDoubleClick={() => {
-              setIsEditing(true);
-              setTimeout(() => titleInputRef.current?.focus(), 0);
-            }}
-          >
-            {title}
-          </h1>
-        )}
-        {isEditor && !isEditing && (
-          <button onClick={() => setIsEditing(true)}>edit</button>
-        )}
-        {isEditor && isEditing && (
-          <button onClick={() => setIsEditing(false)}>save</button>
-        )}
-      </div>
-      {isEditing ? (
-        <div className="border">
-          <Editor initialContent={JSON.parse(doc.content)} />
-        </div>
-      ) : (
-        <Viewer json={JSON.parse(doc.content)} />
-      )}
+    <div>
+      {isEditor && <span>owner</span>}
+      <h1 className="text-8xl">{doc.title}</h1>
+      <Viewer json={JSON.parse(doc.content)} />
     </div>
   );
 };

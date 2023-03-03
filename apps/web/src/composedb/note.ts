@@ -1,17 +1,28 @@
 import { gql } from "graphql-request";
 import { composeClient } from "../lib/compose";
 
-type Note = {
+export type Note = {
   id: string;
   title: string;
   content: string;
   author: {
     id: string;
   };
+  createdAt: string;
 };
 
-export async function createNote(title: string, content: string) {
-  return await composeClient.executeQuery<Note>(
+type CreateNoteMutation = {
+  createNote: {
+    document: Note;
+  };
+};
+
+export async function createNote(
+  title: string,
+  content: string,
+  createdAt: string
+) {
+  return await composeClient.executeQuery<CreateNoteMutation>(
     gql`
       mutation ($content: NoteInput!) {
         createNote(input: { content: $content }) {
@@ -22,24 +33,27 @@ export async function createNote(title: string, content: string) {
             author {
               id
             }
+            createdAt
           }
         }
       }
     `,
-    { content: { title, content } }
+    { content: { title, content, createdAt } }
   );
 }
 
 export type GetNotesQuery = {
-  edges: {
-    node: Note;
-  }[];
+  noteIndex: {
+    edges: {
+      node: Note;
+    }[];
+  };
 };
 
 export async function getNotesQuery() {
-  return await composeClient.executeQuery<GetNotesQuery>(`
+  return await composeClient.executeQuery<GetNotesQuery>(gql`
     query {
-      noteIndex(first: 100) {
+      noteIndex(first: 1000) {
         edges {
           node {
             id
@@ -48,34 +62,35 @@ export async function getNotesQuery() {
             author {
               id
             }
+            createdAt
           }
         }
       }
     }
-    `);
+  `);
 }
 
 type GetNoteQuery = {
-  edges: {
-    node: Note;
-  }[];
+  node: Note;
 };
 
-export async function getNoteQuery<GetNoteQuery>(id: string) {
-  return await composeClient.executeQuery<GetNotesQuery>(`
-    query {
-      noteIndex(first: 100) {
-        edges {
-          node {
+export async function getNoteQuery(id: string) {
+  return await composeClient.executeQuery<GetNoteQuery>(
+    gql`
+      query ($id: ID!) {
+        node(id: $id) {
+          ... on Note {
             id
             title
             content
             author {
               id
             }
+            createdAt
           }
         }
       }
-    }
-    `);
+    `,
+    { id }
+  );
 }

@@ -1,46 +1,42 @@
 import { formatEthAddress } from "../utils/index";
-import { timeConverter } from "../utils/index";
 import TimeAgo from "react-timeago";
 import { useEnsName } from "wagmi";
 import Blockies from "react-blockies";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Note } from "../composedb/note";
 
 type CardProps = {
-  id: number;
-  title: string;
-  timeStamp: number;
-  author: string;
+  doc: Note;
 };
 
-export const Card = (props: CardProps) => {
-  const [add, setAdd] = useState<string | undefined | null>(props.author);
+export const Card = ({ doc }: CardProps) => {
+  const address = doc.author.id.split(":")[4];
   const { data: ensName } = useEnsName({
-    address: props.author,
+    address,
   });
 
-  useEffect(() => {
-    return setAdd(ensName);
-  }, [ensName]);
+  console.log(doc.createdAt);
+
+  console.log(new Date(doc.createdAt));
 
   return (
-    <Link href={`/${props.id}`}>
+    <Link href={`/${doc.id}`}>
       <div className="flex flex-col justify-between gap-4 rounded-xl border border-gray-700 bg-white p-5">
         <div className="flex flex-col items-start">
-          <p className="mb-1 text-lg font-medium">{props.title}</p>
+          <p className="mb-1 text-lg font-medium">{doc.title}</p>
           <p className="text-gray-400">
-            <TimeAgo date={timeConverter(props.timeStamp)} />
+            <TimeAgo date={new Date(doc.createdAt)} />
           </p>
         </div>
         <div className="flex gap-2">
           <Blockies
-            seed={props.author}
+            seed={address}
             size={8}
             scale={3}
             className="rounded-full"
           />
           <p className="items-center">
-            {add ? add : formatEthAddress(props.author, 5, 36)}
+            {ensName ?? formatEthAddress(address, 5, 36)}
           </p>
         </div>
       </div>

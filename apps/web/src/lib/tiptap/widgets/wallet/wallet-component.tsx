@@ -4,6 +4,12 @@ import { WalletBalanceWidget } from "../../../../components/widgets/Wallet";
 import { useState } from "react";
 
 import * as Popover from "@radix-ui/react-popover";
+import { ethers } from "ethers";
+
+const provider = new ethers.providers.InfuraProvider(
+  "mainnet",
+  process.env.INFURA_API_KEY
+);
 
 type WalletComponentProps = {
   updateAttributes: (attributes: Record<string, string>) => void;
@@ -16,12 +22,23 @@ type WalletComponentProps = {
   };
 };
 
+async function parseAddress(rawAddress: string) {
+  if (rawAddress.endsWith(".ens")) {
+    return (await provider.resolveName(rawAddress)) ?? "";
+  }
+
+  return rawAddress;
+}
+
 export const WalletComponent = (props: WalletComponentProps) => {
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+
+    const x = formData.get("address")?.toString() ?? "";
+
     props.updateAttributes({
-      address: formData.get("address")?.toString() ?? "",
+      address: await parseAddress(formData.get("address")?.toString() ?? ""),
       symbol: formData.get("symbol")?.toString() ?? "",
       chain: formData.get("chain")?.toString() ?? "",
     });
@@ -62,7 +79,7 @@ export const WalletComponent = (props: WalletComponentProps) => {
             >
               <input
                 name="address"
-                placeholder={"0xdbe2aff176d2896858f0e34f0a652bf9f4bf0848"}
+                placeholder={"erci.eth"}
                 defaultValue={address ?? ""}
               />
               <select name="symbol" defaultValue={symbol}>
