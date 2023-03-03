@@ -6,13 +6,13 @@ export const commandSuggestions = {
   items: ({ query, editor }: any) => {
     const COMMANDS: CommandItem[] = [
       {
-        title: "wallet",
+        title: "balance",
         command: ({ editor, range }) => {
           editor
             .chain()
             .focus()
             .deleteRange(range)
-            .insertContent("<wallet-component></wallet-component>")
+            .insertContent("<balance-component></balance-component>")
             .run();
         },
       },
@@ -62,7 +62,7 @@ export const commandSuggestions = {
             .focus()
             .deleteRange(range)
             .insertContent(
-              `<wallet-component address="${connectedAddress}" symbol="ETH" chain="1"></wallet-component>`
+              `<balance-component address="${connectedAddress}" symbol="ETH" chain="1"></balance-component>`
             )
             .run();
         },

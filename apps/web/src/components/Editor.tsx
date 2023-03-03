@@ -8,7 +8,7 @@ import { Content, JSONContent } from "@tiptap/core";
 
 import { Command } from "../lib/tiptap/command/command-extension";
 import { commandSuggestions } from "../lib/tiptap/command/command-suggestions";
-import { Wallet } from "../lib/tiptap/widgets/wallet/wallet-extension";
+import { Balance } from "../lib/tiptap/widgets/balance/balance-extension";
 import { useAccount } from "wagmi";
 import { Lens } from "../lib/tiptap/widgets/lens/lens-extension";
 import { Graph } from "../lib/tiptap/widgets/graph/graph-extension";
@@ -45,7 +45,7 @@ export const extensions = [
   StarterKit,
   Highlight,
   Typography,
-  Wallet,
+  Balance,
   Lens,
   Graph,
 ];

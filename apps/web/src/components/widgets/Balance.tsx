@@ -32,7 +32,7 @@ const COVALENT_CHAIN_NAME_MAP: Record<number, string> = {
 };
 
 const formatBalance = (balance: string) => {
-  return Number(ethers.utils.formatEther(balance)).toFixed("3");
+  return Number(ethers.utils.formatEther(balance)).toFixed(3);
 };
 
 export const WalletBalanceWidget = ({

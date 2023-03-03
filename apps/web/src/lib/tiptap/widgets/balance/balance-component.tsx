@@ -1,17 +1,11 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import React from "react";
-import { WalletBalanceWidget } from "../../../../components/widgets/Wallet";
-import { useState } from "react";
+import { WalletBalanceWidget } from "../../../../components/widgets/Balance";
 
 import * as Popover from "@radix-ui/react-popover";
-import { ethers } from "ethers";
+import { getEnsAddress } from "../../../../utils/ens";
 
-const provider = new ethers.providers.InfuraProvider(
-  "mainnet",
-  process.env.INFURA_API_KEY
-);
-
-type WalletComponentProps = {
+type BalanceComponentProps = {
   updateAttributes: (attributes: Record<string, string>) => void;
   node: {
     attrs: {
@@ -24,13 +18,13 @@ type WalletComponentProps = {
 
 async function parseAddress(rawAddress: string) {
   if (rawAddress.endsWith(".ens")) {
-    return (await provider.resolveName(rawAddress)) ?? "";
+    return (await getEnsAddress(rawAddress)) ?? "";
   }
 
   return rawAddress;
 }
 
-export const WalletComponent = (props: WalletComponentProps) => {
+export const BalanceComponent = (props: BalanceComponentProps) => {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
