@@ -40,13 +40,13 @@ type EditorProps = {
   onUpdate?: (json: JSONContent) => void;
 };
 
+export const extensions = [StarterKit, Highlight, Typography, Wallet, Lens];
+
 export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
   const { address } = useAccount();
   const editor = useEditor({
     extensions: [
-      StarterKit,
-      Highlight,
-      Typography,
+      ...extensions,
       Placeholder,
       Command.configure({
         HTMLAttributes: {
@@ -54,8 +54,6 @@ export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
         },
         suggestion: commandSuggestions,
       }),
-      Wallet,
-      Lens,
     ],
     content: initialContent,
     editorProps: {

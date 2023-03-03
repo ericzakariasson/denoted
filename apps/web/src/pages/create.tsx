@@ -1,6 +1,7 @@
+import { useRouter } from "next/router";
 import { NextPage } from "next/types";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation } from "react-query";
 import { useAccount } from "wagmi";
 import { Editor } from "../components/Editor";
@@ -11,22 +12,32 @@ const CreatePage: NextPage = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const isAuthenticated =
     typeof localStorage === "undefined" ? false : localStorage.getItem("did");
 
+  const router = useRouter();
+
+  useEffect(() => {
+    authenticateCompose();
+  }, [address]);
+
   const { mutate, isLoading } = useMutation(
     async () => {
-      return await createNote(title, content);
+      return await createNote(title, content, new Date().toISOString());
     },
     {
-      onSuccess: (data, variables, context) => {
-        console.log(data, variables, context);
+      onSuccess: (data) => {
+        console.log(data);
+        const id = data.data?.createNote?.document?.id ?? null;
+        if (id) {
+          router.push(id);
+        }
       },
     }
   );
 
-  const isEnabled = isAuthenticated && !title && !content;
+  const isEnabled = isAuthenticated && title.length > 0 && content.length > 0;
 
   const handleSubmit = () => {
     mutate();
@@ -34,8 +45,8 @@ const CreatePage: NextPage = () => {
 
   return (
     <div>
-      {isConnected && !isAuthenticated && (
-        <button onClick={() => authenticateCompose()} type="button">
+      {isConnected && (
+        <button onClick={authenticateCompose} type="button">
           authenticate composedb
         </button>
       )}
