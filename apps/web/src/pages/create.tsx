@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useMutation } from "react-query";
 import { useAccount } from "wagmi";
 import { Editor } from "../components/Editor";
+import { createNote } from "../composedb/note";
 import { authenticateCompose } from "../lib/compose";
 
 const CreatePage: NextPage = () => {
@@ -14,10 +15,18 @@ const CreatePage: NextPage = () => {
   const isAuthenticated =
     typeof localStorage === "undefined" ? false : localStorage.getItem("did");
 
-  const { mutate, isLoading } = useMutation(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    console.log({ title, content });
-  });
+  const { mutate, isLoading } = useMutation(
+    async () => {
+      return await createNote(title, content);
+    },
+    {
+      onSuccess: (data, variables, context) => {
+        console.log(data, variables, context);
+      },
+    }
+  );
+
+  const isEnabled = isAuthenticated && !title && !content;
 
   const handleSubmit = () => {
     mutate();
@@ -37,8 +46,18 @@ const CreatePage: NextPage = () => {
         onChange={(event) => setTitle(event.target.value)}
         required
       />
-      <Editor onUpdate={(json) => setContent(JSON.stringify(json))} />
-      <button onClick={handleSubmit}>{isLoading ? "loading" : "save"}</button>
+      <Editor
+        onUpdate={(json) =>
+          setContent(JSON.stringify(json).replace(/\\"/g, '"'))
+        }
+      />
+      <button
+        className="rounded-full border border-black px-2"
+        onClick={handleSubmit}
+        disabled={!isEnabled}
+      >
+        {isLoading ? "saving" : "save"}
+      </button>
     </div>
   );
 };

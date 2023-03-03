@@ -1,3 +1,4 @@
+import { gql } from "graphql-request";
 import { composeClient } from "../lib/compose";
 
 type Note = {
@@ -10,25 +11,23 @@ type Note = {
 };
 
 export async function createNote(title: string, content: string) {
-  return await composeClient.executeQuery<Note>(`
-  mutation {
-    createNote(input: {
-      content: {
-        title: "${title}",
-        content:"${content}",
-      }
-    }) {
-      document {
-        id
-        title
-        content
-        author {
-          id
+  return await composeClient.executeQuery<Note>(
+    gql`
+      mutation ($content: NoteInput!) {
+        createNote(input: { content: $content }) {
+          document {
+            id
+            title
+            content
+            author {
+              id
+            }
+          }
         }
       }
-    }
-  }
-    `);
+    `,
+    { content: { title, content } }
+  );
 }
 
 export type GetNotesQuery = {

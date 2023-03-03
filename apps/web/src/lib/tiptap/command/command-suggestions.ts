@@ -21,6 +21,7 @@ export const commandSuggestions = {
         title: "me",
         command: ({ editor, range }: { editor: Editor; range: any }) => {
           const { connectedAddress } = editor.storage;
+
           if (!connectedAddress) {
             return null;
           }
