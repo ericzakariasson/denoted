@@ -13,7 +13,7 @@ const { chains, provider, webSocketProvider } = configureChains(
 // Set up client
 const client = createClient({
   autoConnect: true,
-  connectors: [Web3AuthConnectorInstance(chains)],
+  connectors: [Web3AuthConnectorInstance(chains as any)],
   provider,
   webSocketProvider,
 });

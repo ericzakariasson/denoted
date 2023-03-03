@@ -8,7 +8,6 @@ import { Web3AuthConnector } from "@web3auth/web3auth-wagmi-connector/dist/web3a
 export default function Web3AuthConnectorInstance(chains: Chain[]) {
   // Create Web3Auth Instance
   const name = "Denoted";
-  const iconUrl = "https://web3auth.io/docs/contents/logo-ethereum.png";
   const web3AuthInstance = new Web3Auth({
     clientId:
       "BMJyE6XQO6A3sfo9lr8-EwhwPXqV3KlblOIOUsM-hCgMjgmpV_KPn7QbVkioRrCRKzNSTC4ASyYEp2NG-R9Ne64", //process.env.NEXT_PUBLIC_WEB3_AUTH_KEY as string,

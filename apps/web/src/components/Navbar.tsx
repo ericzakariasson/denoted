@@ -1,8 +1,11 @@
 import { useAccount, useConnect } from "wagmi";
 import { formatEthAddress } from "../utils/index";
+import { useDisconnect } from "wagmi";
+
 export const Navbar = () => {
   const { isConnected, address } = useAccount();
   const { connect, connectors } = useConnect();
+  const { disconnect } = useDisconnect();
 
   return (
     <nav className="mx-auto max-w-3xl py-4 px-4">
@@ -20,7 +23,9 @@ export const Navbar = () => {
                   onClick={() => connect({ connector })}
                 >
                   {isConnected && address && (
-                    <p>{formatEthAddress(address, 5, 40)}</p>
+                    <p onClick={() => disconnect()}>
+                      {formatEthAddress(address, 5, 40)}
+                    </p>
                   )}
                   {!isConnected && <p>connect</p>}
                 </button>
