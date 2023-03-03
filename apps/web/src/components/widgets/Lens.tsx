@@ -31,8 +31,7 @@ export const LensWidget = ({ handle }: LensWidgetProps) => {
       >
         🌿
       </Link>{" "}
-      {data?.name}: {data?.stats.totalPosts} posts, {data?.stats.totalFollowing}{" "}
-      following & {data?.stats.totalFollowers} followers
+      {data?.name}
     </span>
   );
 };
