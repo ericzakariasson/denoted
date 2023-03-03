@@ -1,3 +1,4 @@
+import { PropsWithChildren } from "react";
 import { WagmiConfig, createClient, configureChains } from "wagmi";
 import { arbitrum, mainnet, polygon } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
