@@ -18,6 +18,15 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
 };
 
 const Page: NextPage<Props> = ({ documents }) => {
+  if (documents.length === 0) {
+    return (
+      <div>
+        <h1 className="text-2xl font-normal text-black">
+          waiting for some docs
+        </h1>
+      </div>
+    );
+  }
   return (
     <div className="grid gap-4 md:grid-cols-3">
       {documents.map((doc) => (

@@ -9,7 +9,7 @@ type NavbarProps = {
 };
 
 export const Navbar = ({ className }: NavbarProps) => {
-  const { isConnected, address } = useAccount();
+  const { isConnected, address, isConnecting } = useAccount();
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
 
@@ -37,7 +37,8 @@ export const Navbar = ({ className }: NavbarProps) => {
                   {formatEthAddress(address, 5, 40)}
                 </p>
               )}
-              {!isConnected && <p>connect</p>}
+              {isConnecting && <p>connecting...</p>}
+              {!isConnected && !isConnecting && <p>connect</p>}
             </button>
           ))}
         </div>
