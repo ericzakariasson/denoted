@@ -12,6 +12,7 @@ import { Wallet } from "../lib/tiptap/widgets/wallet/wallet-extension";
 import { useAccount } from "wagmi";
 import { Lens } from "../lib/tiptap/widgets/lens/lens-extension";
 import { Graph } from "../lib/tiptap/widgets/graph/graph-extension";
+import { Tally } from "../lib/tiptap/widgets/tally/tally-extension";
 
 type BubbleMenuButtonProps = {
   onClick: () => void;
@@ -48,6 +49,7 @@ export const extensions = [
   Wallet,
   Lens,
   Graph,
+  Tally,
 ];
 
 export const Editor = ({ initialContent, onUpdate }: EditorProps) => {

@@ -52,7 +52,7 @@ export const TallyComponent = (props: TallyComponentProps) => {
             <form
               onSubmit={handleSubmit}
               className="flex flex-col gap-2"
-              name="graph-setup"
+              name="tally-setup"
             >
               <input name="url" type="url" />
               <textarea name="query"></textarea>

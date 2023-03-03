@@ -7,7 +7,9 @@ type TallyWidgetProps = {
   url: string;
   query: string;
   path: string;
+  variable?: string;
 };
+
 
 export const TallyWidget = ({ url, query, path }: TallyWidgetProps) => {
   const { isLoading, data, isError } = useQuery(

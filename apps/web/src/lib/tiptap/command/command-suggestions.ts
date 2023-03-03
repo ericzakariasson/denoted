@@ -30,17 +30,6 @@ export const commandSuggestions = {
         },
       },
       {
-        title: "graph",
-        command: ({ editor, range }: { editor: Editor; range: any }) => {
-          editor
-            .chain()
-            .focus()
-            .deleteRange(range)
-            .insertContent(`<graph-component></graph-component>`)
-            .run();
-        },
-      },
-      {
         title: "tally",
         command: ({ editor, range }: { editor: Editor; range: any }) => {
           editor
@@ -48,6 +37,17 @@ export const commandSuggestions = {
             .focus()
             .deleteRange(range)
             .insertContent(`<tally-component></tally-component>`)
+            .run();
+        },
+      },
+      {
+        title: "graph",
+        command: ({ editor, range }: { editor: Editor; range: any }) => {
+          editor
+            .chain()
+            .focus()
+            .deleteRange(range)
+            .insertContent(`<graph-component></graph-component>`)
             .run();
         },
       },

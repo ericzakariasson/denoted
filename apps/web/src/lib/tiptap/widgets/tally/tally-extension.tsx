@@ -2,7 +2,7 @@ import { Node } from "@tiptap/core";
 import { mergeAttributes, ReactNodeViewRenderer } from "@tiptap/react";
 import { TallyComponent } from "./tally-component";
 
-export const Graph = Node.create({
+export const Tally = Node.create({
   name: "tallyComponent",
 
   group: "inline",
