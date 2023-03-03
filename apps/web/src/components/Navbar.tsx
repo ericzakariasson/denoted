@@ -1,7 +1,7 @@
+import Link from "next/link";
 import { useAccount, useConnect } from "wagmi";
 import { formatEthAddress } from "../utils/index";
 import { useDisconnect } from "wagmi";
-import Link from "next/link";
 
 export const Navbar = () => {
   const { isConnected, address } = useAccount();
@@ -9,7 +9,7 @@ export const Navbar = () => {
   const { disconnect } = useDisconnect();
 
   return (
-    <nav className="mx-auto max-w-3xl py-4 px-4">
+    <nav className="mx-auto max-w-3xl p-4">
       <div className="flex items-center justify-between">
         <div>
           <Link href={`/`}>
