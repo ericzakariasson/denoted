@@ -53,7 +53,7 @@ export const commandSuggestions = {
             .focus()
             .deleteRange(range)
             .insertContent(
-              `<wallet-component address="${connectedAddress}"></wallet-component>`
+              `<wallet-component address="${connectedAddress}" symbol="ETH" chain="1"></wallet-component>`
             )
             .run();
         },

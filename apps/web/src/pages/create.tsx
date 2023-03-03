@@ -50,18 +50,20 @@ const CreatePage: NextPage = () => {
           authenticate composedb
         </button>
       )}
-      <input
-        placeholder="Untitled"
-        className="w-full text-6xl font-bold placeholder:text-gray-200"
-        value={title}
-        onChange={(event) => setTitle(event.target.value)}
-        required
-      />
-      <Editor
-        onUpdate={(json) =>
-          setContent(JSON.stringify(json).replace(/\\"/g, '"'))
-        }
-      />
+      <div className="mb-4">
+        <input
+          placeholder="Untitled"
+          className="mb-4 w-full text-6xl font-bold placeholder:text-gray-200 focus:outline-none"
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+          required
+        />
+        <Editor
+          onUpdate={(json) =>
+            setContent(JSON.stringify(json).replace(/\\"/g, '"'))
+          }
+        />
+      </div>
       <button
         className="rounded-full border border-black px-2"
         onClick={handleSubmit}
