@@ -40,6 +40,17 @@ export const commandSuggestions = {
             .run();
         },
       },
+      {
+        title: "tally",
+        command: ({ editor, range }: { editor: Editor; range: any }) => {
+          editor
+            .chain()
+            .focus()
+            .deleteRange(range)
+            .insertContent(`<tally-component></tally-component>`)
+            .run();
+        },
+      },
     ];
 
     const { connectedAddress } = editor.storage;
