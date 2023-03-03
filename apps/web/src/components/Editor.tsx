@@ -55,7 +55,9 @@ export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
   const editor = useEditor({
     extensions: [
       ...extensions,
-      Placeholder,
+      Placeholder.configure({
+        placeholder: () => "Use '/' for commands",
+      }),
       Command.configure({
         HTMLAttributes: {
           class: "command",
