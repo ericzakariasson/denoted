@@ -4,6 +4,7 @@ import { WalletBalanceWidget } from "../../../../components/widgets/Balance";
 
 import * as Popover from "@radix-ui/react-popover";
 import { getEnsAddress } from "../../../../utils/ens";
+import { useState } from "react";
 
 type BalanceComponentProps = {
   updateAttributes: (attributes: Record<string, string>) => void;
@@ -36,17 +37,24 @@ export const BalanceComponent = (props: BalanceComponentProps) => {
       symbol: formData.get("symbol")?.toString() ?? "",
       chain: formData.get("chain")?.toString() ?? "",
     });
+    setOpen(false);
   }
 
   const address = props.node.attrs.address;
   const chain = Number(props.node.attrs.chain);
   const symbol = props.node.attrs.symbol;
 
+  const [isOpen, setOpen] = useState(false);
+
   const isConfigured = address !== undefined && symbol !== undefined;
 
   return (
     <NodeViewWrapper as="span">
-      <Popover.Root>
+      <Popover.Root
+        defaultOpen={!isConfigured}
+        onOpenChange={setOpen}
+        open={isOpen}
+      >
         <Popover.Trigger>
           {isConfigured ? (
             <WalletBalanceWidget
