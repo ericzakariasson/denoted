@@ -14,8 +14,7 @@ export default function Web3AuthConnectorInstance(chains: Chain[]) {
     chainConfig: {
       chainNamespace: CHAIN_NAMESPACES.EIP155,
       chainId: "0x" + chains[0].id.toString(16),
-      rpcTarget:
-        "https://eth-goerli.g.alchemy.com/v2/mmfu_XmGNCwDegW1WN-WqjvH64wzzdZK", // chains[0].rpcUrls.default.http[0], // This is the public RPC we have added, please pass on your own endpoint while creating an app
+      rpcTarget: process.env.NEXT_PUBLIC_INFURA_WEB_KEY,
       displayName: chains[0].name,
       tickerName: chains[0].nativeCurrency?.name,
       ticker: chains[0].nativeCurrency?.symbol,
@@ -25,12 +24,11 @@ export default function Web3AuthConnectorInstance(chains: Chain[]) {
       theme: "light",
       loginMethodsOrder: ["facebook", "google"],
       defaultLanguage: "en",
-      appLogo: "https://web3auth.io/images/w3a-L-Favicon-1.svg", // Your App Logo Here
+      appLogo: "https://web3auth.io/images/w3a-L-Favicon-1.svg",
       modalZIndex: "2147483647",
     },
   });
 
-  // Add openlogin adapter for customisations
   const openloginAdapterInstance = new OpenloginAdapter({
     adapterSettings: {
       network: "cyan",
@@ -40,7 +38,7 @@ export default function Web3AuthConnectorInstance(chains: Chain[]) {
         logoLight: "https://web3auth.io/images/w3a-L-Favicon-1.svg",
         logoDark: "https://web3auth.io/images/w3a-D-Favicon-1.svg",
         defaultLanguage: "en",
-        dark: true, // whether to enable dark mode. defaultValue: false
+        dark: true,
       },
     },
   });
