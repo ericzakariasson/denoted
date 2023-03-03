@@ -11,6 +11,7 @@ import { commandSuggestions } from "../lib/tiptap/command/command-suggestions";
 import { Wallet } from "../lib/tiptap/widgets/wallet/wallet-extension";
 import { useAccount } from "wagmi";
 import { Lens } from "../lib/tiptap/widgets/lens/lens-extension";
+import { Graph } from "../lib/tiptap/widgets/graph/graph-extension";
 
 type BubbleMenuButtonProps = {
   onClick: () => void;
@@ -40,7 +41,14 @@ type EditorProps = {
   onUpdate?: (json: JSONContent) => void;
 };
 
-export const extensions = [StarterKit, Highlight, Typography, Wallet, Lens];
+export const extensions = [
+  StarterKit,
+  Highlight,
+  Typography,
+  Wallet,
+  Lens,
+  Graph,
+];
 
 export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
   const { address } = useAccount();

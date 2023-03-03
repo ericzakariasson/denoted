@@ -4,7 +4,7 @@ import tippy from "tippy.js";
 import { CommandList } from "../../../components/CommandList";
 
 export const commandSuggestions = {
-  items: ({ query }: any) => {
+  items: ({ query, editor }: any) => {
     const COMMANDS = [
       {
         title: "wallet",
@@ -17,25 +17,7 @@ export const commandSuggestions = {
             .run();
         },
       },
-      {
-        title: "me",
-        command: ({ editor, range }: { editor: Editor; range: any }) => {
-          const { connectedAddress } = editor.storage;
 
-          if (!connectedAddress) {
-            return null;
-          }
-
-          editor
-            .chain()
-            .focus()
-            .deleteRange(range)
-            .insertContent(
-              `<wallet-component address="${connectedAddress}"></wallet-component>`
-            )
-            .run();
-        },
-      },
       {
         title: "lens",
         command: ({ editor, range }: { editor: Editor; range: any }) => {
@@ -47,7 +29,36 @@ export const commandSuggestions = {
             .run();
         },
       },
+      {
+        title: "graph",
+        command: ({ editor, range }: { editor: Editor; range: any }) => {
+          editor
+            .chain()
+            .focus()
+            .deleteRange(range)
+            .insertContent(`<graph-component></graph-component>`)
+            .run();
+        },
+      },
     ];
+
+    const { connectedAddress } = editor.storage;
+
+    if (connectedAddress) {
+      COMMANDS.unshift({
+        title: "me",
+        command: ({ editor, range }: { editor: Editor; range: any }) => {
+          editor
+            .chain()
+            .focus()
+            .deleteRange(range)
+            .insertContent(
+              `<wallet-component address="${connectedAddress}"></wallet-component>`
+            )
+            .run();
+        },
+      });
+    }
 
     return COMMANDS.filter(
       (item) =>
