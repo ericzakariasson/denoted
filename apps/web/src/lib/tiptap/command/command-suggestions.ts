@@ -1,14 +1,13 @@
 import { ReactRenderer } from "@tiptap/react";
-import { Editor } from "@tiptap/core";
 import tippy from "tippy.js";
-import { CommandList } from "../../../components/CommandList";
+import { CommandItem, CommandList } from "../../../components/CommandList";
 
 export const commandSuggestions = {
   items: ({ query, editor }: any) => {
-    const COMMANDS = [
+    const COMMANDS: CommandItem[] = [
       {
         title: "wallet",
-        command: ({ editor, range }: { editor: Editor; range: any }) => {
+        command: ({ editor, range }) => {
           editor
             .chain()
             .focus()
@@ -17,10 +16,9 @@ export const commandSuggestions = {
             .run();
         },
       },
-
       {
         title: "lens",
-        command: ({ editor, range }: { editor: Editor; range: any }) => {
+        command: ({ editor, range }) => {
           editor
             .chain()
             .focus()
@@ -31,7 +29,7 @@ export const commandSuggestions = {
       },
       {
         title: "graph",
-        command: ({ editor, range }: { editor: Editor; range: any }) => {
+        command: ({ editor, range }) => {
           editor
             .chain()
             .focus()
@@ -42,7 +40,7 @@ export const commandSuggestions = {
       },
       {
         title: "tally",
-        command: ({ editor, range }: { editor: Editor; range: any }) => {
+        command: ({ editor, range }) => {
           editor
             .chain()
             .focus()
@@ -58,7 +56,7 @@ export const commandSuggestions = {
     if (connectedAddress) {
       COMMANDS.unshift({
         title: "me",
-        command: ({ editor, range }: { editor: Editor; range: any }) => {
+        command: ({ editor, range }) => {
           editor
             .chain()
             .focus()
