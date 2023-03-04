@@ -3,6 +3,7 @@ import React from "react";
 import { GraphWidget } from "../../../../components/widgets/Graph";
 
 import * as Popover from "@radix-ui/react-popover";
+import { Label } from "../../../../components/Label";
 
 type GraphComponentProps = {
   updateAttributes: (attributes: Record<string, string>) => void;
@@ -47,17 +48,51 @@ export const GraphComponent = (props: GraphComponentProps) => {
           <Popover.Content
             sideOffset={5}
             align="start"
-            className="data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 data-[side=right]:slide-in-from-left-2 data-[side=left]:slide-in-from-right-2 s z-50 w-72 rounded-md border border-black bg-white p-4 outline-none dark:border-slate-800 dark:bg-slate-800"
+            className="s z-50 w-64 overflow-hidden rounded-2xl bg-gray-100 p-4 outline-none"
           >
             <form
               onSubmit={handleSubmit}
-              className="flex flex-col gap-2"
+              className="flex flex-col items-start gap-4"
               name="graph-setup"
             >
-              <input name="url" type="url" defaultValue={url} />
-              <textarea name="query" defaultValue={query}></textarea>
-              <input name="path" defaultValue={path} placeholder="foo.bar" />
-              <button type="submit">save</button>
+              <Label label="URL">
+                <input
+                  name="url"
+                  type="url"
+                  defaultValue={url}
+                  required
+                  className="rounded-lg border-none bg-gray-200 px-3 py-2"
+                />
+              </Label>
+              <Label label="Query">
+                <textarea
+                  name="query"
+                  defaultValue={query}
+                  placeholder={`query { 
+  foo {
+    bar
+  }
+}`}
+                  className="rounded-lg border-none bg-gray-200 px-3 py-2 font-mono"
+                  rows={5}
+                  required
+                ></textarea>
+              </Label>
+              <Label label="Selector path">
+                <input
+                  name="path"
+                  defaultValue={path}
+                  placeholder="foo.bar"
+                  required
+                  className="rounded-lg border-none bg-gray-200 px-3 py-2"
+                />
+              </Label>
+              <button
+                type="submit"
+                className="rounded-full border border-black px-2 py-0 text-black"
+              >
+                save
+              </button>
             </form>
           </Popover.Content>
         </Popover.Portal>
