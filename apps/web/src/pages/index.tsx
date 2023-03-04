@@ -6,8 +6,6 @@ type Props = {
   documents: Note[];
 };
 
-const IS_DEMO = false;
-
 export const getServerSideProps: GetServerSideProps<Props> = async () => {
   const query = await getNotesQuery();
   const documents = query.data?.noteIndex?.edges.map((edge) => edge.node) ?? [];
@@ -30,35 +28,9 @@ const Page: NextPage<Props> = ({ documents }) => {
     );
   }
 
-  const docs: Note[] = IS_DEMO
-    ? [
-        {
-          id: "1",
-          title: "Gnosos Chain Insights",
-          author: { id: "x:x:x:x:0x9768cead8f28bd7aA5e095D4402B8911b8484e7E" },
-          createdAt: new Date("2023-03-02").toISOString(),
-          content: "",
-        },
-        {
-          id: "2",
-          title: "NFT Holdings 2022",
-          author: { id: "x:x:x:x:0x9768cead8f28bd7aA5e095D4402B8911b8484e7E" },
-          createdAt: new Date("2023-02-12").toISOString(),
-          content: "",
-        },
-        {
-          id: "3",
-          title: "gm?",
-          author: { id: "x:x:x:x:0x9768cead8f28bd7aA5e095D4402B8911b8484e7E" },
-          createdAt: new Date("2023-03-04").toISOString(),
-          content: "",
-        },
-      ]
-    : documents;
-
   return (
     <div className="grid gap-4 md:grid-cols-3">
-      {docs.map((doc) => (
+      {documents.map((doc) => (
         <Card key={doc.id} doc={doc} />
       ))}
     </div>
