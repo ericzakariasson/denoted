@@ -43,12 +43,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 const DocumentPage: NextPage<Props> = ({ doc, isEditor }) => {
   return (
     <div>
-      {isEditor && (
-        <span className="mb-4 inline-block rounded-full border px-2 py-0">
-          owner
-        </span>
-      )}
-      <h1 className="mb-8 text-6xl font-bold">{doc.title}</h1>
+      <div className="flex items-start justify-between">
+        <h1 className="mb-8 text-5xl font-bold">{doc.title}</h1>
+        {isEditor && (
+          <span className="mb-1 inline-block rounded-full border px-2 py-0">
+            owner
+          </span>
+        )}
+      </div>
       <Viewer json={JSON.parse(doc.content)} />
     </div>
   );

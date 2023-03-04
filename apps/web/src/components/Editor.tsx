@@ -8,11 +8,12 @@ import { Content, JSONContent } from "@tiptap/core";
 
 import { Command } from "../lib/tiptap/command/command-extension";
 import { commandSuggestions } from "../lib/tiptap/command/command-suggestions";
-import { Wallet } from "../lib/tiptap/widgets/wallet/wallet-extension";
+import { Balance } from "../lib/tiptap/widgets/balance/balance-extension";
 import { useAccount } from "wagmi";
 import { Lens } from "../lib/tiptap/widgets/lens/lens-extension";
 import { Graph } from "../lib/tiptap/widgets/graph/graph-extension";
 import { Tally } from "../lib/tiptap/widgets/tally/tally-extension";
+import { Iframe } from "../lib/tiptap/widgets/iframe/iframe-extension";
 
 type BubbleMenuButtonProps = {
   onClick: () => void;
@@ -28,8 +29,8 @@ const BubbleMenuButton = ({
     <button
       onClick={onClick}
       className={
-        "rounded-full border px-2 " +
-        (isActive ? "bg-black text-white" : "border-black bg-white")
+        "border border-r-0 border-black px-2 first:rounded-tl-full first:rounded-bl-full last:rounded-tr-full last:rounded-br-full last:border-r " +
+        (isActive ? "bg-black text-white" : "bg-white")
       }
     >
       {children}
@@ -46,10 +47,11 @@ export const extensions = [
   StarterKit,
   Highlight,
   Typography,
-  Wallet,
+  Balance,
   Lens,
   Graph,
   Tally,
+  Iframe,
 ];
 
 export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
@@ -57,7 +59,9 @@ export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
   const editor = useEditor({
     extensions: [
       ...extensions,
-      Placeholder,
+      Placeholder.configure({
+        placeholder: () => "Use '/' for commands",
+      }),
       Command.configure({
         HTMLAttributes: {
           class: "command",
@@ -68,7 +72,7 @@ export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
     content: initialContent,
     editorProps: {
       attributes: {
-        class: "prose dark:prose-invert focus:outline-none",
+        class: "prose dark:prose-invert focus:outline-none max-w-none",
       },
     },
     onUpdate: (data) => onUpdate?.(data.editor.getJSON()),
@@ -84,7 +88,7 @@ export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
         <BubbleMenu
           editor={editor}
           tippyOptions={{ duration: 100 }}
-          className="flex gap-1"
+          className="flex"
         >
           <BubbleMenuButton
             onClick={() => editor.chain().focus().toggleBold().run()}

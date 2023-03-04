@@ -1,6 +1,6 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import React from "react";
-import { TallyWidget } from "../../../../components/widgets/Tally";
+import { TallyWidget } from "../../../../components/commands/tally/Tally";
 
 import * as Popover from "@radix-ui/react-popover";
 

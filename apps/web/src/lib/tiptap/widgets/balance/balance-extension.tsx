@@ -1,9 +1,9 @@
 import { Node } from "@tiptap/core";
 import { mergeAttributes, ReactNodeViewRenderer } from "@tiptap/react";
-import { WalletComponent } from "./wallet-component";
+import { BalanceComponent } from "./balance-component";
 
-export const Wallet = Node.create({
-  name: "walletComponent",
+export const Balance = Node.create({
+  name: "balanceComponent",
 
   group: "inline",
 
@@ -27,14 +27,14 @@ export const Wallet = Node.create({
   parseHTML() {
     return [
       {
-        tag: "wallet-component",
+        tag: "balance-component",
       },
     ];
   },
   renderHTML({ HTMLAttributes }) {
-    return ["wallet-component", mergeAttributes(HTMLAttributes)];
+    return ["balance-component", mergeAttributes(HTMLAttributes)];
   },
   addNodeView() {
-    return ReactNodeViewRenderer(WalletComponent);
+    return ReactNodeViewRenderer(BalanceComponent);
   },
 });

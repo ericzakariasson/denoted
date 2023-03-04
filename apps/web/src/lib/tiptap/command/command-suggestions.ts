@@ -1,80 +1,13 @@
-import { ReactRenderer } from "@tiptap/react";
 import { Editor } from "@tiptap/core";
+import { ReactRenderer } from "@tiptap/react";
 import tippy from "tippy.js";
 import { CommandList } from "../../../components/CommandList";
+import { COMMANDS } from "../../../components/commands";
 
 export const commandSuggestions = {
-  items: ({ query, editor }: any) => {
-    const COMMANDS = [
-      {
-        title: "wallet",
-        command: ({ editor, range }: { editor: Editor; range: any }) => {
-          editor
-            .chain()
-            .focus()
-            .deleteRange(range)
-            .insertContent("<wallet-component></wallet-component>")
-            .run();
-        },
-      },
-
-      {
-        title: "lens",
-        command: ({ editor, range }: { editor: Editor; range: any }) => {
-          editor
-            .chain()
-            .focus()
-            .deleteRange(range)
-            .insertContent(`<lens-component></lens-component>`)
-            .run();
-        },
-      },
-      {
-        title: "tally",
-        command: ({ editor, range }: { editor: Editor; range: any }) => {
-          editor
-            .chain()
-            .focus()
-            .deleteRange(range)
-            .insertContent(`<tally-component></tally-component>`)
-            .run();
-        },
-      },
-      {
-        title: "graph",
-        command: ({ editor, range }: { editor: Editor; range: any }) => {
-          editor
-            .chain()
-            .focus()
-            .deleteRange(range)
-            .insertContent(`<graph-component></graph-component>`)
-            .run();
-        },
-      },
-    ];
-
-    const { connectedAddress } = editor.storage;
-
-    if (connectedAddress) {
-      COMMANDS.unshift({
-        title: "me",
-        command: ({ editor, range }: { editor: Editor; range: any }) => {
-          editor
-            .chain()
-            .focus()
-            .deleteRange(range)
-            .insertContent(
-              `<wallet-component address="${connectedAddress}" symbol="ETH" chain="1"></wallet-component>`
-            )
-            .run();
-        },
-      });
-    }
-
-    return COMMANDS.filter(
-      (item) =>
-        item !== null &&
-        item.title.toLowerCase().startsWith(query.toLowerCase())
+  items: ({ query }: { query: string; editor: Editor }) => {
+    return COMMANDS.filter((item) =>
+      item.title.toLowerCase().startsWith(query.toLowerCase())
     ).slice(0, 10);
   },
 

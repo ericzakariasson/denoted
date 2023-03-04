@@ -1,8 +1,10 @@
 import { NodeViewWrapper } from "@tiptap/react";
-import React from "react";
-import { LensWidget } from "../../../../components/widgets/Lens";
+import React, { useEffect } from "react";
+import { LensWidget } from "../../../../components/commands/lens/Lens";
 
 import * as Popover from "@radix-ui/react-popover";
+import { Label } from "../../../../components/Label";
+import { useState } from "react";
 
 type LensComponentProps = {
   updateAttributes: (attributes: Record<string, string>) => void;
@@ -20,15 +22,28 @@ export const LensComponent = (props: LensComponentProps) => {
     props.updateAttributes({
       handle: formData.get("handle")?.toString() ?? "",
     });
+    setOpen(false);
   }
 
   const handle = props.node.attrs.handle;
 
   const isConfigured = handle !== undefined;
 
+  const [isOpen, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isConfigured) {
+      setOpen(true);
+    }
+  }, [isConfigured]);
+
   return (
     <NodeViewWrapper as="span">
-      <Popover.Root defaultOpen={!isConfigured}>
+      <Popover.Root
+        defaultOpen={!isConfigured}
+        onOpenChange={setOpen}
+        open={isOpen}
+      >
         <Popover.Trigger>
           {isConfigured ? (
             <LensWidget handle={handle} />
@@ -42,19 +57,28 @@ export const LensComponent = (props: LensComponentProps) => {
           <Popover.Content
             sideOffset={5}
             align="start"
-            className="data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 data-[side=right]:slide-in-from-left-2 data-[side=left]:slide-in-from-right-2 s z-50 w-72 rounded-md border border-black bg-white p-4 outline-none dark:border-slate-800 dark:bg-slate-800"
+            className="s z-50 w-64 overflow-hidden rounded-2xl bg-gray-100 p-4 outline-none"
           >
             <form
               onSubmit={handleSubmit}
-              className="flex flex-col gap-2"
+              className="flex flex-col items-start gap-4"
               name="lens-setup"
             >
-              <input
-                name="handle"
-                placeholder={"ericz.lens"}
-                defaultValue={handle}
-              />
-              <button type="submit">save</button>
+              <Label label="Handle">
+                <input
+                  name="handle"
+                  placeholder="ericz.lens"
+                  className="rounded-lg bg-gray-200 px-3 py-2"
+                  defaultValue={handle}
+                  required
+                />
+              </Label>
+              <button
+                type="submit"
+                className="rounded-full border border-black px-2 py-0 text-black"
+              >
+                save
+              </button>
             </form>
           </Popover.Content>
         </Popover.Portal>

@@ -53,7 +53,7 @@ const CreatePage: NextPage = () => {
       <div className="mb-4">
         <input
           placeholder="Untitled"
-          className="mb-4 w-full text-6xl font-bold placeholder:text-gray-200 focus:outline-none"
+          className="mb-4 w-full text-5xl font-bold placeholder:text-gray-200 focus:outline-none"
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           required
@@ -65,7 +65,7 @@ const CreatePage: NextPage = () => {
         />
       </div>
       <button
-        className="rounded-full border border-black px-2"
+        className="rounded-full border border-black bg-black px-2 text-white disabled:opacity-50"
         onClick={handleSubmit}
         disabled={!isEnabled}
       >

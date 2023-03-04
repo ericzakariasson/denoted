@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useQuery } from "react-query";
-import { lensClient } from "../../lib/lens";
+import { lensClient } from "../../../lib/lens";
 
 type LensWidgetProps = {
   handle: string;
