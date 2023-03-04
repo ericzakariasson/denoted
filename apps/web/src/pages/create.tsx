@@ -59,9 +59,7 @@ const CreatePage: NextPage = () => {
           required
         />
         <Editor
-          onUpdate={(json) =>
-            setContent(JSON.stringify(json).replace(/\\"/g, '"'))
-          }
+          onUpdate={(json) => setContent(JSON.stringify(JSON.stringify(json)))}
         />
       </div>
       <button

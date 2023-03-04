@@ -6,16 +6,11 @@ import * as Popover from "@radix-ui/react-popover";
 import { useEffect } from "react";
 import Link from "next/link";
 import { Label } from "../../../../components/Label";
+import { CommandExtensionProps } from "../../types";
 
-type IframeComponentProps = {
-  updateAttributes: (attributes: Record<string, string>) => void;
-  node: {
-    attrs: {
-      src: string | null;
-    };
-  };
-  editor: Editor;
-};
+type IframeComponentProps = CommandExtensionProps<{
+  src: string | null;
+}>;
 
 function formatHref(src: string) {
   if (src.startsWith("https://dune.com/embeds/")) {
@@ -35,6 +30,7 @@ export const IframeComponent = (props: IframeComponentProps) => {
       src: formData.get("src")?.toString() ?? "",
     });
     setOpen(false);
+    props.editor.view.dom.focus();
   }
 
   const { src } = props.node.attrs;

@@ -1,40 +1,48 @@
 import { NodeViewWrapper } from "@tiptap/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { GraphWidget } from "../../../../components/commands/graph/Graph";
 
 import * as Popover from "@radix-ui/react-popover";
 import { Label } from "../../../../components/Label";
+import { CommandExtensionProps } from "../../types";
 
-type GraphComponentProps = {
-  updateAttributes: (attributes: Record<string, string>) => void;
-  node: {
-    attrs: {
-      url: string | undefined;
-      query: string | undefined;
-      path: string | undefined;
-    };
-  };
-};
+type GraphComponentProps = CommandExtensionProps<{
+  url: string | null;
+  query: string | null;
+  path: string | null;
+}>;
 
 export const GraphComponent = (props: GraphComponentProps) => {
+  const [isOpen, setOpen] = useState(false);
+
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     props.updateAttributes({
-      url: formData.get("url")?.toString() ?? "",
-      query: formData.get("query")?.toString() ?? "",
-      path: formData.get("path")?.toString() ?? "",
+      url: formData.get("url")?.toString() ?? null,
+      query: formData.get("query")?.toString() ?? null,
+      path: formData.get("path")?.toString() ?? null,
     });
+    props.editor.view.dom.focus();
   }
 
   const { url, query, path } = props.node.attrs;
 
-  const isConfigured =
-    url !== undefined && query !== undefined && path !== undefined;
+  const isConfigured = url !== null && query !== null && path !== null;
+
+  useEffect(() => {
+    if (!isConfigured) {
+      setOpen(true);
+    }
+  }, [isConfigured]);
 
   return (
     <NodeViewWrapper as="span">
-      <Popover.Root defaultOpen={!isConfigured}>
+      <Popover.Root
+        defaultOpen={!isConfigured}
+        onOpenChange={setOpen}
+        open={isOpen}
+      >
         <Popover.Trigger>
           {isConfigured ? (
             <GraphWidget url={url} query={query} path={path} />
@@ -59,7 +67,7 @@ export const GraphComponent = (props: GraphComponentProps) => {
                 <input
                   name="url"
                   type="url"
-                  defaultValue={url}
+                  defaultValue={url ?? ""}
                   required
                   className="rounded-lg border-none bg-gray-200 px-3 py-2"
                 />
@@ -67,7 +75,7 @@ export const GraphComponent = (props: GraphComponentProps) => {
               <Label label="Query">
                 <textarea
                   name="query"
-                  defaultValue={query}
+                  defaultValue={query ?? ""}
                   placeholder={`query { 
   foo {
     bar
@@ -81,7 +89,7 @@ export const GraphComponent = (props: GraphComponentProps) => {
               <Label label="Selector path">
                 <input
                   name="path"
-                  defaultValue={path}
+                  defaultValue={path ?? ""}
                   placeholder="foo.bar"
                   required
                   className="rounded-lg border-none bg-gray-200 px-3 py-2"

@@ -1,5 +1,5 @@
 import { NodeViewWrapper } from "@tiptap/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import * as Popover from "@radix-ui/react-popover";
 import { Label } from "../../../../components/Label";
@@ -29,9 +29,21 @@ export const TallyComponent = (props: TallyComponentProps) => {
 
   const isConfigured = query !== undefined && path !== undefined;
 
+  const [isOpen, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isConfigured) {
+      setOpen(true);
+    }
+  }, [isConfigured]);
+
   return (
     <NodeViewWrapper as="span">
-      <Popover.Root defaultOpen={!isConfigured}>
+      <Popover.Root
+        defaultOpen={!isConfigured}
+        onOpenChange={setOpen}
+        open={isOpen}
+      >
         <Popover.Trigger>
           {isConfigured ? (
             <TallyWidget query={query} path={path} />

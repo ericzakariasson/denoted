@@ -1,3 +1,4 @@
+import { Editor } from "@tiptap/core";
 import { NodeViewWrapper } from "@tiptap/react";
 import React, { useEffect } from "react";
 import { LensWidget } from "../../../../components/commands/lens/Lens";
@@ -13,6 +14,7 @@ type LensComponentProps = {
       handle: string | undefined;
     };
   };
+  editor: Editor;
 };
 
 export const LensComponent = (props: LensComponentProps) => {
@@ -23,6 +25,7 @@ export const LensComponent = (props: LensComponentProps) => {
       handle: formData.get("handle")?.toString() ?? "",
     });
     setOpen(false);
+    props.editor.view.dom.focus();
   }
 
   const handle = props.node.attrs.handle;

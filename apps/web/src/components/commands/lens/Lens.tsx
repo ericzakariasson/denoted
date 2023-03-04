@@ -21,7 +21,7 @@ export const LensWidget = ({ handle }: LensWidgetProps) => {
       >
         🌿
       </Link>{" "}
-      {query.data?.name}
+      {query.data?.name ?? handle}
     </DataPill>
   );
 };

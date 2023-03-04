@@ -1,26 +1,18 @@
 import { NodeViewWrapper } from "@tiptap/react";
-import { Editor } from "@tiptap/core";
-import React from "react";
 import { WalletBalanceWidget } from "../../../../components/commands/balance/Balance";
 
 import * as chains from "wagmi/chains";
 
 import * as Popover from "@radix-ui/react-popover";
-import { getEnsAddress } from "../../../../utils/ens";
-import { useState, useEffect, PropsWithChildren } from "react";
 import { Label } from "../../../../components/Label";
+import { CommandExtensionProps } from "../../types";
+import { useState, useEffect } from "react";
 
-type BalanceComponentProps = {
-  updateAttributes: (attributes: Record<string, string>) => void;
-  node: {
-    attrs: {
-      address: string | undefined;
-      chain: string;
-      symbol: string | undefined;
-    };
-  };
-  editor: Editor;
-};
+type BalanceComponentProps = CommandExtensionProps<{
+  address: string | undefined;
+  chain: string | undefined;
+  symbol: string | undefined;
+}>;
 
 export const BalanceComponent = (props: BalanceComponentProps) => {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -34,11 +26,11 @@ export const BalanceComponent = (props: BalanceComponentProps) => {
     });
 
     setOpen(false);
+
+    props.editor.view.dom.focus();
   }
 
-  const address = props.node.attrs.address;
-  const chain = Number(props.node.attrs.chain);
-  const symbol = props.node.attrs.symbol;
+  const { address, chain, symbol } = props.node.attrs;
 
   const [isOpen, setOpen] = useState(false);
 
@@ -53,7 +45,11 @@ export const BalanceComponent = (props: BalanceComponentProps) => {
   return (
     <NodeViewWrapper as="span">
       {isConfigured && !props.editor.isEditable && (
-        <WalletBalanceWidget address={address} chain={chain} symbol={symbol} />
+        <WalletBalanceWidget
+          address={address}
+          chain={Number(chain)}
+          symbol={symbol}
+        />
       )}
       {props.editor.isEditable && (
         <Popover.Root
@@ -65,7 +61,7 @@ export const BalanceComponent = (props: BalanceComponentProps) => {
             {isConfigured ? (
               <WalletBalanceWidget
                 address={address}
-                chain={chain}
+                chain={Number(chain)}
                 symbol={symbol}
               />
             ) : (
@@ -97,7 +93,7 @@ export const BalanceComponent = (props: BalanceComponentProps) => {
                 <Label label="Ticker symbol">
                   <select
                     name="symbol"
-                    defaultValue={symbol}
+                    defaultValue={symbol ?? ""}
                     className="rounded-lg border-none bg-gray-200"
                   >
                     {["eth", "usdc", "op"].map((symbol) => (
@@ -110,7 +106,7 @@ export const BalanceComponent = (props: BalanceComponentProps) => {
                 <Label label="Chain">
                   <select
                     name="chain"
-                    defaultValue={chain}
+                    defaultValue={chain ?? ""}
                     className="rounded-lg border-none bg-gray-200"
                   >
                     {Object.values(chains)
