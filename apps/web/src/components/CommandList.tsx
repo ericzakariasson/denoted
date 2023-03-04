@@ -6,9 +6,17 @@ import React, {
   useState,
 } from "react";
 
+export type CommandContext = {
+  editor: Editor;
+  range: Range;
+};
+
 export type CommandItem = {
   title: string;
-  command: (ctx: { editor: Editor; range: Range }) => void;
+  description?: string;
+  icon: string;
+  command: string;
+  editorCommand: (ctx: CommandContext) => void;
 };
 
 type CommandListProps = {
@@ -67,15 +75,20 @@ export const CommandList = forwardRef<unknown, CommandListProps>(
     return (
       <div className="w-64 overflow-hidden rounded-2xl bg-gray-100">
         {props.items.length ? (
-          props.items.map((item: any, index: number) => (
+          props.items.map((item: CommandItem, index: number) => (
             <button
+              key={index}
               className={`w-full border-b px-3 py-2 text-left last:border-b-0 ${
                 index === selectedIndex ? "bg-gray-200" : ""
               }`}
-              key={index}
               onClick={() => selectItem(index)}
             >
-              {item.title}
+              <div className="flex flex-col">
+                <p>{item.title}</p>
+                {item.description && (
+                  <p className="text-xs text-gray-500">{item.description}</p>
+                )}
+              </div>
             </button>
           ))
         ) : (
