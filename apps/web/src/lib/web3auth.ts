@@ -7,7 +7,7 @@ import { Web3AuthConnector } from "@web3auth/web3auth-wagmi-connector/dist/web3a
 
 export default function Web3AuthConnectorInstance(chains: Chain[]) {
   // Create Web3Auth Instance
-  const name = "Denoted";
+  const name = "denoted";
   const web3AuthInstance = new Web3Auth({
     clientId: process.env.NEXT_PUBLIC_WEB3_AUTH_KEY as string,
     chainConfig: {
