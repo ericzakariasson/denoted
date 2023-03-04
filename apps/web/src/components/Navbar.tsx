@@ -3,6 +3,7 @@ import { useAccount, useConnect } from "wagmi";
 import { formatEthAddress } from "../utils/index";
 import { useDisconnect } from "wagmi";
 import { Logo } from "./Logo";
+import { useEnsName } from "wagmi";
 
 type NavbarProps = {
   className: string;
@@ -12,6 +13,9 @@ export const Navbar = ({ className }: NavbarProps) => {
   const { isConnected, address, isConnecting } = useAccount();
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
+  const { data: ensName } = useEnsName({
+    address,
+  });
 
   return (
     <nav className={"mx-auto max-w-3xl p-4" + " " + className}>
@@ -34,7 +38,7 @@ export const Navbar = ({ className }: NavbarProps) => {
             >
               {isConnected && address && (
                 <p onClick={() => disconnect()}>
-                  {formatEthAddress(address, 5, 40)}
+                  {ensName ?? formatEthAddress(address, 5, 40)}
                 </p>
               )}
               {isConnecting && <p>connecting...</p>}

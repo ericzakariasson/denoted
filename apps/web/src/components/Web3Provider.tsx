@@ -1,13 +1,13 @@
 import { PropsWithChildren } from "react";
 import { WagmiConfig, createClient, configureChains } from "wagmi";
 import { arbitrum, mainnet, polygon } from "wagmi/chains";
-import { publicProvider } from "wagmi/providers/public";
+import { infuraProvider } from "wagmi/providers/infura";
 
 import Web3AuthConnectorInstance from "../lib/web3auth";
 
 const { chains, provider, webSocketProvider } = configureChains(
   [mainnet, arbitrum, polygon],
-  [publicProvider()]
+  [infuraProvider()]
 );
 
 // Set up client
