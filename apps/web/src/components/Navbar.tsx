@@ -12,7 +12,9 @@ type NavbarProps = {
 export const Navbar = ({ className }: NavbarProps) => {
   const { isConnected, address, isConnecting } = useAccount();
   const { connect, connectors } = useConnect();
-  const { disconnect } = useDisconnect();
+  const { disconnect } = useDisconnect({
+    onSuccess: () => localStorage.removeItem("did"),
+  });
   const { data: ensName } = useEnsName({
     address,
   });
