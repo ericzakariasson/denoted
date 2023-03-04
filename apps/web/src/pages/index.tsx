@@ -8,6 +8,7 @@ type Props = {
 
 export const getServerSideProps: GetServerSideProps<Props> = async () => {
   const query = await getNotesQuery();
+  console.log(query);
   const documents = query.data?.noteIndex?.edges.map((edge) => edge.node) ?? [];
 
   return {
