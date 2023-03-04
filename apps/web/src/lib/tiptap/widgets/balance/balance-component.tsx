@@ -22,21 +22,13 @@ type BalanceComponentProps = {
   editor: Editor;
 };
 
-async function parseAddress(rawAddress: string) {
-  if (rawAddress.endsWith(".ens")) {
-    return (await getEnsAddress(rawAddress)) ?? "";
-  }
-
-  return rawAddress;
-}
-
 export const BalanceComponent = (props: BalanceComponentProps) => {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
 
     props.updateAttributes({
-      address: await parseAddress(formData.get("address")?.toString() ?? ""),
+      address: formData.get("address")?.toString() ?? "",
       symbol: formData.get("symbol")?.toString() ?? "",
       chain: formData.get("chain")?.toString() ?? "",
     });
@@ -121,11 +113,13 @@ export const BalanceComponent = (props: BalanceComponentProps) => {
                     defaultValue={chain}
                     className="rounded-lg border-none bg-gray-200"
                   >
-                    {Object.values(chains).map((chain) => (
-                      <option key={chain.id} value={chain.id}>
-                        {chain.name}
-                      </option>
-                    ))}
+                    {Object.values(chains)
+                      .filter((chain) => !chain.testnet)
+                      .map((chain) => (
+                        <option key={chain.id} value={chain.id}>
+                          {chain.name}
+                        </option>
+                      ))}
                   </select>
                 </Label>
                 <button

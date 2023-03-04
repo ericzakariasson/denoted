@@ -1,6 +1,7 @@
 import process from "process";
 import { useQuery } from "react-query";
 import { ethers } from "ethers";
+import { getEnsAddress } from "../../../utils/ens";
 
 type CovalentResponse = {
   contract_decimals: number;
@@ -21,6 +22,14 @@ type CovalentResponse = {
   nft_data: any;
 };
 
+async function resolveAddress(rawAddress: string) {
+  if (rawAddress.endsWith(".eth")) {
+    return await getEnsAddress(rawAddress);
+  }
+
+  return rawAddress;
+}
+
 type WalletBalanceWidgetProps = {
   address: string;
   chain: number;
@@ -29,6 +38,8 @@ type WalletBalanceWidgetProps = {
 
 const COVALENT_CHAIN_NAME_MAP: Record<number, string> = {
   1: "eth-mainnet",
+  10: "optimism-mainnet",
+  137: "matic-mainnet",
 };
 
 const formatBalance = (balance: string) => {
@@ -44,8 +55,9 @@ export const WalletBalanceWidget = ({
     ["WALLET", "BALANCES", address, chain],
     async () => {
       const chainName = COVALENT_CHAIN_NAME_MAP[chain] ?? "";
+      const fullAddress = await resolveAddress(address);
       const response = await fetch(
-        `https://api.covalenthq.com/v1/${chainName}/address/${address}/balances_v2/?key=${process.env.NEXT_PUBLIC_COVALENT_KEY}`
+        `https://api.covalenthq.com/v1/${chainName}/address/${fullAddress}/balances_v2/?key=${process.env.NEXT_PUBLIC_COVALENT_KEY}`
       );
       const json = await response.json();
       return json.data.items as CovalentResponse[];
