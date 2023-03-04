@@ -25,7 +25,6 @@ function formatHref(src: string) {
 }
 
 export const IframeComponent = (props: IframeComponentProps) => {
-  console.log(props);
   const [isOpen, setOpen] = useState(false);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -36,8 +35,6 @@ export const IframeComponent = (props: IframeComponentProps) => {
     });
     setOpen(false);
   }
-
-  props.editor.isEditable;
 
   const { src } = props.node.attrs;
 

@@ -62,11 +62,6 @@ const CreatePage: NextPage = () => {
           onUpdate={(json) =>
             setContent(JSON.stringify(json).replace(/\\"/g, '"'))
           }
-          initialContent={`
-          asdad
-          <iframe src="https://dune.com/embeds/1909661/3144730" frameborder="0" allowfullscreen></iframe>
-
-          `}
         />
       </div>
       <button

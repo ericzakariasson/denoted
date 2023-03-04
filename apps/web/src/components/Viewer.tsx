@@ -14,7 +14,7 @@ export const Viewer = ({ json }: ViewerProps) => {
     content: json,
     editorProps: {
       attributes: {
-        class: "prose dark:prose-invert focus:outline-none",
+        class: "prose dark:prose-invert focus:outline-nonem max-w-none",
       },
     },
   });
