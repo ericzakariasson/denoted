@@ -9,8 +9,7 @@ export default function Web3AuthConnectorInstance(chains: Chain[]) {
   // Create Web3Auth Instance
   const name = "Denoted";
   const web3AuthInstance = new Web3Auth({
-    clientId:
-      "BMJyE6XQO6A3sfo9lr8-EwhwPXqV3KlblOIOUsM-hCgMjgmpV_KPn7QbVkioRrCRKzNSTC4ASyYEp2NG-R9Ne64", //process.env.NEXT_PUBLIC_WEB3_AUTH_KEY as string,
+    clientId: process.env.NEXT_PUBLIC_WEB3_AUTH_KEY as string,
     chainConfig: {
       chainNamespace: CHAIN_NAMESPACES.EIP155,
       chainId: "0x" + chains[0].id.toString(16),
@@ -22,7 +21,7 @@ export default function Web3AuthConnectorInstance(chains: Chain[]) {
     uiConfig: {
       appName: name,
       theme: "light",
-      loginMethodsOrder: ["facebook", "google"],
+      loginMethodsOrder: ["github", "discord", "twitter"],
       defaultLanguage: "en",
       appLogo: "https://web3auth.io/images/w3a-L-Favicon-1.svg",
       modalZIndex: "2147483647",
@@ -34,7 +33,7 @@ export default function Web3AuthConnectorInstance(chains: Chain[]) {
       network: "cyan",
       uxMode: "popup",
       whiteLabel: {
-        name: "Your app Name",
+        name: "Denoted",
         logoLight: "https://web3auth.io/images/w3a-L-Favicon-1.svg",
         logoDark: "https://web3auth.io/images/w3a-D-Favicon-1.svg",
         defaultLanguage: "en",
