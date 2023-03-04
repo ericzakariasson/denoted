@@ -6,7 +6,7 @@ import icon from "./icon.svg";
 export const balanceCommand: CommandItem = {
   command: "balance",
   title: "Balance",
-  description: "Get wallet balance for account",
+  description: "Get wallet balance for an account",
   icon,
   onCommand: insertComponent("<balance-component></balance-component>"),
 };
