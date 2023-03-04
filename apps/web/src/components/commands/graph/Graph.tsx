@@ -3,14 +3,11 @@ import get from "lodash.get";
 import { useQuery } from "react-query";
 import { hash } from "../../../utils/hash";
 
-import graphLogo from "./graph-logo.svg";
-
 type GraphWidgetProps = {
   url: string;
   query: string;
   path: string;
 };
-
 
 export const GraphWidget = ({ url, query, path }: GraphWidgetProps) => {
   const { isLoading, data, isError } = useQuery(

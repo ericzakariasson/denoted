@@ -1,14 +1,14 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import React from "react";
-import { TallyWidget } from "../../../../components/commands/tally/Tally";
 
 import * as Popover from "@radix-ui/react-popover";
+import { Label } from "../../../../components/Label";
+import { TallyWidget } from "../../../../components/commands/tally/Tally";
 
 type TallyComponentProps = {
   updateAttributes: (attributes: Record<string, string>) => void;
   node: {
     attrs: {
-      url: string | undefined;
       query: string | undefined;
       path: string | undefined;
     };
@@ -20,23 +20,21 @@ export const TallyComponent = (props: TallyComponentProps) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     props.updateAttributes({
-      url: formData.get("url")?.toString() ?? "",
       query: formData.get("query")?.toString() ?? "",
       path: formData.get("path")?.toString() ?? "",
     });
   }
 
-  const { url, query, path } = props.node.attrs;
+  const { query, path } = props.node.attrs;
 
-  const isConfigured =
-    url !== undefined && query !== undefined && path !== undefined;
+  const isConfigured = query !== undefined && path !== undefined;
 
   return (
     <NodeViewWrapper as="span">
       <Popover.Root defaultOpen={!isConfigured}>
         <Popover.Trigger>
           {isConfigured ? (
-            <TallyWidget url={url} query={query} path={path} />
+            <TallyWidget query={query} path={path} />
           ) : (
             <span className="rounded-full border border-gray-300 py-0 px-1 leading-normal text-gray-500">
               setup
@@ -47,17 +45,42 @@ export const TallyComponent = (props: TallyComponentProps) => {
           <Popover.Content
             sideOffset={5}
             align="start"
-            className="data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 data-[side=right]:slide-in-from-left-2 data-[side=left]:slide-in-from-right-2 s z-50 w-72 rounded-md border border-black bg-white p-4 outline-none dark:border-slate-800 dark:bg-slate-800"
+            className="s z-50 w-64 overflow-hidden rounded-2xl bg-gray-100 p-4 outline-none"
           >
             <form
               onSubmit={handleSubmit}
-              className="flex flex-col gap-2"
+              className="flex flex-col items-start gap-4"
               name="tally-setup"
             >
-              <input name="url" type="url" />
-              <textarea name="query"></textarea>
-              <input name="path" placeholder="foo.bar" />
-              <button type="submit">save</button>
+              <Label label="Query">
+                <textarea
+                  name="query"
+                  defaultValue={query}
+                  placeholder={`query { 
+  foo {
+    bar
+  }
+}`}
+                  className="rounded-lg border-none bg-gray-200 px-3 py-2 font-mono"
+                  rows={5}
+                  required
+                ></textarea>
+              </Label>
+              <Label label="Selector path">
+                <input
+                  name="path"
+                  defaultValue={path}
+                  placeholder="foo.bar"
+                  required
+                  className="rounded-lg border-none bg-gray-200 px-3 py-2"
+                />
+              </Label>
+              <button
+                type="submit"
+                className="rounded-full border border-black px-2 py-0 text-black"
+              >
+                save
+              </button>
             </form>
           </Popover.Content>
         </Popover.Portal>

@@ -13,9 +13,6 @@ export const Tally = Node.create({
 
   addAttributes() {
     return {
-      url: {
-        default: undefined,
-      },
       query: {
         default: undefined,
       },

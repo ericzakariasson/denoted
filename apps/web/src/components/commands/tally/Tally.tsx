@@ -4,27 +4,21 @@ import { useQuery } from "react-query";
 import { hash } from "../../../utils/hash";
 
 type TallyWidgetProps = {
-  url: string;
   query: string;
   path: string;
-  variable?: string;
 };
 
-const requestHeaders = {
-  "Api-Key": process.env.NEXT_PUBLIC_TALLY_KEY,
-  "X-Cors-Proxy-Url": "http://localhost:3000/",
+const url = "https://api.tally.xyz/query";
+
+const headers = {
+  "Api-key": process.env.NEXT_PUBLIC_TALLY_KEY as string,
 };
 
-export const TallyWidget = ({ url, query, path }: TallyWidgetProps) => {
+export const TallyWidget = ({ query, path }: TallyWidgetProps) => {
   const { isLoading, data, isError } = useQuery(
     ["TALLY", hash(query), path],
     async () => {
-      const variables = {
-        chainId: "1",
-        pagination: "page=1&pageSize=10",
-        sort: JSON.stringify({ field: "VOTES", order: "DESC" }),
-      };
-      const result = await request(url, query, requestHeaders, variables);
+      const result = await request(url, query, undefined, headers);
       return get(result, path) as string;
     }
   );
