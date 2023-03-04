@@ -11,14 +11,20 @@ type TallyWidgetProps = {
 };
 
 const requestHeaders = {
-  authorization: process.env.NEXT_PUBLIC_TALLY_KEY,
+  "Api-Key": process.env.NEXT_PUBLIC_TALLY_KEY,
+  "X-Cors-Proxy-Url": "http://localhost:3000/",
 };
+
 export const TallyWidget = ({ url, query, path }: TallyWidgetProps) => {
   const { isLoading, data, isError } = useQuery(
     ["TALLY", hash(query), path],
     async () => {
-      const result = await request(url, query);
-      console.log(result);
+      const variables = {
+        chainId: "1",
+        pagination: "page=1&pageSize=10",
+        sort: JSON.stringify({ field: "VOTES", order: "DESC" }),
+      };
+      const result = await request(url, query, requestHeaders, variables);
       return get(result, path) as string;
     }
   );
