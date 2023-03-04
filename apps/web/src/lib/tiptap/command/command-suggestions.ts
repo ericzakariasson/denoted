@@ -49,6 +49,17 @@ export const commandSuggestions = {
             .run();
         },
       },
+      {
+        title: "dune",
+        command: ({ editor, range }) => {
+          editor
+            .chain()
+            .focus()
+            .deleteRange(range)
+            .insertContent(`<iframe-component></iframe-component>`)
+            .run();
+        },
+      },
     ];
 
     const { connectedAddress } = editor.storage;

@@ -12,6 +12,7 @@ import { Balance } from "../lib/tiptap/widgets/balance/balance-extension";
 import { useAccount } from "wagmi";
 import { Lens } from "../lib/tiptap/widgets/lens/lens-extension";
 import { Graph } from "../lib/tiptap/widgets/graph/graph-extension";
+import { Iframe } from "../lib/tiptap/widgets/iframe/iframe-extension";
 
 type BubbleMenuButtonProps = {
   onClick: () => void;
@@ -48,6 +49,7 @@ export const extensions = [
   Balance,
   Lens,
   Graph,
+  Iframe,
 ];
 
 export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
@@ -68,7 +70,7 @@ export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
     content: initialContent,
     editorProps: {
       attributes: {
-        class: "prose dark:prose-invert focus:outline-none",
+        class: "prose dark:prose-invert focus:outline-none max-w-none",
       },
     },
     onUpdate: (data) => onUpdate?.(data.editor.getJSON()),
