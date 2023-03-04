@@ -10,15 +10,12 @@ type GraphWidgetProps = {
   path: string;
 };
 
-const requestHeaders = {
-  authorization: process.env.NEXT_PUBLIC_TALLY_KEY,
-};
 
 export const GraphWidget = ({ url, query, path }: GraphWidgetProps) => {
   const { isLoading, data, isError } = useQuery(
     ["GRAPH", hash(query), path],
     async () => {
-      const result = await request(url, query, requestHeaders);
+      const result = await request(url, query);
       return get(result, path);
     }
   );

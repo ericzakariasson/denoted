@@ -10,16 +10,18 @@ type TallyWidgetProps = {
   variable?: string;
 };
 
-
+const requestHeaders = {
+  authorization: process.env.NEXT_PUBLIC_TALLY_KEY,
+};
 export const TallyWidget = ({ url, query, path }: TallyWidgetProps) => {
   const { isLoading, data, isError } = useQuery(
     ["TALLY", hash(query), path],
     async () => {
       const result = await request(url, query);
+      console.log(result);
       return get(result, path) as string;
     }
   );
-
   if (isLoading) {
     return <span>loading...</span>;
   }
