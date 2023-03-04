@@ -77,6 +77,13 @@ const CreatePage: NextPage = () => {
           </button>
         </div>
       )}
+      {!isConnected && (
+        <div className="mb-8 flex w-full flex-col items-center justify-center gap-3 rounded-2xl bg-gray-100 p-6">
+          <p className="max-w-sm text-center text-gray-500">
+            You need to connect before creating a document
+          </p>
+        </div>
+      )}
       <div className="mb-4">
         <input
           placeholder="Untitled"
