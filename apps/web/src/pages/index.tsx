@@ -21,9 +21,7 @@ const Page: NextPage<Props> = ({ documents }) => {
   if (documents.length === 0) {
     return (
       <div>
-        <h1 className="text-2xl font-normal text-black">
-          waiting for some docs
-        </h1>
+        <h1 className="text-2xl font-normal text-black">no documents yet</h1>
       </div>
     );
   }
