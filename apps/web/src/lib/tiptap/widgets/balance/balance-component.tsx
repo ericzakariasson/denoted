@@ -1,7 +1,7 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import { Editor } from "@tiptap/core";
 import React from "react";
-import { WalletBalanceWidget } from "../../../../components/widgets/Balance";
+import { WalletBalanceWidget } from "../../../../components/commands/balance/Balance";
 
 import * as chains from "wagmi/chains";
 

@@ -1,74 +1,11 @@
+import { Editor } from "@tiptap/core";
 import { ReactRenderer } from "@tiptap/react";
 import tippy from "tippy.js";
-import {
-  CommandContext,
-  CommandItem,
-  CommandList,
-} from "../../../components/CommandList";
-
-const insertComponent = (component: string) => (ctx: CommandContext) => {
-  return ctx.editor
-    .chain()
-    .focus()
-    .deleteRange(ctx.range)
-    .insertContent(component)
-    .run();
-};
-
-const COMMANDS: CommandItem[] = [
-  {
-    command: "balance",
-    title: "Balance",
-    description: "Get wallet balance for account",
-    icon: "",
-    editorCommand: insertComponent("<balance-component></balance-component>"),
-  },
-  {
-    command: "lens",
-    title: "Lens",
-    description: "Lens statistics",
-    icon: "",
-    editorCommand: insertComponent(`<lens-component></lens-component>`),
-  },
-  {
-    command: "graph",
-    title: "The Graph",
-    description: "Query any graph endpoint",
-    icon: "",
-    editorCommand: insertComponent(`<graph-component></graph-component>`),
-  },
-  {
-    command: "tally",
-    title: "Tally",
-    description: "Get DAO data with Tally",
-    icon: "",
-    editorCommand: insertComponent(`<tally-component></tally-component>`),
-  },
-  {
-    command: "dune",
-    title: "Dune",
-    description: "Embed Dune Analytics queries",
-    icon: "",
-    editorCommand: insertComponent(`<iframe-component></tally-component>`),
-  },
-];
+import { CommandList } from "../../../components/CommandList";
+import { COMMANDS } from "../../../components/commands";
 
 export const commandSuggestions = {
-  items: ({ query, editor }: any) => {
-    const { connectedAddress } = editor.storage;
-
-    if (connectedAddress) {
-      COMMANDS.unshift({
-        command: "dune",
-        title: "Dune",
-        description: "Embed Dune Analytics queries",
-        icon: "",
-        editorCommand: insertComponent(
-          `<balance-component address="${connectedAddress}" symbol="ETH" chain="1"></balance-component>`
-        ),
-      });
-    }
-
+  items: ({ query }: { query: string; editor: Editor }) => {
     return COMMANDS.filter((item) =>
       item.title.toLowerCase().startsWith(query.toLowerCase())
     ).slice(0, 10);

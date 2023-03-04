@@ -1,7 +1,7 @@
 import request from "graphql-request";
 import get from "lodash.get";
 import { useQuery } from "react-query";
-import { hash } from "../../utils/hash";
+import { hash } from "../../../utils/hash";
 
 type TallyWidgetProps = {
   url: string;

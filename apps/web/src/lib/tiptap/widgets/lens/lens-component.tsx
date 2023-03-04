@@ -1,6 +1,6 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import React, { useEffect } from "react";
-import { LensWidget } from "../../../../components/widgets/Lens";
+import { LensWidget } from "../../../../components/commands/lens/Lens";
 
 import * as Popover from "@radix-ui/react-popover";
 import { Label } from "../../../../components/Label";

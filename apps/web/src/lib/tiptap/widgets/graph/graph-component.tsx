@@ -1,6 +1,6 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import React from "react";
-import { GraphWidget } from "../../../../components/widgets/Graph";
+import { GraphWidget } from "../../../../components/commands/graph/Graph";
 
 import * as Popover from "@radix-ui/react-popover";
 import { Label } from "../../../../components/Label";

@@ -1,4 +1,5 @@
 import { Editor, Range } from "@tiptap/core";
+import Image, { StaticImageData } from "next/image";
 import React, {
   forwardRef,
   useEffect,
@@ -14,9 +15,9 @@ export type CommandContext = {
 export type CommandItem = {
   title: string;
   description?: string;
-  icon: string;
+  icon: StaticImageData;
   command: string;
-  editorCommand: (ctx: CommandContext) => void;
+  onCommand: (ctx: CommandContext) => void;
 };
 
 type CommandListProps = {
@@ -78,11 +79,12 @@ export const CommandList = forwardRef<unknown, CommandListProps>(
           props.items.map((item: CommandItem, index: number) => (
             <button
               key={index}
-              className={`w-full border-b px-3 py-2 text-left last:border-b-0 ${
+              className={`flex w-full items-center gap-3 border-b px-3 py-2 text-left last:border-b-0 ${
                 index === selectedIndex ? "bg-gray-200" : ""
               }`}
               onClick={() => selectItem(index)}
             >
+              <Image {...item.icon} width={24} height={24} alt={item.title} />
               <div className="flex flex-col">
                 <p>{item.title}</p>
                 {item.description && (

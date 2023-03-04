@@ -1,8 +1,9 @@
 import request from "graphql-request";
 import get from "lodash.get";
 import { useQuery } from "react-query";
-import { hash } from "../../utils/hash";
-import { TheGraphLogo } from "../TheGraphLogo";
+import { hash } from "../../../utils/hash";
+
+import graphLogo from "./graph-logo.svg";
 
 type GraphWidgetProps = {
   url: string;
@@ -29,7 +30,6 @@ export const GraphWidget = ({ url, query, path }: GraphWidgetProps) => {
 
   return (
     <span className="flex items-center gap-1 rounded-full bg-indigo-100 px-1 py-0">
-      {/* <TheGraphLogo /> */}
       {data}
     </span>
   );
