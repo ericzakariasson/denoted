@@ -8,6 +8,12 @@ import { Editor } from "../components/Editor";
 import { createNote } from "../composedb/note";
 import { authenticateCompose } from "../lib/compose";
 
+function getDid() {
+  return typeof localStorage === "undefined"
+    ? null
+    : localStorage.getItem("did");
+}
+
 const CreatePage: NextPage = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -16,28 +22,12 @@ const CreatePage: NextPage = () => {
 
   const router = useRouter();
 
-  const [isAuthenticated, setAuthenticated] = useState(
-    typeof localStorage === "undefined" ? false : localStorage.getItem("did")
-  );
+  const [isAuthenticated, setAuthenticated] = useState(() => Boolean(getDid()));
 
-  useEffect(() => {
-    function handleStorage() {
-      const item = localStorage.getItem("did");
-
-      if (item) {
-        setAuthenticated(true);
-      }
-    }
-
-    window.addEventListener("storage", handleStorage);
-    return () => {
-      window.removeEventListener("storage", handleStorage);
-    };
-  }, []);
-
-  useEffect(() => {
-    authenticateCompose();
-  }, []);
+  async function handleAuthenticate() {
+    await authenticateCompose();
+    setAuthenticated(true);
+  }
 
   const { mutate, isLoading } = useMutation(
     async () => {
@@ -69,7 +59,7 @@ const CreatePage: NextPage = () => {
             document
           </p>
           <button
-            onClick={authenticateCompose}
+            onClick={handleAuthenticate}
             type="button"
             className="rounded-full border border-black px-2"
           >

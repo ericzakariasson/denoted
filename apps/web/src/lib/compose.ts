@@ -8,7 +8,9 @@ export const composeClient = new ComposeClient({
   definition,
 });
 
-export const authenticateCompose = () => authenticate(composeClient);
+export async function authenticateCompose() {
+  await authenticate(composeClient);
+}
 
 /**
  * Checks localStorage for a stored DID Session. If one is found we authenticate it, otherwise we create a new one.

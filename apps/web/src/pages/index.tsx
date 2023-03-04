@@ -22,8 +22,10 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
 const Page: NextPage<Props> = ({ documents }) => {
   if (documents.length === 0) {
     return (
-      <div>
-        <h1 className="text-2xl font-normal text-black">no documents yet</h1>
+      <div className="rounded-2xl bg-gray-100 p-8">
+        <h1 className="text-center text-lg font-normal text-gray-500">
+          no documents
+        </h1>
       </div>
     );
   }
