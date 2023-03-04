@@ -2,6 +2,7 @@ import process from "process";
 import { useQuery } from "react-query";
 import { ethers } from "ethers";
 import { getEnsAddress } from "../../../utils/ens";
+import { DataPill } from "../../DataPill";
 
 type CovalentResponse = {
   contract_decimals: number;
@@ -51,7 +52,7 @@ export const WalletBalanceWidget = ({
   chain,
   symbol,
 }: WalletBalanceWidgetProps) => {
-  const { isLoading, data, isError } = useQuery(
+  const query = useQuery(
     ["WALLET", "BALANCES", address, chain],
     async () => {
       const chainName = COVALENT_CHAIN_NAME_MAP[chain] ?? "";
@@ -60,29 +61,25 @@ export const WalletBalanceWidget = ({
         `https://api.covalenthq.com/v1/${chainName}/address/${fullAddress}/balances_v2/?key=${process.env.NEXT_PUBLIC_COVALENT_KEY}`
       );
       const json = await response.json();
-      return json.data.items as CovalentResponse[];
+
+      return json.data?.items as CovalentResponse[];
+    },
+    {
+      cacheTime: 0,
     }
   );
 
-  if (isLoading) {
-    return <span>loading...</span>;
-  }
-
-  if (isError) {
-    return <span>an error has occured...</span>;
-  }
-
-  const item = data?.find(
+  const item = query.data?.find(
     (item) => item.contract_ticker_symbol.toUpperCase() === symbol.toUpperCase()
   );
 
   if (!item) {
-    return <span>404</span>;
+    return <DataPill query={query}>no data</DataPill>;
   }
 
   return (
-    <span className="rounded-full bg-gray-200 px-1 py-0">
+    <DataPill query={query}>
       {formatBalance(item?.balance)} {symbol.toUpperCase()}
-    </span>
+    </DataPill>
   );
 };

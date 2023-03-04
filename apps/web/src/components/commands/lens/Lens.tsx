@@ -1,29 +1,19 @@
 import Link from "next/link";
 import { useQuery } from "react-query";
 import { lensClient } from "../../../lib/lens";
+import { DataPill } from "../../DataPill";
 
 type LensWidgetProps = {
   handle: string;
 };
 
 export const LensWidget = ({ handle }: LensWidgetProps) => {
-  const { isLoading, data, isError } = useQuery(
-    ["LENS", "PROFILE", handle],
-    async () => {
-      return lensClient.profile.fetch({ handle });
-    }
-  );
-
-  if (isLoading) {
-    return <span>loading...</span>;
-  }
-
-  if (isError) {
-    return <span>an error has occured...</span>;
-  }
+  const query = useQuery(["LENS", "PROFILE", handle], async () => {
+    return lensClient.profile.fetch({ handle });
+  });
 
   return (
-    <span className="rounded-full bg-green-100 px-1 py-0">
+    <DataPill query={query} className="bg-green-100">
       <Link
         href={`https://lenster.xyz/u/${handle.replace(".lens", "")}`}
         className="no-underline"
@@ -31,7 +21,7 @@ export const LensWidget = ({ handle }: LensWidgetProps) => {
       >
         🌿
       </Link>{" "}
-      {data?.name}
-    </span>
+      {query.data?.name}
+    </DataPill>
   );
 };

@@ -2,6 +2,7 @@ import request from "graphql-request";
 import get from "lodash.get";
 import { useQuery } from "react-query";
 import { hash } from "../../../utils/hash";
+import { DataPill } from "../../DataPill";
 
 type TallyWidgetProps = {
   query: string;
@@ -15,20 +16,10 @@ const headers = {
 };
 
 export const TallyWidget = ({ query, path }: TallyWidgetProps) => {
-  const { isLoading, data, isError } = useQuery(
-    ["TALLY", hash(query), path],
-    async () => {
-      const result = await request(url, query, undefined, headers);
-      return get(result, path) as string;
-    }
-  );
-  if (isLoading) {
-    return <span>loading...</span>;
-  }
+  const tallyQuery = useQuery(["TALLY", hash(query), path], async () => {
+    const result = await request(url, query, undefined, headers);
+    return get(result, path) as string;
+  });
 
-  if (isError) {
-    return <span>an error has occured...</span>;
-  }
-
-  return <span className="rounded-full bg-indigo-300 px-1 py-0">{data}</span>;
+  return <DataPill query={tallyQuery}>{tallyQuery.data}</DataPill>;
 };
