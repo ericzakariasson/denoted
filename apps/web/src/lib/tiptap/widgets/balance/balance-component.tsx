@@ -96,7 +96,7 @@ export const BalanceComponent = (props: BalanceComponentProps) => {
                     defaultValue={symbol ?? ""}
                     className="rounded-lg border-none bg-gray-200"
                   >
-                    {["eth", "usdc", "op"].map((symbol) => (
+                    {["eth", "usdc", "op", "spork"].map((symbol) => (
                       <option key={symbol} value={symbol}>
                         {symbol.toUpperCase()}
                       </option>

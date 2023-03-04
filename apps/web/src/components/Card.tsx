@@ -15,10 +15,6 @@ export const Card = ({ doc }: CardProps) => {
     address,
   });
 
-  console.log(doc.createdAt);
-
-  console.log(new Date(doc.createdAt));
-
   return (
     <Link href={`/${doc.id}`}>
       <div className="flex flex-col justify-between gap-4 rounded-xl border border-gray-700 bg-white p-5">

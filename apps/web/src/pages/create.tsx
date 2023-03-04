@@ -12,15 +12,32 @@ const CreatePage: NextPage = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
-  const { isConnected, address } = useAccount();
-  const isAuthenticated =
-    typeof localStorage === "undefined" ? false : localStorage.getItem("did");
+  const { isConnected } = useAccount();
 
   const router = useRouter();
 
+  const [isAuthenticated, setAuthenticated] = useState(
+    typeof localStorage === "undefined" ? false : localStorage.getItem("did")
+  );
+
+  useEffect(() => {
+    function handleStorage() {
+      const item = localStorage.getItem("did");
+
+      if (item) {
+        setAuthenticated(true);
+      }
+    }
+
+    window.addEventListener("storage", handleStorage);
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, []);
+
   useEffect(() => {
     authenticateCompose();
-  }, [address]);
+  }, []);
 
   const { mutate, isLoading } = useMutation(
     async () => {
@@ -45,10 +62,20 @@ const CreatePage: NextPage = () => {
 
   return (
     <div>
-      {isConnected && (
-        <button onClick={authenticateCompose} type="button">
-          authenticate composedb
-        </button>
+      {isConnected && !isAuthenticated && (
+        <div className="mb-8 flex w-full flex-col items-center justify-center gap-3 rounded-2xl bg-gray-100 p-6">
+          <p className="max-w-sm text-center text-gray-500">
+            You need to sign in with ethereum to ceramic before you can create a
+            document
+          </p>
+          <button
+            onClick={authenticateCompose}
+            type="button"
+            className="rounded-full border border-black px-2"
+          >
+            sign in
+          </button>
+        </div>
       )}
       <div className="mb-4">
         <input

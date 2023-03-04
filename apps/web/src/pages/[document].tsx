@@ -51,7 +51,7 @@ const DocumentPage: NextPage<Props> = ({ doc, isEditor }) => {
           </span>
         )}
       </div>
-      <Viewer json={JSON.parse(doc.content)} />
+      <Viewer json={JSON.parse(JSON.parse(doc.content))} />
     </div>
   );
 };
