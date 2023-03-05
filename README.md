@@ -28,7 +28,8 @@ If you want to contribute with your own `/command`, you can follow these steps:
    - The react component which will render the data. It should be named `Component.tsx` or the name of the integration. Check current components for examples
 4. Update the `commands.ts` to include the command
 5. Add a new folder in `apps/web/lib/tiptap/widgets` with your command. If it's a inline component you can see the `balance` components. If it's a full width block component you see the `iframe` components.
-6. Submit a PR
+6. Verify your command works in the editor
+7. Submit PR when you feel confident
 
 ## Architecture
 
