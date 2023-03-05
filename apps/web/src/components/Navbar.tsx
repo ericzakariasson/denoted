@@ -26,6 +26,9 @@ export const Navbar = ({ className }: NavbarProps) => {
           <Logo />
         </Link>
         <div className="flex gap-2">
+          <Link href={`/explore`} className="px-2 py-0 text-black">
+            explore
+          </Link>
           <Link
             href={`/create`}
             className="rounded-full border border-black bg-black px-2 py-0 text-white"
