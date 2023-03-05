@@ -7,9 +7,9 @@ import { Label } from "../../../../components/Label";
 import { CommandExtensionProps } from "../../types";
 
 type GraphComponentProps = CommandExtensionProps<{
-  url: string | null;
-  query: string | null;
-  path: string | null;
+  url: string | undefined;
+  query: string | undefined;
+  path: string | undefined;
 }>;
 
 export const GraphComponent = (props: GraphComponentProps) => {
@@ -17,18 +17,23 @@ export const GraphComponent = (props: GraphComponentProps) => {
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
     const formData = new FormData(event.currentTarget);
     props.updateAttributes({
-      url: formData.get("url")?.toString() ?? null,
-      query: formData.get("query")?.toString() ?? null,
-      path: formData.get("path")?.toString() ?? null,
+      url: formData.get("url")?.toString() ?? undefined,
+      query: formData.get("query")?.toString() ?? undefined,
+      path: formData.get("path")?.toString() ?? undefined,
     });
+
+    setOpen(false);
+
     props.editor.view.dom.focus();
   }
 
   const { url, query, path } = props.node.attrs;
 
-  const isConfigured = url !== null && query !== null && path !== null;
+  const isConfigured =
+    url !== undefined && query !== undefined && path !== undefined;
 
   useEffect(() => {
     if (!isConfigured) {
