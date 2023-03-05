@@ -37,9 +37,17 @@ const CreatePage: NextPage = () => {
       return await createNote(title, content, new Date().toISOString());
     },
     {
-      onSuccess: (data) => {
+      onSuccess: async ({ data, errors }) => {
+        const isNotAuthenticated = errors?.some((error) =>
+          error.message.includes("Ceramic instance is not authenticated")
+        );
+
+        if (isNotAuthenticated) {
+          await handleAuthenticate();
+        }
+
         console.log(data);
-        const id = data.data?.createNote?.document?.id ?? null;
+        const id = data?.createNote?.document?.id ?? null;
         if (id) {
           router.push(id);
         }
