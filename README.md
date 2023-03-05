@@ -30,3 +30,16 @@ We built a WYSIWYG-editor with a clean and simple design to use immediately for 
 ## Contributions
 
 Denoted is open-source and meant to be used as community tooling. Feel free to open an issue or PR.
+
+### Covalent API implementation
+
+The reasoning behind implementing the Covalent API is that, for us, it is an easy way to fetch the wallet balances of an EOA requested by the user writing a community article.
+
+The Covalent API implementation was straightforward. The API has good documentation overall.
+
+Challenges faced:
+
+- Implement chainID to match the standard and be able to switch networks instead of your naming (especially when working with WAGMI).
+
+- Fetching can sometimes be slow.
+
