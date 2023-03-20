@@ -1,22 +1,33 @@
-import { Editor } from "@tiptap/core";
 import { ReactRenderer } from "@tiptap/react";
+import { SuggestionOptions } from "@tiptap/suggestion";
+import { RefAttributes } from "react";
 import tippy from "tippy.js";
-import { CommandList } from "../../../components/CommandList";
+import {
+  CommandItem,
+  CommandList,
+  CommandListHandle,
+  CommandListProps,
+} from "../../../components/CommandList";
 import { COMMANDS } from "../../../components/commands";
 
-export const commandSuggestions = {
-  items: ({ query }: { query: string; editor: Editor }) => {
+export const commandSuggestions: Omit<
+  SuggestionOptions<CommandItem>,
+  "editor"
+> = {
+  items: ({ query }) => {
     return COMMANDS.filter((item) =>
       item.title.toLowerCase().startsWith(query.toLowerCase())
     ).slice(0, 10);
   },
-
   render: () => {
-    let component: any;
-    let popup: any;
+    let component: ReactRenderer<
+      CommandListHandle,
+      CommandListProps & RefAttributes<CommandListHandle>
+    >;
+    let popup: ReturnType<typeof tippy>;
 
     return {
-      onStart: (props: any) => {
+      onStart: (props) => {
         component = new ReactRenderer(CommandList, {
           props,
           editor: props.editor,
@@ -27,7 +38,7 @@ export const commandSuggestions = {
         }
 
         popup = tippy("body", {
-          getReferenceClientRect: props.clientRect,
+          getReferenceClientRect: props.clientRect as () => DOMRect,
           appendTo: () => document.body,
           content: component.element,
           showOnCreate: true,
@@ -49,14 +60,13 @@ export const commandSuggestions = {
         });
       },
 
-      onKeyDown(props: any) {
+      onKeyDown(props) {
         if (props.event.key === "Escape") {
           popup[0].hide();
-
           return true;
         }
 
-        return component.ref?.onKeyDown(props);
+        return component.ref?.onKeyDown(props) ?? false;
       },
 
       onExit() {
