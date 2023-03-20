@@ -3,7 +3,10 @@ import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { mainnet } from "wagmi/chains";
 import { infuraProvider } from "wagmi/providers/infura";
 
-const { chains, provider } = configureChains([mainnet], [infuraProvider()]);
+const { provider } = configureChains(
+  [mainnet],
+  [infuraProvider({ apiKey: process.env.NEXT_PUBLIC_INFURA_KEY })]
+);
 
 const client = createClient({
   autoConnect: true,

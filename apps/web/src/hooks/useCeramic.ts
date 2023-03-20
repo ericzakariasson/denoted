@@ -1,19 +1,19 @@
 import { ComposeClient } from "@composedb/client";
-import { DIDSession } from "did-session";
 import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
-import { useAccount, useConnect, useProvider } from "wagmi";
+import { DIDSession } from "did-session";
+import { useAccount } from "wagmi";
+import { InjectedConnector } from "@wagmi/core";
 
 export function useCeramic(composeClient: ComposeClient) {
   const { address } = useAccount();
-  const { connectors } = useConnect();
 
-  const web3authProvider = (connectors[0] as any).provider;
-  const provider = web3authProvider;
+  const connector = new InjectedConnector();
 
   async function authenticate() {
     if (!address) {
       throw new Error("Address is undefined");
     }
+    const provider = await connector.getProvider();
 
     // for production you will want a better place than localStorage for your sessions.
     const sessionStr = localStorage.getItem("did");
