@@ -1,7 +1,7 @@
 version: '3'
 services:
   ipfs:
-    image: ceramicnetwork/go-ipfs-daemon:latest
+    image: ceramicnetwork/go-ipfs-daemon:prod
     ports:
       - '5001:5001'
       - '8011:8011'
@@ -20,7 +20,7 @@ services:
     depends_on:
       - ipfs
       - postgres
-    image: ceramicnetwork/js-ceramic:latest
+    image: ceramicnetwork/js-ceramic:prod
     ports:
       - '7007:7007'
     volumes:
