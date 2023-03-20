@@ -1,0 +1,34 @@
+version: '3'
+services:
+  ipfs:
+    image: ceramicnetwork/go-ipfs-daemon:latest
+    ports:
+      - '5001:5001'
+      - '8011:8011'
+    volumes:
+      - composedb-ipfs:/data/ipfs
+  postgres:
+    image: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - composedb-postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+  ceramic:
+    depends_on:
+      - ipfs
+      - postgres
+    image: ceramicnetwork/js-ceramic:latest
+    ports:
+      - '7007:7007'
+    volumes:
+      - composedb-ceramic:/root/.ceramic
+    environment:
+      NODE_ENV: production
+      CERAMIC_INDEXING_DB_URI: postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/postgres
+volumes:
+  composedb-ipfs:
+  composedb-postgres:
+  composedb-ceramic:

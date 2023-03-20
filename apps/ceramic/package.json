@@ -13,7 +13,8 @@
     "deploy": "source .env.local && composedb composite:deploy ./generated/denoted-composite.json --did-private-key=$DID_PRIVATE_KEY -c $CERAMIC_API_URL",
     "compile": "source .env.local && composedb composite:compile ./generated/denoted-composite.json runtime-composite.json --did-private-key=$DID_PRIVATE_KEY -c $CERAMIC_API_URL",
     "graphql": "source .env.local && composedb graphql:server --graphiql --port=5001 runtime-composite.json --did-private-key=$DID_PRIVATE_KEY -c $CERAMIC_API_URL",
-    "deploy-models": "source .env.local && yarn schema && yarn deploy && yarn compile && yarn definitions"
+    "deploy-models": "source .env.local && yarn schema && yarn deploy && yarn compile && yarn definitions",
+    "up:local": "docker-compose --env-file .env.local up"
   },
   "devDependencies": {
     "@ceramicnetwork/cli": "^2.22.0",
