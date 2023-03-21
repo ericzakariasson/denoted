@@ -1,24 +1,17 @@
+import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useAccount, useConnect } from "wagmi";
-import { formatEthAddress } from "../utils/index";
-import { useDisconnect } from "wagmi";
+// import { Connect } from "./Connect";
 import { Logo } from "./Logo";
-import { useEnsName } from "wagmi";
+
+const Connect = dynamic(() => import("./Connect").then((x) => x.Connect), {
+  ssr: false,
+});
 
 type NavbarProps = {
   className: string;
 };
 
 export const Navbar = ({ className }: NavbarProps) => {
-  const { isConnected, address, isConnecting } = useAccount();
-  const { connect, connectors } = useConnect();
-  const { disconnect } = useDisconnect({
-    onSuccess: () => localStorage.removeItem("did"),
-  });
-  const { data: ensName } = useEnsName({
-    address,
-  });
-
   return (
     <nav className={"mx-auto max-w-3xl p-4" + " " + className}>
       <div className="flex items-center justify-between">
@@ -35,21 +28,7 @@ export const Navbar = ({ className }: NavbarProps) => {
           >
             create
           </Link>
-          {connectors.map((connector) => (
-            <button
-              className="rounded-full border border-black px-2 py-0"
-              key={connector?.id}
-              onClick={() => connect({ connector })}
-            >
-              {isConnected && address && (
-                <p onClick={() => disconnect()}>
-                  {ensName ?? formatEthAddress(address, 5, 40)}
-                </p>
-              )}
-              {isConnecting && <p>connecting...</p>}
-              {!isConnected && !isConnecting && <p>connect</p>}
-            </button>
-          ))}
+          <Connect />
         </div>
       </div>
     </nav>
