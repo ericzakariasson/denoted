@@ -3,15 +3,15 @@ import { SuggestionOptions } from "@tiptap/suggestion";
 import { RefAttributes } from "react";
 import tippy from "tippy.js";
 import {
-  CommandItem,
   CommandList,
   CommandListHandle,
+  CommandListItem,
   CommandListProps,
 } from "../../../components/CommandList";
 import { COMMANDS } from "../../../components/commands";
 
 export const commandSuggestions: Omit<
-  SuggestionOptions<CommandItem>,
+  SuggestionOptions<CommandListItem>,
   "editor"
 > = {
   items: ({ query }) => {

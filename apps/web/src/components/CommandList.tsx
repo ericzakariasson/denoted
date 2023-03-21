@@ -7,25 +7,37 @@ import React, {
   useImperativeHandle,
   useState,
 } from "react";
+import { cn } from "../utils/classnames";
 
 export type CommandContext = {
   editor: Editor;
   range: Range;
 };
 
-export type CommandItem = {
+export type BaseCommandItem = {
   title: string;
   description?: string;
   icon: StaticImageData;
+};
+
+export type CommandGroup = BaseCommandItem & {
+  type: "group";
+  items: CommandItem[];
+};
+
+export type CommandItem = BaseCommandItem & {
+  type?: "item";
   command: string;
   onCommand: (ctx: CommandContext) => void;
 };
+
+export type CommandListItem = CommandGroup | CommandItem;
 
 export type CommandListHandle = {
   onKeyDown: (props: SuggestionKeyDownProps) => boolean;
 };
 
-export type CommandListProps = SuggestionProps<CommandItem>;
+export type CommandListProps = SuggestionProps<CommandListItem>;
 
 export const CommandList = forwardRef<CommandListHandle, CommandListProps>(
   (props, ref) => {
@@ -76,15 +88,28 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(
       },
     }));
 
+    if (props.items.length === 0) {
+      return (
+        <div className="w-64 overflow-hidden rounded-2xl bg-gray-100">
+          <p className="w-full px-3 py-2 text-left">no result</p>
+        </div>
+      );
+    }
+
     return (
       <div className="w-64 overflow-hidden rounded-2xl bg-gray-100">
-        {props.items.length ? (
-          props.items.map((item: CommandItem, index: number) => (
+        {props.items.map((item, index) => {
+          if (item.type === "group") {
+            // TODO: implement group options
+            return null;
+          }
+          return (
             <button
               key={index}
-              className={`flex w-full items-center gap-3 border-b px-3 py-2 text-left last:border-b-0 ${
-                index === selectedIndex ? "bg-gray-200" : ""
-              }`}
+              className={cn(
+                "flex w-full items-center gap-3 border-b px-3 py-2 text-left last:border-b-0",
+                index === selectedIndex && "bg-gray-200"
+              )}
               onClick={() => selectItem(index)}
             >
               <Image {...item.icon} width={24} height={24} alt={item.title} />
@@ -95,10 +120,8 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(
                 )}
               </div>
             </button>
-          ))
-        ) : (
-          <p className="w-full px-3 py-2 text-left">no result</p>
-        )}
+          );
+        })}
       </div>
     );
   }
