@@ -27,9 +27,10 @@ export type CommandGroup = BaseCommandItem<string> & {
   items: CommandItem<string>[];
 };
 
-export type CommandItem<Command extends string> = BaseCommandItem<Command> & {
-  type?: "item";
-};
+export type CommandItem<Command extends string = string> =
+  BaseCommandItem<Command> & {
+    type?: "item";
+  };
 
 export type CommandListItem<Command extends string> =
   | CommandGroup
