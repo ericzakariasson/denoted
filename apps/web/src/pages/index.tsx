@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { COMMANDS } from "../components/commands";
 import Link from "next/link";

@@ -4,11 +4,13 @@ import { duneCommand } from "./dune/command";
 import { graphCommand } from "./graph/command";
 import { lensCommand } from "./lens/command";
 import { tallyCommand } from "./tally/command";
+import { walletCommand } from "./wallet/command";
 
-export const COMMANDS: CommandItem[] = [
+export const COMMANDS: CommandItem<string>[] = [
   balanceCommand,
   lensCommand,
   graphCommand,
   duneCommand,
   tallyCommand,
+  walletCommand,
 ];

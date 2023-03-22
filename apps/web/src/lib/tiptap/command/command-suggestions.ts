@@ -11,7 +11,7 @@ import {
 import { COMMANDS } from "../../../components/commands";
 
 export const commandSuggestions: Omit<
-  SuggestionOptions<CommandListItem>,
+  SuggestionOptions<CommandListItem<string>>,
   "editor"
 > = {
   items: ({ query }) => {

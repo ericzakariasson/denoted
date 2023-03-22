@@ -31,7 +31,7 @@ async function resolveAddress(rawAddress: string) {
   return rawAddress;
 }
 
-type WalletBalanceWidgetProps = {
+export type WalletBalanceWidgetProps = {
   address: string;
   chain: number;
   symbol: string;

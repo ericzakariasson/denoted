@@ -14,30 +14,32 @@ export type CommandContext = {
   range: Range;
 };
 
-export type BaseCommandItem = {
+export type BaseCommandItem<Command extends string> = {
   title: string;
   description?: string;
   icon: StaticImageData;
-};
-
-export type CommandGroup = BaseCommandItem & {
-  type: "group";
-  items: CommandItem[];
-};
-
-export type CommandItem = BaseCommandItem & {
-  type?: "item";
-  command: string;
+  command: Command;
   onCommand: (ctx: CommandContext) => void;
 };
 
-export type CommandListItem = CommandGroup | CommandItem;
+export type CommandGroup = BaseCommandItem<string> & {
+  type: "group";
+  items: CommandItem<string>[];
+};
+
+export type CommandItem<Command extends string> = BaseCommandItem<Command> & {
+  type?: "item";
+};
+
+export type CommandListItem<Command extends string> =
+  | CommandGroup
+  | CommandItem<Command>;
 
 export type CommandListHandle = {
   onKeyDown: (props: SuggestionKeyDownProps) => boolean;
 };
 
-export type CommandListProps = SuggestionProps<CommandListItem>;
+export type CommandListProps = SuggestionProps<CommandListItem<string>>;
 
 export const CommandList = forwardRef<CommandListHandle, CommandListProps>(
   (props, ref) => {
@@ -100,12 +102,43 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(
       <div className="w-64 overflow-hidden rounded-2xl bg-gray-100">
         {props.items.map((item, index) => {
           if (item.type === "group") {
-            // TODO: implement group options
-            return null;
+            return (
+              <button
+                key={item.command}
+                disabled
+                className={cn(
+                  "flex w-full items-center gap-3 border-b px-3 py-2 text-left last:border-b-0 disabled:opacity-50",
+                  index === selectedIndex && "bg-gray-200"
+                )}
+              >
+                <Image {...item.icon} width={24} height={24} alt={item.title} />
+                <div className="flex flex-col">
+                  <p>{item.title}</p>
+                  {item.description && (
+                    <p className="text-xs text-gray-500">{item.description}</p>
+                  )}
+                </div>
+                <div className="ml-auto">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </div>
+              </button>
+            );
           }
           return (
             <button
-              key={index}
+              key={item.command}
               className={cn(
                 "flex w-full items-center gap-3 border-b px-3 py-2 text-left last:border-b-0",
                 index === selectedIndex && "bg-gray-200"
