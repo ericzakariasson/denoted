@@ -14,6 +14,7 @@ import { Lens } from "../lib/tiptap/widgets/lens/lens-extension";
 import { Graph } from "../lib/tiptap/widgets/graph/graph-extension";
 import { Tally } from "../lib/tiptap/widgets/tally/tally-extension";
 import { Iframe } from "../lib/tiptap/widgets/iframe/iframe-extension";
+import { NetWorth } from "../lib/tiptap/widgets/net-worth/net-worth-extension";
 
 type BubbleMenuButtonProps = {
   onClick: () => void;
@@ -52,6 +53,7 @@ export const extensions = [
   Graph,
   Tally,
   Iframe,
+  NetWorth,
 ];
 
 export const Editor = ({ initialContent, onUpdate }: EditorProps) => {

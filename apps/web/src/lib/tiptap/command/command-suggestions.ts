@@ -17,7 +17,7 @@ export const commandSuggestions: Omit<
   items: ({ query }) => {
     return COMMANDS.filter((item) => {
       if (item.type === "group") {
-        return item.items.map((item) =>
+        return item.items.filter((item) =>
           item.title.toLowerCase().startsWith(query.toLowerCase())
         );
       }
