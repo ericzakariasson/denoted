@@ -11,7 +11,9 @@ import { useMutation } from "react-query";
 type Props = {};
 
 const Page: NextPage<Props> = ({}) => {
-  const commands = COMMANDS.map((c) => c.command);
+  const commands = COMMANDS.flatMap((c) =>
+    c.type === "group" ? c.items.map((item) => item.command) : c.command
+  );
 
   const [index, setIndex] = useState(0);
 
