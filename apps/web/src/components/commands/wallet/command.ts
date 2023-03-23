@@ -1,16 +1,9 @@
-import { insertComponent } from "../../../lib/tiptap/tiptap";
-import { CommandListItem } from "../../CommandList";
+import { CommandGroup } from "../../CommandList";
 
 import { balanceCommand } from "../balance/command";
 
-import icon from "./icon.svg";
-
-export const walletCommand = {
+export const walletCommand: CommandGroup = {
   type: "group",
-  command: "wallet",
-  title: "Wallet",
-  description: "Get wallet data",
-  icon,
-  onCommand: insertComponent("<balance-component></balance-component>"),
+  name: "Wallet",
   items: [balanceCommand],
-} satisfies CommandListItem<"wallet">;
+};

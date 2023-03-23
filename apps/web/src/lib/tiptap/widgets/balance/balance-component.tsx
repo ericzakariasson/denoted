@@ -110,7 +110,12 @@ export const BalanceComponent = (props: BalanceComponentProps) => {
                     className="rounded-lg border-none bg-gray-200"
                   >
                     {Object.values(chains)
-                      .filter((chain) => !chain.testnet)
+                      .filter(
+                        (chain) =>
+                          !chain.testnet &&
+                          chain.network !== "localhost" &&
+                          chain.network !== "hardhat"
+                      )
                       .map((chain) => (
                         <option key={chain.id} value={chain.id}>
                           {chain.name}

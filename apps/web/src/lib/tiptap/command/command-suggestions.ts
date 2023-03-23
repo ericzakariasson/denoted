@@ -11,13 +11,19 @@ import {
 import { COMMANDS } from "../../../components/commands";
 
 export const commandSuggestions: Omit<
-  SuggestionOptions<CommandListItem<string>>,
+  SuggestionOptions<CommandListItem>,
   "editor"
 > = {
   items: ({ query }) => {
-    return COMMANDS.filter((item) =>
-      item.title.toLowerCase().startsWith(query.toLowerCase())
-    ).slice(0, 10);
+    return COMMANDS.filter((item) => {
+      if (item.type === "group") {
+        return item.items.map((item) =>
+          item.title.toLowerCase().startsWith(query.toLowerCase())
+        );
+      }
+
+      return item.title.toLowerCase().startsWith(query.toLowerCase());
+    }).slice(0, 10);
   },
   render: () => {
     let component: ReactRenderer<
