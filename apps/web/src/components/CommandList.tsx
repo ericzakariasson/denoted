@@ -18,7 +18,7 @@ export type CommandContext = {
 export type CommandItem = {
   title: string;
   description?: string;
-  icon: StaticImageData;
+  icon: StaticImageData | null;
   command: string;
   onCommand: (ctx: CommandContext) => void;
 };
@@ -149,7 +149,11 @@ const CommandItemButton = ({
       )}
       onClick={() => onSelect(index)}
     >
-      <Image {...item.icon} width={24} height={24} alt={item.title} />
+      {item.icon ? (
+        <Image {...item.icon} width={24} height={24} alt={item.title} />
+      ) : (
+        <div className="h-[24px] w-[24px] rounded-sm bg-slate-100" />
+      )}
       <div className="flex flex-col">
         <p>{item.title}</p>
         {item.description && (

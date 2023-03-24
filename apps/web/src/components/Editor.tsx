@@ -15,6 +15,7 @@ import { Graph } from "../lib/tiptap/widgets/graph/graph-extension";
 import { Tally } from "../lib/tiptap/widgets/tally/tally-extension";
 import { Iframe } from "../lib/tiptap/widgets/iframe/iframe-extension";
 import { NetWorth } from "../lib/tiptap/widgets/net-worth/net-worth-extension";
+import { Nft } from "../lib/tiptap/widgets/nft/nft-extension";
 
 type BubbleMenuButtonProps = {
   onClick: () => void;
@@ -54,6 +55,7 @@ export const extensions = [
   Tally,
   Iframe,
   NetWorth,
+  Nft,
 ];
 
 export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
