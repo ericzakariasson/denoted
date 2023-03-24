@@ -15,15 +15,22 @@ export const commandSuggestions: Omit<
   "editor"
 > = {
   items: ({ query }) => {
-    return COMMANDS.filter((item) => {
-      if (item.type === "group") {
-        return item.items.filter((item) =>
-          item.title.toLowerCase().startsWith(query.toLowerCase())
-        );
-      }
-
-      return item.title.toLowerCase().startsWith(query.toLowerCase());
-    }).slice(0, 10);
+    return COMMANDS.filter((group) =>
+      group.items.some(
+        (item) =>
+          item.title.toLowerCase().includes(query.toLowerCase()) ||
+          item.description?.toLowerCase().includes(query.toLowerCase()) ||
+          item.command.toLowerCase().includes(query.toLowerCase())
+      )
+    ).map((group) => ({
+      ...group,
+      items: group.items.filter(
+        (item) =>
+          item.title.toLowerCase().includes(query.toLowerCase()) ||
+          item.description?.toLowerCase().includes(query.toLowerCase()) ||
+          item.command.toLowerCase().includes(query.toLowerCase())
+      ),
+    }));
   },
   render: () => {
     let component: ReactRenderer<
