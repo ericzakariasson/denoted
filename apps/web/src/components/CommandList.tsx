@@ -16,7 +16,6 @@ export type CommandContext = {
 };
 
 export type CommandItem = {
-  type?: "item";
   title: string;
   description?: string;
   icon: StaticImageData;
@@ -25,12 +24,11 @@ export type CommandItem = {
 };
 
 export type CommandGroup = {
-  type: "group";
   name: string;
   items: CommandItem[];
 };
 
-export type CommandListItem = CommandGroup | CommandItem;
+export type CommandListItem = CommandGroup;
 
 export type CommandListHandle = {
   onKeyDown: (props: SuggestionKeyDownProps) => boolean;
@@ -40,13 +38,10 @@ export type CommandListProps = SuggestionProps<CommandListItem>;
 
 export const CommandList = forwardRef<CommandListHandle, CommandListProps>(
   (props, ref) => {
-    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [selectedIndex, setSelectedIndex] = useState(1);
 
     const allCommands = useMemo(
-      () =>
-        props.items.flatMap((item) =>
-          item.type === "group" ? item.items : item
-        ),
+      () => props.items.flatMap((item) => item.items),
       [props.items]
     );
 
@@ -56,7 +51,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(
       const item = allCommands[index];
 
       if (item) {
-        props.command(item);
+        props.command(item as any);
       }
     };
 
@@ -105,38 +100,29 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(
 
     return (
       <div className="w-64 overflow-hidden rounded-2xl bg-gray-100">
-        {props.items.map((item, topIndex) => {
-          if (item.type === "group") {
-            return (
-              <div key={item.name}>
-                <p className="border-b px-3 py-2 text-xs font-medium text-gray-500">
-                  {item.name}
-                </p>
-                <div>
-                  {item.items.map((item, itemIndex) => {
-                    const index = topIndex + itemIndex;
-                    return (
-                      <CommandItemButton
-                        key={item.command}
-                        item={item}
-                        index={index}
-                        selectedIndex={selectedIndex}
-                        onSelect={selectItem}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          }
+        {props.items.map((item) => {
           return (
-            <CommandItemButton
-              key={item.command}
-              item={item}
-              index={topIndex}
-              selectedIndex={selectedIndex}
-              onSelect={selectItem}
-            />
+            <div key={item.name}>
+              <p className="border-b px-3 py-2 text-xs font-medium text-gray-500">
+                {item.name}
+              </p>
+              <div>
+                {item.items.map((item) => {
+                  const index = allCommands
+                    .map((c) => c.command)
+                    .indexOf(item.command);
+                  return (
+                    <CommandItemButton
+                      key={item.command}
+                      item={item}
+                      index={index}
+                      selectedIndex={selectedIndex}
+                      onSelect={selectItem}
+                    />
+                  );
+                })}
+              </div>
+            </div>
           );
         })}
       </div>
