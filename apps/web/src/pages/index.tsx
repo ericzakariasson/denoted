@@ -7,6 +7,7 @@ import Link from "next/link";
 
 import * as Form from "@radix-ui/react-form";
 import { useMutation } from "react-query";
+import Head from "next/head";
 
 type Props = {};
 
@@ -45,6 +46,9 @@ const Page: NextPage<Props> = ({}) => {
 
   return (
     <div className="flex flex-col items-center gap-8 pt-32">
+      <Head>
+        <title>denoted</title>
+      </Head>
       <h1 className="text-2xl">start creating with</h1>
       <Link
         href="/create"
