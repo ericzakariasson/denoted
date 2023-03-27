@@ -1,18 +1,14 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import React, { useEffect, useState } from "react";
-import { GraphWidget } from "../../../../components/commands/graph/Graph";
 
 import * as Popover from "@radix-ui/react-popover";
-import { Label } from "../../../../components/Label";
-import { CommandExtensionProps } from "../../types";
+import { CommandExtensionProps } from "../../../lib/tiptap/types";
+import { GraphWidgetProps, GraphWidget } from "./Graph";
+import { Label } from "../../Label";
 
-type GraphComponentProps = CommandExtensionProps<{
-  url: string | undefined;
-  query: string | undefined;
-  path: string | undefined;
-}>;
+type GraphComponentProps = CommandExtensionProps<GraphWidgetProps>;
 
-export const GraphComponent = (props: GraphComponentProps) => {
+export const GraphConfig = (props: GraphComponentProps) => {
   const [isOpen, setOpen] = useState(false);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {

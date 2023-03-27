@@ -1,21 +1,15 @@
-import { useEditor, EditorContent, BubbleMenu } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Highlight from "@tiptap/extension-highlight";
-import Typography from "@tiptap/extension-typography";
-import Placeholder from "@tiptap/extension-placeholder";
-import { PropsWithChildren } from "react";
 import { Content, JSONContent } from "@tiptap/core";
+import Highlight from "@tiptap/extension-highlight";
+import Placeholder from "@tiptap/extension-placeholder";
+import Typography from "@tiptap/extension-typography";
+import { BubbleMenu, EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import { PropsWithChildren } from "react";
 
+import { useAccount } from "wagmi";
 import { Command } from "../lib/tiptap/command/command-extension";
 import { commandSuggestions } from "../lib/tiptap/command/command-suggestions";
-import { Balance } from "../lib/tiptap/widgets/balance/balance-extension";
-import { useAccount } from "wagmi";
-import { Lens } from "../lib/tiptap/widgets/lens/lens-extension";
-import { Graph } from "../lib/tiptap/widgets/graph/graph-extension";
-import { Tally } from "../lib/tiptap/widgets/tally/tally-extension";
-import { Iframe } from "../lib/tiptap/widgets/iframe/iframe-extension";
-import { NetWorth } from "../lib/tiptap/widgets/net-worth/net-worth-extension";
-import { Nft } from "../lib/tiptap/widgets/nft/nft-extension";
+import { getCommandExtensions } from "../lib/tiptap/tiptap";
 
 type BubbleMenuButtonProps = {
   onClick: () => void;
@@ -45,17 +39,13 @@ type EditorProps = {
   onUpdate?: (json: JSONContent) => void;
 };
 
+const commandExtensions = getCommandExtensions();
+
 export const extensions = [
   StarterKit,
   Highlight,
   Typography,
-  Balance,
-  Lens,
-  Graph,
-  Tally,
-  Iframe,
-  NetWorth,
-  Nft,
+  ...commandExtensions,
 ];
 
 export const Editor = ({ initialContent, onUpdate }: EditorProps) => {

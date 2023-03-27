@@ -9,23 +9,16 @@ import React, {
   useState,
 } from "react";
 import { cn } from "../utils/classnames";
+import { CommandConfiguration } from "./commands/types";
 
 export type CommandContext = {
   editor: Editor;
   range: Range;
 };
 
-export type CommandItem = {
-  title: string;
-  description?: string;
-  icon: StaticImageData | null;
-  command: string;
-  onCommand: (ctx: CommandContext) => void;
-};
-
 export type CommandGroup = {
   name: string;
-  items: CommandItem[];
+  items: CommandConfiguration<any>[];
 };
 
 export type CommandListItem = CommandGroup;
@@ -130,13 +123,13 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(
   }
 );
 
-const CommandItemButton = ({
+const CommandItemButton = <T extends Record<string, string>>({
   item,
   index,
   selectedIndex,
   onSelect,
 }: {
-  item: CommandItem;
+  item: CommandConfiguration<T>;
   index: number;
   selectedIndex: number;
   onSelect: (index: number) => void;

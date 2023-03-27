@@ -1,12 +1,18 @@
-import { insertComponent } from "../../../lib/tiptap/tiptap";
-import { CommandItem } from "../../CommandList";
+import { CommandConfiguration } from "../types";
 
+import { TallyConfig } from "./Config";
 import icon from "./icon.png";
+import { TallyWidgetProps } from "./Tally";
 
-export const tallyCommand: CommandItem = {
+export const tallyCommand: CommandConfiguration<TallyWidgetProps> = {
   command: "tally",
   title: "Tally",
   description: "Get DAO data with Tally",
   icon,
-  onCommand: insertComponent(`<tally-component></tally-component>`),
+  blockType: "inline",
+  defaultValues: {
+    path: undefined,
+    query: undefined,
+  },
+  ConfigComponent: TallyConfig,
 };

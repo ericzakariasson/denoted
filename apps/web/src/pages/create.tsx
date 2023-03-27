@@ -46,7 +46,6 @@ const CreatePage: NextPage = () => {
           await handleAuthenticate();
         }
 
-        console.log(data);
         const id = data?.createNote?.document?.id ?? null;
         if (id) {
           router.push(id);

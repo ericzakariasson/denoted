@@ -1,12 +1,20 @@
-import { insertComponent } from "../../../lib/tiptap/tiptap";
-import { CommandItem } from "../../CommandList";
+import { CommandConfiguration } from "../types";
+import { WalletBalanceWidgetProps } from "./Balance";
+import { WalletBalanceWidgetConfig } from "./Config";
 
+import { mainnet } from "wagmi/chains";
 import icon from "./icon.svg";
 
-export const balanceCommand: CommandItem = {
+export const balanceCommand: CommandConfiguration<WalletBalanceWidgetProps> = {
   command: "balance",
   title: "Balance",
   description: "Use Covalent API to get balance",
   icon,
-  onCommand: insertComponent("<balance-component></balance-component>"),
+  blockType: "inline",
+  defaultValues: {
+    address: undefined,
+    symbol: undefined,
+    chain: mainnet.id,
+  },
+  ConfigComponent: WalletBalanceWidgetConfig,
 };

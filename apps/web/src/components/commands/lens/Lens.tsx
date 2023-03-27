@@ -3,7 +3,7 @@ import { useQuery } from "react-query";
 import { lensClient } from "../../../lib/lens";
 import { DataPill } from "../../DataPill";
 
-type LensWidgetProps = {
+export type LensWidgetProps = {
   handle: string;
 };
 

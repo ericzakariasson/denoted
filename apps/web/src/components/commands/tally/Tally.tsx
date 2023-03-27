@@ -4,7 +4,7 @@ import { useQuery } from "react-query";
 import { hash } from "../../../utils/hash";
 import { DataPill } from "../../DataPill";
 
-type TallyWidgetProps = {
+export type TallyWidgetProps = {
   query: string;
   path: string;
 };

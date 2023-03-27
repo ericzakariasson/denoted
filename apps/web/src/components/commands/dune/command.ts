@@ -1,12 +1,17 @@
-import { insertComponent } from "../../../lib/tiptap/tiptap";
-import { CommandItem } from "../../CommandList";
+import { CommandConfiguration } from "../types";
+import { DuneConfig } from "./Config";
+import { DuneProps } from "./Dune";
 
 import icon from "./icon.png";
 
-export const duneCommand: CommandItem = {
+export const duneCommand: CommandConfiguration<DuneProps> = {
   command: "dune",
   title: "Dune",
   description: "Embed Dune Analytics queries",
   icon,
-  onCommand: insertComponent(`<iframe-component></iframe-component>`),
+  blockType: "block",
+  defaultValues: {
+    src: undefined,
+  },
+  ConfigComponent: DuneConfig,
 };

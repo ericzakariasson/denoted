@@ -2,39 +2,25 @@ import { NodeViewWrapper } from "@tiptap/react";
 import React, { useEffect, useState } from "react";
 
 import * as Popover from "@radix-ui/react-popover";
-import { Label } from "../../../../components/Label";
-import { CommandExtensionProps } from "../../types";
-import * as chains from "wagmi/chains";
-import {
-  NftWidget,
-  NftWidgetProps,
-} from "../../../../components/commands/nft/Nft";
+import { TallyWidget, TallyWidgetProps } from "./Tally";
+import { CommandExtensionProps } from "../../../lib/tiptap/types";
+import { Label } from "../../Label";
 
-type NftComponentProps = CommandExtensionProps<Partial<NftWidgetProps>>;
-
-export const NftComponent = (props: NftComponentProps) => {
-  const [isOpen, setOpen] = useState(false);
-
+export const TallyConfig = (props: CommandExtensionProps<TallyWidgetProps>) => {
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
     const formData = new FormData(event.currentTarget);
     props.updateAttributes({
-      address: formData.get("address")?.toString() ?? undefined,
-      chain: formData.get("chain")
-        ? Number(formData.get("chain")?.toString())
-        : undefined,
+      query: formData.get("query")?.toString() ?? "",
+      path: formData.get("path")?.toString() ?? "",
     });
-
-    setOpen(false);
-
-    props.editor.view.dom.focus();
   }
 
-  const { property, address, chain } = props.node.attrs;
+  const { query, path } = props.node.attrs;
 
-  const isConfigured =
-    property !== undefined && address !== undefined && chain !== undefined;
+  const isConfigured = query !== undefined && path !== undefined;
+
+  const [isOpen, setOpen] = useState(false);
 
   useEffect(() => {
     if (!isConfigured) {
@@ -45,7 +31,7 @@ export const NftComponent = (props: NftComponentProps) => {
   return (
     <NodeViewWrapper as="span">
       {isConfigured && !props.editor.isEditable && (
-        <NftWidget property={property} address={address} chain={chain} />
+        <TallyWidget query={query} path={path} />
       )}
       {props.editor.isEditable && (
         <Popover.Root
@@ -55,7 +41,7 @@ export const NftComponent = (props: NftComponentProps) => {
         >
           <Popover.Trigger>
             {isConfigured ? (
-              <NftWidget property={property} address={address} chain={chain} />
+              <TallyWidget query={query} path={path} />
             ) : (
               <span className="rounded-full border border-gray-300 py-0 px-1 leading-normal text-gray-500">
                 setup
@@ -71,29 +57,30 @@ export const NftComponent = (props: NftComponentProps) => {
               <form
                 onSubmit={handleSubmit}
                 className="flex flex-col items-start gap-4"
-                name="graph-setup"
+                name="tally-setup"
               >
-                <Label label="Address">
-                  <input
-                    name="address"
-                    placeholder="0x"
-                    defaultValue={address ?? ""}
-                    className="rounded-lg bg-gray-200 px-3 py-2"
+                <Label label="Query">
+                  <textarea
+                    name="query"
+                    defaultValue={query}
+                    placeholder={`query { 
+  foo {
+    bar
+  }
+}`}
+                    className="rounded-lg border-none bg-gray-200 px-3 py-2 font-mono"
+                    rows={5}
                     required
-                  />
+                  ></textarea>
                 </Label>
-                <Label label="Chain">
-                  <select
-                    name="chain"
-                    defaultValue={chain ?? ""}
-                    className="rounded-lg border-none bg-gray-200"
-                  >
-                    {[chains.mainnet, chains.polygon].map((chain) => (
-                      <option key={chain.id} value={chain.id}>
-                        {chain.name}
-                      </option>
-                    ))}
-                  </select>
+                <Label label="Selector path">
+                  <input
+                    name="path"
+                    defaultValue={path}
+                    placeholder="foo.bar"
+                    required
+                    className="rounded-lg border-none bg-gray-200 px-3 py-2"
+                  />
                 </Label>
                 <button
                   type="submit"

@@ -2,30 +2,34 @@ import { NodeViewWrapper } from "@tiptap/react";
 import React, { useEffect, useState } from "react";
 
 import * as Popover from "@radix-ui/react-popover";
-import { Label } from "../../../../components/Label";
-import { TallyWidget } from "../../../../components/commands/tally/Tally";
-import { CommandExtensionProps } from "../../types";
+import * as chains from "wagmi/chains";
+import { CommandExtensionProps } from "../../../lib/tiptap/types";
+import { NftWidget, NftWidgetProps } from "./Nft";
+import { Label } from "../../Label";
 
-type TallyComponentProps = CommandExtensionProps<{
-  query: string | undefined;
-  path: string | undefined;
-}>;
+export const NftConfig = (props: CommandExtensionProps<NftWidgetProps>) => {
+  const [isOpen, setOpen] = useState(false);
 
-export const TallyComponent = (props: TallyComponentProps) => {
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
     const formData = new FormData(event.currentTarget);
     props.updateAttributes({
-      query: formData.get("query")?.toString() ?? "",
-      path: formData.get("path")?.toString() ?? "",
+      address: formData.get("address")?.toString() ?? undefined,
+      chain: formData.get("chain")
+        ? Number(formData.get("chain")?.toString())
+        : undefined,
     });
+
+    setOpen(false);
+
+    props.editor.view.dom.focus();
   }
 
-  const { query, path } = props.node.attrs;
+  const { property, address, chain } = props.node.attrs;
 
-  const isConfigured = query !== undefined && path !== undefined;
-
-  const [isOpen, setOpen] = useState(false);
+  const isConfigured =
+    property !== undefined && address !== undefined && chain !== undefined;
 
   useEffect(() => {
     if (!isConfigured) {
@@ -36,7 +40,7 @@ export const TallyComponent = (props: TallyComponentProps) => {
   return (
     <NodeViewWrapper as="span">
       {isConfigured && !props.editor.isEditable && (
-        <TallyWidget query={query} path={path} />
+        <NftWidget property={property} address={address} chain={chain} />
       )}
       {props.editor.isEditable && (
         <Popover.Root
@@ -46,7 +50,7 @@ export const TallyComponent = (props: TallyComponentProps) => {
         >
           <Popover.Trigger>
             {isConfigured ? (
-              <TallyWidget query={query} path={path} />
+              <NftWidget property={property} address={address} chain={chain} />
             ) : (
               <span className="rounded-full border border-gray-300 py-0 px-1 leading-normal text-gray-500">
                 setup
@@ -62,30 +66,29 @@ export const TallyComponent = (props: TallyComponentProps) => {
               <form
                 onSubmit={handleSubmit}
                 className="flex flex-col items-start gap-4"
-                name="tally-setup"
+                name="graph-setup"
               >
-                <Label label="Query">
-                  <textarea
-                    name="query"
-                    defaultValue={query}
-                    placeholder={`query { 
-  foo {
-    bar
-  }
-}`}
-                    className="rounded-lg border-none bg-gray-200 px-3 py-2 font-mono"
-                    rows={5}
-                    required
-                  ></textarea>
-                </Label>
-                <Label label="Selector path">
+                <Label label="Address">
                   <input
-                    name="path"
-                    defaultValue={path}
-                    placeholder="foo.bar"
+                    name="address"
+                    placeholder="0x"
+                    defaultValue={address ?? ""}
+                    className="rounded-lg bg-gray-200 px-3 py-2"
                     required
-                    className="rounded-lg border-none bg-gray-200 px-3 py-2"
                   />
+                </Label>
+                <Label label="Chain">
+                  <select
+                    name="chain"
+                    defaultValue={chain ?? ""}
+                    className="rounded-lg border-none bg-gray-200"
+                  >
+                    {[chains.mainnet, chains.polygon].map((chain) => (
+                      <option key={chain.id} value={chain.id}>
+                        {chain.name}
+                      </option>
+                    ))}
+                  </select>
                 </Label>
                 <button
                   type="submit"

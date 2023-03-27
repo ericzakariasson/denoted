@@ -42,7 +42,6 @@ export const DataPill = ({
   }
 
   if (isStatus("error")) {
-    console.log(query.error);
     const message =
       "message" in (query.error as any)
         ? (query.error as any).message

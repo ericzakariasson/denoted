@@ -1,22 +1,18 @@
-import { insertComponent } from "../../../lib/tiptap/tiptap";
-import { CommandItem } from "../../CommandList";
+import { mainnet } from "wagmi/chains";
+import { CommandConfiguration } from "../types";
+import { NftConfig } from "./Config";
+import { NftWidgetProps } from "./Nft";
 
-export const nftFloorPriceCommand: CommandItem = {
+export const nftFloorPriceCommand: CommandConfiguration<NftWidgetProps> = {
   command: "floor-price",
-  title: "NFT Floor price",
+  title: "Floor price",
   description: "Floor price for NFT",
   icon: null,
-  onCommand: insertComponent(
-    '<nft-component property="floor"></nft-component>'
-  ),
+  blockType: "inline",
+  defaultValues: {
+    property: "floor",
+    address: undefined,
+    chain: mainnet.id,
+  },
+  ConfigComponent: NftConfig,
 };
-
-// export const nftHoldersCommand: CommandItem = {
-//   command: "holders",
-//   title: "NFT Holders",
-//   description: "Amount of holders for NFT",
-//   icon: null,
-//   onCommand: insertComponent(
-//     '<nft-component property="holders"></nft-component>'
-//   ),
-// };

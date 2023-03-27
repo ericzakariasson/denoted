@@ -1,26 +1,22 @@
+import * as Popover from "@radix-ui/react-popover";
 import { NodeViewWrapper } from "@tiptap/react";
-
+import { useState, useEffect } from "react";
+import { CommandExtensionProps } from "../../../lib/tiptap/types";
+import { Label } from "../../Label";
+import { WalletBalanceWidget, WalletBalanceWidgetProps } from "./Balance";
 import * as chains from "wagmi/chains";
 
-import * as Popover from "@radix-ui/react-popover";
-import { useEffect, useState } from "react";
-import { NetWorthWidget } from "../../../../components/commands/net-worth/NetWorth";
-import { Label } from "../../../../components/Label";
-import { CommandExtensionProps } from "../../types";
-
-type BalanceComponentProps = CommandExtensionProps<{
-  address: string | undefined;
-  chain: string | undefined;
-}>;
-
-export const BalanceComponent = (props: BalanceComponentProps) => {
+export const WalletBalanceWidgetConfig = (
+  props: CommandExtensionProps<WalletBalanceWidgetProps>
+) => {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
 
     props.updateAttributes({
       address: formData.get("address")?.toString() ?? "",
-      chain: formData.get("chain")?.toString() ?? "",
+      symbol: formData.get("symbol")?.toString() ?? "",
+      chain: Number(formData.get("chain")?.toString() ?? ""),
     });
 
     setOpen(false);
@@ -28,11 +24,11 @@ export const BalanceComponent = (props: BalanceComponentProps) => {
     props.editor.view.dom.focus();
   }
 
-  const { address, chain } = props.node.attrs;
+  const { address, chain, symbol } = props.node.attrs;
 
   const [isOpen, setOpen] = useState(false);
 
-  const isConfigured = address !== undefined;
+  const isConfigured = address !== undefined && symbol !== undefined;
 
   useEffect(() => {
     if (!isConfigured) {
@@ -43,7 +39,11 @@ export const BalanceComponent = (props: BalanceComponentProps) => {
   return (
     <NodeViewWrapper as="span">
       {isConfigured && !props.editor.isEditable && (
-        <NetWorthWidget address={address} chain={Number(chain)} />
+        <WalletBalanceWidget
+          address={address}
+          chain={Number(chain)}
+          symbol={symbol}
+        />
       )}
       {props.editor.isEditable && (
         <Popover.Root
@@ -53,7 +53,11 @@ export const BalanceComponent = (props: BalanceComponentProps) => {
         >
           <Popover.Trigger>
             {isConfigured ? (
-              <NetWorthWidget address={address} chain={Number(chain)} />
+              <WalletBalanceWidget
+                address={address}
+                chain={Number(chain)}
+                symbol={symbol}
+              />
             ) : (
               <span className="rounded-full border border-gray-300 py-0 px-1 leading-normal text-gray-500">
                 setup
@@ -79,6 +83,19 @@ export const BalanceComponent = (props: BalanceComponentProps) => {
                     className="rounded-lg bg-gray-200 px-3 py-2"
                     required
                   />
+                </Label>
+                <Label label="Ticker symbol">
+                  <select
+                    name="symbol"
+                    defaultValue={symbol ?? ""}
+                    className="rounded-lg border-none bg-gray-200"
+                  >
+                    {["eth", "usdc", "op", "spork"].map((symbol) => (
+                      <option key={symbol} value={symbol}>
+                        {symbol.toUpperCase()}
+                      </option>
+                    ))}
+                  </select>
                 </Label>
                 <Label label="Chain">
                   <select

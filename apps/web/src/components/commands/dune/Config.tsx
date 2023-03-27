@@ -1,16 +1,12 @@
 import { NodeViewWrapper } from "@tiptap/react";
-import { Editor } from "@tiptap/core";
 import React, { useState } from "react";
 
 import * as Popover from "@radix-ui/react-popover";
-import { useEffect } from "react";
 import Link from "next/link";
-import { Label } from "../../../../components/Label";
-import { CommandExtensionProps } from "../../types";
-
-type IframeComponentProps = CommandExtensionProps<{
-  src: string | null;
-}>;
+import { useEffect } from "react";
+import { CommandExtensionProps } from "../../../lib/tiptap/types";
+import { Label } from "../../Label";
+import { DuneProps } from "./Dune";
 
 function formatHref(src: string) {
   if (src.startsWith("https://dune.com/embeds/")) {
@@ -20,14 +16,22 @@ function formatHref(src: string) {
   return src;
 }
 
-export const IframeComponent = (props: IframeComponentProps) => {
+function formatSrc(src: string) {
+  if (src.startsWith("https://dune.com/queries/")) {
+    return src.replace("queries", "embeds");
+  }
+
+  return src;
+}
+
+export const DuneConfig = (props: CommandExtensionProps<DuneProps>) => {
   const [isOpen, setOpen] = useState(false);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     props.updateAttributes({
-      src: formData.get("src")?.toString() ?? "",
+      src: formatSrc(formData.get("src")?.toString() ?? ""),
     });
     setOpen(false);
     props.editor.view.dom.focus();
@@ -35,7 +39,7 @@ export const IframeComponent = (props: IframeComponentProps) => {
 
   const { src } = props.node.attrs;
 
-  const isConfigured = src !== null;
+  const isConfigured = src !== undefined;
 
   useEffect(() => {
     if (!isConfigured) {

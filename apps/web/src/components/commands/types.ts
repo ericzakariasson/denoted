@@ -1,16 +1,20 @@
+import { StaticImageData } from "next/image";
 import { FunctionComponent, ReactNode } from "react";
+import { CommandExtensionProps } from "../../lib/tiptap/types";
 
-export type CommandConfiguration<Props> = {
+export type CommandConfiguration<
+  Props extends Record<string, string | number | undefined>
+> = {
   // visual
   command: string;
   title: string;
   description?: string;
-  icon: ReactNode;
+  icon: StaticImageData | ReactNode | null;
 
   // editor
   blockType: "inline" | "block";
   defaultValues: Partial<Props>;
 
   // component
-  component: FunctionComponent<Props>;
+  ConfigComponent: FunctionComponent<CommandExtensionProps<Props>>;
 };
