@@ -1,5 +1,5 @@
 import { StaticImageData } from "next/image";
-import { FunctionComponent, ReactNode } from "react";
+import { FunctionComponent } from "react";
 import { CommandExtensionProps } from "../../lib/tiptap/types";
 
 export type CommandConfiguration<
@@ -9,7 +9,7 @@ export type CommandConfiguration<
   command: string;
   title: string;
   description?: string;
-  icon: StaticImageData | ReactNode | null;
+  icon: StaticImageData | null;
 
   // editor
   blockType: "inline" | "block";
