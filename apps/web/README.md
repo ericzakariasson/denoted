@@ -5,6 +5,15 @@
 1. Setup environment variables (`cp .env.local.example .env.local`)
 2. Run the local developer environment with `yarn dev` (or `yarn dev --filter web` from root directory)
 
+### dotenv
+
+To pull preset `.env` containing environment variables for local development.
+
+```sh
+npx dotenv-vault login
+npx dotenv-vault pull
+```
+
 ## Adding a command
 
 > ⚠️ NOTE: This is very subject to change in order to improve developer experience
