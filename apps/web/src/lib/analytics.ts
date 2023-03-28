@@ -5,6 +5,7 @@ const isProduction = process.env.NODE_ENV === "production";
 if (isProduction) {
   mixpanel.init(process.env.NEXT_PUBLIC_MIXPANEL_TOKEN as string, {
     api_host: `${getBaseUrl()}/mp`,
+    debug: !isProduction,
   });
 }
 
