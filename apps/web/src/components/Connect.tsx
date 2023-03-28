@@ -1,13 +1,23 @@
 "use client";
 
 import { useAccount, useConnect, useDisconnect, useEnsName } from "wagmi";
+import { identify, track } from "../lib/analytics";
 import { formatEthAddress } from "../utils";
-
 export const Connect = () => {
   const { isConnected, address, isConnecting } = useAccount();
-  const { connect, connectors } = useConnect();
+  const { connect, connectors } = useConnect({
+    onSuccess: (data) => {
+      identify(data.account);
+      track("Wallet Connected", {
+        chainId: data.chain.id,
+      });
+    },
+  });
   const { disconnect } = useDisconnect({
-    onSuccess: () => localStorage.removeItem("did"),
+    onSuccess: () => {
+      track("Wallet Disconnected");
+      localStorage.removeItem("did");
+    },
   });
 
   const { data: ensName } = useEnsName({

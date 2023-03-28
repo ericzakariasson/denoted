@@ -1,24 +1,18 @@
+/** @type {import('next').NextConfig} */
 module.exports = {
   reactStrictMode: true,
-  experimental: {
-    transpilePackages: ["@web3auth/web3auth-wagmi-connector", "ui"],
-    esmExternals: "loose",
-  },
-  externals: {
-    "@wagmi/core": "@wagmi/core",
-  },
-  webpack: (config) => {
-    // If a package has node.js dependencies and we want to use it client side webpack breakes. Here we surpass those errors for these packages
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      net: false,
-      os: false,
-      fs: false,
-      tls: false,
-      utils: false,
-    };
-
-    return config;
-  },
   transpilePackages: ["ui"],
+  async rewrites() {
+    return [
+      {
+        source: "/mp/decide",
+        destination: "https://decide.mixpanel.com/decide",
+      },
+      {
+        source: "/mp/:slug",
+        // use "api-eu.mixpanel.com" if you need to use EU servers
+        destination: "https://api-eu.mixpanel.com/:slug",
+      },
+    ];
+  },
 };

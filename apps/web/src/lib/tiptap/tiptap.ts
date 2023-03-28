@@ -36,7 +36,7 @@ export function getCommandExtensions() {
   const commands = COMMANDS.flatMap((group) => group.items);
   const extensions = commands.map((command) => {
     const extension = Node.create({
-      name: command.command + "Component",
+      name: command.command,
       group: command.blockType === "inline" ? "inline" : "block",
       inline: command.blockType === "inline",
       selectable: command.blockType === "block",
