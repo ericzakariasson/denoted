@@ -16,20 +16,9 @@ We built a WYSIWYG-editor with a clean and simple design to use immediately for 
 
 ## Contribution
 
-> ⚠️ This is very subject to change in order to improve developer experience. It currently requires too many steps, so abstracting this configuration is needed.
+### Custom Command
 
-If you want to contribute with your own `/command`, you can follow these steps:
-
-1. Fork repository
-2. Create new folder in `apps/web/components/commands` with the name of your command
-3. Add the following files:
-   - `command.ts` which adheres to the `CommandItemType`. Make sure the command is unique
-   - `icon.png/svg/jpg` which will be used in the command list dropdown
-   - The react component which will render the data. It should be named `Component.tsx` or the name of the integration. Check current components for examples
-4. Update the `commands.ts` to include the command
-5. Add a new folder in `apps/web/lib/tiptap/widgets` with your command. If it's an inline component you can see the `balance` components. If it's a full width block component you see the `iframe` components.
-6. Verify your command works in the editor
-7. Submit PR when you feel confident
+If you want to add a custom command, see _Adding a command_ in [web/README](https://github.com/ericzakariasson/denoted/blob/main/apps/web/README.md).
 
 ## Architecture
 
