@@ -22,6 +22,15 @@ This is a short version of running a local development, please read the official
 5. Restart the node so the updated config
 6. Deploy your ComposeDB Model to the node by opening a new terminal and run the script `yarn deploy-models`. You'll have to do this after every change you make to your models.
 
+### dotenv
+
+To pull preset `.env` containing environment variables for local development.
+
+```sh
+npx dotenv-vault login
+npx dotenv-vault pull
+```
+
 ## Read More
 
 If you're interested in learning more about Ceramic and ComposeDB you can read the docs here: https://composedb.js.org/
