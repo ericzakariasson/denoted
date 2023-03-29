@@ -11,7 +11,17 @@ if (isProductionRuntime) {
   });
 }
 
-export function track(event: string, properties?: Record<string, unknown>) {
+type EventName =
+  | "Email Signed Up"
+  | "Wallet Connected"
+  | "Wallet Disconnected"
+  | "Command Handled"
+  | "Ceramic Authenticated";
+
+export function trackEvent(
+  event: EventName,
+  properties?: Record<string, unknown>
+) {
   if (isProductionRuntime) {
     mixpanel.track(event, properties);
   }

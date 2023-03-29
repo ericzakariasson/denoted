@@ -3,7 +3,7 @@ import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
 import { DIDSession } from "did-session";
 import { useAccount } from "wagmi";
 import { InjectedConnector } from "@wagmi/core";
-import { track } from "../lib/analytics";
+import { trackEvent } from "../lib/analytics";
 
 export function useCeramic(composeClient: ComposeClient) {
   const { address } = useAccount();
@@ -47,7 +47,7 @@ export function useCeramic(composeClient: ComposeClient) {
 
     // Set our Ceramic DID to be our session DID.
     composeClient.setDID(session.did as any);
-    track("Ceramic Authenticated", {
+    trackEvent("Ceramic Authenticated", {
       fromStorage: fromLocalStorage,
     });
   }
