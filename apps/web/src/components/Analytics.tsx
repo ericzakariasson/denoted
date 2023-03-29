@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useAccount } from "wagmi";
-import { identify, page } from "../lib/analytics";
+import { identify, trackPage } from "../lib/analytics";
 
 export function Analytics() {
   const { address } = useAccount();
@@ -16,7 +16,7 @@ export function Analytics() {
 
   useEffect(() => {
     const handler = (url: string) => {
-      page(url);
+      trackPage(url);
     };
 
     router.events.on("routeChangeComplete", handler);

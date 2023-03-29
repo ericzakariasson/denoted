@@ -17,7 +17,7 @@ export function track(event: string, properties?: Record<string, unknown>) {
   }
 }
 
-export function page(url: string) {
+export function trackPage(url: string) {
   if (isProductionRuntime) {
     mixpanel.track("Page Viewed", {
       url,
