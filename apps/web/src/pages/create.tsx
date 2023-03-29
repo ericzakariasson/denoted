@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useMutation } from "react-query";
 import { useAccount } from "wagmi";
 import { Editor } from "../components/Editor";
-import { createNote } from "../composedb/note";
+import { createPage } from "../composedb/page";
 import { useCeramic } from "../hooks/useCeramic";
 import { composeClient } from "../lib/compose";
 
@@ -17,7 +17,7 @@ function getDid() {
 
 const CreatePage: NextPage = () => {
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [body, setBody] = useState("");
 
   const ceramic = useCeramic(composeClient);
 
@@ -34,7 +34,8 @@ const CreatePage: NextPage = () => {
 
   const { mutate, isLoading } = useMutation(
     async () => {
-      return await createNote(title, content, new Date().toISOString());
+      const data = JSON.stringify({ title, body });
+      return await createPage(data, new Date().toISOString());
     },
     {
       onSuccess: async ({ data, errors }) => {
@@ -46,7 +47,7 @@ const CreatePage: NextPage = () => {
           await handleAuthenticate();
         }
 
-        const id = data?.createNote?.document?.id ?? null;
+        const id = data?.createPage?.document?.id ?? null;
         if (id) {
           router.push(id);
         }
@@ -54,7 +55,7 @@ const CreatePage: NextPage = () => {
     }
   );
 
-  const isEnabled = isAuthenticated && title.length > 0 && content.length > 0;
+  const isEnabled = isAuthenticated && title.length > 0 && body.length > 0;
 
   const handleSubmit = () => {
     mutate();
@@ -93,7 +94,7 @@ const CreatePage: NextPage = () => {
           required
         />
         <Editor
-          onUpdate={(json) => setContent(JSON.stringify(JSON.stringify(json)))}
+          onUpdate={(json) => setBody(JSON.stringify(JSON.stringify(json)))}
         />
       </div>
       <button

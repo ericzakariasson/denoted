@@ -1,16 +1,10 @@
 import { GetServerSideProps, NextPage } from "next/types";
-import { useRef, useState } from "react";
 
-import { Editor } from "../components/Editor";
 import { Viewer } from "../components/Viewer";
-import { getNoteQuery } from "../composedb/note";
+import { getPageQuery, Page } from "../composedb/page";
 
 type Props = {
-  doc: {
-    id: string;
-    title: string;
-    content: string;
-  };
+  doc: Page;
   isEditor: boolean;
 };
 
@@ -23,7 +17,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     };
   }
 
-  const query = await getNoteQuery(documentId);
+  const query = await getPageQuery(documentId);
   const doc = query.data?.node;
 
   if (!doc) {
@@ -41,17 +35,18 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 };
 
 const DocumentPage: NextPage<Props> = ({ doc, isEditor }) => {
+  const { title, body } = JSON.parse(doc.data);
   return (
     <div>
       <div className="flex items-start justify-between">
-        <h1 className="mb-8 text-5xl font-bold">{doc.title}</h1>
+        <h1 className="mb-8 text-5xl font-bold">{title}</h1>
         {isEditor && (
           <span className="mb-1 inline-block rounded-full border px-2 py-0">
             owner
           </span>
         )}
       </div>
-      <Viewer json={JSON.parse(JSON.parse(doc.content))} />
+      <Viewer json={JSON.parse(JSON.parse(body))} />
     </div>
   );
 };

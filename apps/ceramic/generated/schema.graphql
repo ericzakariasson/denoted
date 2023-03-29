@@ -1,0 +1,188 @@
+type Query {
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  pageIndex(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+  ): PageConnection
+}
+
+"""An object with an ID"""
+interface Node {
+  """The id of the object."""
+  id: ID!
+}
+
+type CeramicAccount implements Node {
+  """Globally unique identifier of the account (DID string)"""
+  id: ID!
+
+  """
+  Whether the Ceramic instance is currently authenticated with this account or not
+  """
+  isViewer: Boolean!
+  pageList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+  ): PageConnection
+}
+
+"""A connection to a list of items."""
+type PageConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [PageEdge]
+}
+
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+}
+
+"""An edge in a connection."""
+type PageEdge {
+  """The item at the end of the edge"""
+  node: Page
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type Page implements Node {
+  id: ID!
+  data: String!
+  type: PageType
+  createdAt: DateTime!
+  deletedAt: DateTime
+  updatedAt: DateTime
+
+  """Current version of the document"""
+  version: CeramicCommitID!
+
+  """Account controlling the document"""
+  createdBy: CeramicAccount!
+
+  """Account controlling the document"""
+  deletedBy: CeramicAccount!
+
+  """Account controlling the document"""
+  updatedBy: CeramicAccount!
+}
+
+enum PageType {
+  COLLECTION
+  PAGE
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+"""A Ceramic Commit ID"""
+scalar CeramicCommitID @specifiedBy(url: "https://github.com/ceramicnetwork/CIP/blob/main/CIPs/CIP-59/CIP-59.md#commitid")
+
+type Mutation {
+  createPage(input: CreatePageInput!): CreatePagePayload
+  updatePage(input: UpdatePageInput!): UpdatePagePayload
+}
+
+type CreatePagePayload {
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: Page!
+  clientMutationId: String
+}
+
+input CreatePageInput {
+  content: PageInput!
+  clientMutationId: String
+}
+
+input PageInput {
+  data: String!
+  type: PageType
+  createdAt: DateTime!
+  deletedAt: DateTime
+  updatedAt: DateTime
+}
+
+type UpdatePagePayload {
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: Page!
+  clientMutationId: String
+}
+
+input UpdatePageInput {
+  id: ID!
+  content: PartialPageInput!
+  options: UpdateOptionsInput
+  clientMutationId: String
+}
+
+input PartialPageInput {
+  data: String
+  type: PageType
+  createdAt: DateTime
+  deletedAt: DateTime
+  updatedAt: DateTime
+}
+
+input UpdateOptionsInput {
+  """
+  Fully replace the document contents instead of performing a shallow merge
+  """
+  replace: Boolean = false
+
+  """Only perform mutation if the document matches the provided version"""
+  version: CeramicCommitID
+}
