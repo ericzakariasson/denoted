@@ -2,6 +2,7 @@ import { Extension } from "@tiptap/core";
 import Suggestion from "@tiptap/suggestion";
 import { CommandContext } from "../../../components/CommandList";
 import { CommandConfiguration } from "../../../components/commands/types";
+import { trackEvent } from "../../analytics";
 import { getCommandInsertAction } from "../tiptap";
 
 export const Command = Extension.create({
@@ -18,6 +19,9 @@ export const Command = Extension.create({
         }: CommandContext & { props: CommandConfiguration<T> }) => {
           const insert = getCommandInsertAction(props);
           insert({ editor, range });
+          trackEvent("Command Handled", {
+            command: props.command,
+          });
         },
       },
     };

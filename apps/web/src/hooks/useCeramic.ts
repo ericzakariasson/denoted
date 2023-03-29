@@ -3,6 +3,7 @@ import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
 import { DIDSession } from "did-session";
 import { useAccount } from "wagmi";
 import { InjectedConnector } from "@wagmi/core";
+import { trackEvent } from "../lib/analytics";
 
 export function useCeramic(composeClient: ComposeClient) {
   const { address } = useAccount();
@@ -13,6 +14,7 @@ export function useCeramic(composeClient: ComposeClient) {
     if (!address) {
       throw new Error("Address is undefined");
     }
+    let fromLocalStorage = true;
     const provider = await connector.getProvider();
 
     // for production you will want a better place than localStorage for your sessions.
@@ -24,6 +26,7 @@ export function useCeramic(composeClient: ComposeClient) {
     }
 
     if (!session || (session.hasSession && session.isExpired)) {
+      fromLocalStorage = false;
       const accountId = await getAccountId(provider, address);
       const authMethod = await EthereumWebAuth.getAuthMethod(
         provider,
@@ -44,6 +47,9 @@ export function useCeramic(composeClient: ComposeClient) {
 
     // Set our Ceramic DID to be our session DID.
     composeClient.setDID(session.did as any);
+    trackEvent("Ceramic Authenticated", {
+      fromStorage: fromLocalStorage,
+    });
   }
   return { authenticate };
 }

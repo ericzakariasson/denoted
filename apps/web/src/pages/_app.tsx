@@ -1,13 +1,12 @@
+import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
 import "../styles/globals.css";
-import { Analytics } from "@vercel/analytics/react";
 
 import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
 import type { AppProps } from "next/app";
-import React from "react";
-import { Hydrate } from "react-query";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
+import { Analytics } from "../components/Analytics";
 import { Navbar } from "../components/Navbar";
 import WagmiProvider from "../components/Web3Provider";
 
@@ -25,6 +24,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             <Component {...pageProps} />
           </main>
           <Analytics />
+          <VercelAnalytics />
         </WagmiProvider>
       </Hydrate>
     </QueryClientProvider>

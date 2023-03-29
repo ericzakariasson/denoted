@@ -8,6 +8,7 @@ import Link from "next/link";
 import * as Form from "@radix-ui/react-form";
 import { useMutation } from "react-query";
 import Head from "next/head";
+import { trackEvent } from "../lib/analytics";
 
 type Props = {};
 
@@ -40,6 +41,8 @@ const Page: NextPage<Props> = ({}) => {
     });
 
     const result = await response.json();
+
+    trackEvent("Email Signed Up");
 
     return result;
   });
