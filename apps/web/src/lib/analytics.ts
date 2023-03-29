@@ -1,5 +1,6 @@
 import mixpanel from "mixpanel-browser";
 import { getBaseUrl } from "../utils/base-url";
+import { sha256 } from "../utils/hash";
 
 // `NODE_ENV` will be `production` in Vercel Preview and Production environment. Set `NODE_ENV=production` if you want to test locally
 const isProductionRuntime = process.env.NODE_ENV === "production";
@@ -7,7 +8,6 @@ const isProductionRuntime = process.env.NODE_ENV === "production";
 if (isProductionRuntime) {
   mixpanel.init(process.env.NEXT_PUBLIC_MIXPANEL_TOKEN as string, {
     api_host: `${getBaseUrl()}/mp`,
-    debug: !isProductionRuntime,
   });
 }
 
@@ -35,8 +35,9 @@ export function trackPage(url: string) {
   }
 }
 
-export function identify(identifier: string) {
+export async function identify(identifier: string) {
   if (isProductionRuntime) {
-    mixpanel.identify(identifier);
+    const hashedIdentifier = await sha256(identifier);
+    mixpanel.identify(hashedIdentifier);
   }
 }
