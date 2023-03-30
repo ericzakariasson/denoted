@@ -1,19 +1,13 @@
 import { useRouter } from "next/router";
 import { NextPage } from "next/types";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation } from "react-query";
 import { useAccount } from "wagmi";
 import { Editor } from "../components/Editor";
 import { createPage } from "../composedb/page";
 import { useCeramic } from "../hooks/useCeramic";
 import { composeClient } from "../lib/compose";
-
-function getDid() {
-  return typeof localStorage === "undefined"
-    ? null
-    : localStorage.getItem("did");
-}
 
 const CreatePage: NextPage = () => {
   const [title, setTitle] = useState("");
@@ -25,7 +19,7 @@ const CreatePage: NextPage = () => {
 
   const router = useRouter();
 
-  const [isAuthenticated, setAuthenticated] = useState(() => Boolean(getDid()));
+  const [isAuthenticated, setAuthenticated] = useState(false);
 
   async function handleAuthenticate() {
     await ceramic.authenticate();
