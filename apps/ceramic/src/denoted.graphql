@@ -3,9 +3,15 @@ enum PageType {
   PAGE
 }
 
+enum PageVisibility {
+  PRIVATE
+  PUBLIC
+}
+
 type Page @createModel(accountRelation: LIST, description: "Page Object") {
   data: String! @string(maxLength: 2000000000)
   type: PageType!
+  visibility: PageVisibility!
   version: CommitID! @documentVersion
   createdBy: DID! @documentAccount
   createdAt: DateTime!

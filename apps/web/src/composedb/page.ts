@@ -6,10 +6,12 @@ type DID = {
 };
 
 type PageType = "COLLECTION" | "PAGE";
+type PageVisibility = "PRIVATE" | "PUBLIC";
 
 export type Page = {
   id: string;
   type: PageType;
+  visibility: PageVisibility;
   data: string;
   createdBy: DID;
   createdAt: string;
@@ -39,7 +41,14 @@ export async function createPage(data: string, createdAt: string) {
         }
       }
     `,
-    { content: { data, type: "PAGE", createdAt } }
+    {
+      content: {
+        data,
+        type: "PAGE",
+        visibility: "PUBLIC",
+        createdAt,
+      },
+    }
   );
 }
 
@@ -58,6 +67,8 @@ export async function getPagesQuery() {
         edges {
           node {
             id
+            type
+            visibility
             data
             createdBy {
               id
@@ -81,6 +92,8 @@ export async function getPageQuery(id: string) {
         node(id: $id) {
           ... on Page {
             id
+            type
+            visibility
             data
             createdBy {
               id
