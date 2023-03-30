@@ -7,7 +7,7 @@ type Query {
 
   """Account currently authenticated on the Ceramic instance, if set"""
   viewer: CeramicAccount
-  profileIndex(
+  pageIndex(
     """Returns the items in the list that come after the specified cursor."""
     after: String
 
@@ -19,7 +19,7 @@ type Query {
 
     """Returns the last n items from the list."""
     last: Int
-  ): ProfileConnection
+  ): PageConnection
 }
 
 """An object with an ID"""
@@ -36,22 +36,28 @@ type CeramicAccount implements Node {
   Whether the Ceramic instance is currently authenticated with this account or not
   """
   isViewer: Boolean!
-  profile: Profile
-}
+  pageList(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
 
-type Profile implements Node {
-  id: ID!
-  name: String
-  address: String!
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+  ): PageConnection
 }
 
 """A connection to a list of items."""
-type ProfileConnection {
+type PageConnection {
   """Information to aid in pagination."""
   pageInfo: PageInfo!
 
   """A list of edges."""
-  edges: [ProfileEdge]
+  edges: [PageEdge]
 }
 
 """Information about pagination in a connection."""
@@ -70,65 +76,113 @@ type PageInfo {
 }
 
 """An edge in a connection."""
-type ProfileEdge {
+type PageEdge {
   """The item at the end of the edge"""
-  node: Profile
+  node: Page
 
   """A cursor for use in pagination"""
   cursor: String!
 }
 
-type Mutation {
-  createProfile(input: CreateProfileInput!): CreateProfilePayload
-  updateProfile(input: UpdateProfileInput!): UpdateProfilePayload
-}
-
-type CreateProfilePayload {
-  """Fetches an object given its ID"""
-  node(
-    """The ID of an object"""
-    id: ID!
-  ): Node
-
-  """Account currently authenticated on the Ceramic instance, if set"""
-  viewer: CeramicAccount
-  document: Profile!
-  clientMutationId: String
-}
-
-input CreateProfileInput {
-  content: ProfileInput!
-  clientMutationId: String
-}
-
-input ProfileInput {
-  name: String
-  address: String!
-}
-
-type UpdateProfilePayload {
-  """Fetches an object given its ID"""
-  node(
-    """The ID of an object"""
-    id: ID!
-  ): Node
-
-  """Account currently authenticated on the Ceramic instance, if set"""
-  viewer: CeramicAccount
-  document: Profile!
-  clientMutationId: String
-}
-
-input UpdateProfileInput {
+type Page implements Node {
   id: ID!
-  content: PartialProfileInput!
+  data: String!
+  type: PageType
+  createdAt: DateTime!
+  deletedAt: DateTime
+  updatedAt: DateTime
+  visibility: PageVisibility
+
+  """Current version of the document"""
+  version: CeramicCommitID!
+
+  """Account controlling the document"""
+  createdBy: CeramicAccount!
+
+  """Account controlling the document"""
+  deletedBy: CeramicAccount!
+
+  """Account controlling the document"""
+  updatedBy: CeramicAccount!
+}
+
+enum PageType {
+  COLLECTION
+  PAGE
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+enum PageVisibility {
+  PRIVATE
+  PUBLIC
+}
+
+"""A Ceramic Commit ID"""
+scalar CeramicCommitID @specifiedBy(url: "https://github.com/ceramicnetwork/CIP/blob/main/CIPs/CIP-59/CIP-59.md#commitid")
+
+type Mutation {
+  createPage(input: CreatePageInput!): CreatePagePayload
+  updatePage(input: UpdatePageInput!): UpdatePagePayload
+}
+
+type CreatePagePayload {
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: Page!
+  clientMutationId: String
+}
+
+input CreatePageInput {
+  content: PageInput!
+  clientMutationId: String
+}
+
+input PageInput {
+  data: String!
+  type: PageType
+  createdAt: DateTime!
+  deletedAt: DateTime
+  updatedAt: DateTime
+  visibility: PageVisibility
+}
+
+type UpdatePagePayload {
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Account currently authenticated on the Ceramic instance, if set"""
+  viewer: CeramicAccount
+  document: Page!
+  clientMutationId: String
+}
+
+input UpdatePageInput {
+  id: ID!
+  content: PartialPageInput!
   options: UpdateOptionsInput
   clientMutationId: String
 }
 
-input PartialProfileInput {
-  name: String
-  address: String
+input PartialPageInput {
+  data: String
+  type: PageType
+  createdAt: DateTime
+  deletedAt: DateTime
+  updatedAt: DateTime
+  visibility: PageVisibility
 }
 
 input UpdateOptionsInput {
@@ -140,6 +194,3 @@ input UpdateOptionsInput {
   """Only perform mutation if the document matches the provided version"""
   version: CeramicCommitID
 }
-
-"""A Ceramic Commit ID"""
-scalar CeramicCommitID @specifiedBy(url: "https://github.com/ceramicnetwork/CIP/blob/main/CIPs/CIP-59/CIP-59.md#commitid")

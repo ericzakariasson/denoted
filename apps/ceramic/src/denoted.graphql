@@ -1,13 +1,16 @@
-type Profile
-  @createModel(accountRelation: SINGLE, description: "Simple user profile") {
-  address: String! @string(minLength: 42, maxLength: 42)
-  name: String @string(maxLength: 32)
+enum PageType {
+  COLLECTION
+  PAGE
 }
 
-type Note @createModel(accountRelation: LIST, description: "Simple text note") {
-  author: DID! @documentAccount
+type Page @createModel(accountRelation: LIST, description: "Page Object") {
+  data: String! @string(maxLength: 2000000000)
+  type: PageType!
   version: CommitID! @documentVersion
-  title: String! @string(minLength: 1, maxLength: 100)
-  content: String! @string(maxLength: 2000)
+  createdBy: DID! @documentAccount
   createdAt: DateTime!
+  updatedBy: DID @documentAccount
+  updatedAt: DateTime
+  deletedBy: DID @documentAccount
+  deletedAt: DateTime
 }

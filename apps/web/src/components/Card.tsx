@@ -1,16 +1,17 @@
-import { formatEthAddress } from "../utils/index";
+import Link from "next/link";
+import Blockies from "react-blockies";
 import TimeAgo from "react-timeago";
 import { useEnsName } from "wagmi";
-import Blockies from "react-blockies";
-import Link from "next/link";
-import { Note } from "../composedb/note";
+import { Page } from "../composedb/page";
+import { formatEthAddress } from "../utils/index";
 
 type CardProps = {
-  doc: Note;
+  doc: Page;
 };
 
 export const Card = ({ doc }: CardProps) => {
-  const address = doc.author.id.split(":")[4];
+  const { title } = JSON.parse(doc.data);
+  const address = doc.createdBy.id.split(":")[4];
   const { data: ensName } = useEnsName({
     address,
   });
@@ -19,7 +20,7 @@ export const Card = ({ doc }: CardProps) => {
     <Link href={`/${doc.id}`}>
       <div className="flex flex-col justify-between gap-4 rounded-xl border border-gray-700 bg-white p-5">
         <div className="flex flex-col items-start">
-          <p className="mb-1 text-lg font-medium">{doc.title}</p>
+          <p className="mb-1 text-lg font-medium">{title}</p>
           <p className="text-gray-400">
             <TimeAgo date={new Date(doc.createdAt)} />
           </p>

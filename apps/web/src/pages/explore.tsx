@@ -1,14 +1,14 @@
 import { GetServerSideProps, NextPage } from "next";
 import { Card } from "../components/Card";
-import { getNotesQuery, Note } from "../composedb/note";
+import { getPagesQuery, Page } from "../composedb/page";
 
 type Props = {
-  documents: Note[];
+  documents: Page[];
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async () => {
-  const query = await getNotesQuery();
-  const documents = query.data?.noteIndex?.edges.map((edge) => edge.node) ?? [];
+  const query = await getPagesQuery();
+  const documents = query.data?.pageIndex?.edges.map((edge) => edge.node) ?? [];
 
   return {
     props: {
