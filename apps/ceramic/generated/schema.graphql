@@ -1,88 +1,197 @@
 type Query {
-  """Fetches an object given its ID"""
+  """
+  Fetches an object given its ID
+  """
   node(
-    """The ID of an object"""
+    """
+    The ID of an object
+    """
     id: ID!
   ): Node
 
-  """Account currently authenticated on the Ceramic instance, if set"""
+  """
+  Account currently authenticated on the Ceramic instance, if set
+  """
   viewer: CeramicAccount
-  pageIndex(
-    """Returns the items in the list that come after the specified cursor."""
+  blockNodeIndex(
+    """
+    Returns the items in the list that come after the specified cursor.
+    """
     after: String
 
-    """Returns the first n items from the list."""
+    """
+    Returns the first n items from the list.
+    """
     first: Int
 
-    """Returns the items in the list that come before the specified cursor."""
+    """
+    Returns the items in the list that come before the specified cursor.
+    """
     before: String
 
-    """Returns the last n items from the list."""
+    """
+    Returns the last n items from the list.
+    """
+    last: Int
+  ): BlockNodeConnection
+  pageIndex(
+    """
+    Returns the items in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the first n items from the list.
+    """
+    first: Int
+
+    """
+    Returns the items in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the last n items from the list.
+    """
     last: Int
   ): PageConnection
 }
 
-"""An object with an ID"""
+"""
+An object with an ID
+"""
 interface Node {
-  """The id of the object."""
+  """
+  The id of the object.
+  """
   id: ID!
 }
 
 type CeramicAccount implements Node {
-  """Globally unique identifier of the account (DID string)"""
+  """
+  Globally unique identifier of the account (DID string)
+  """
   id: ID!
 
   """
   Whether the Ceramic instance is currently authenticated with this account or not
   """
   isViewer: Boolean!
-  pageList(
-    """Returns the items in the list that come after the specified cursor."""
+  blockNodeList(
+    """
+    Returns the items in the list that come after the specified cursor.
+    """
     after: String
 
-    """Returns the first n items from the list."""
+    """
+    Returns the first n items from the list.
+    """
     first: Int
 
-    """Returns the items in the list that come before the specified cursor."""
+    """
+    Returns the items in the list that come before the specified cursor.
+    """
     before: String
 
-    """Returns the last n items from the list."""
+    """
+    Returns the last n items from the list.
+    """
+    last: Int
+  ): BlockNodeConnection
+  pageList(
+    """
+    Returns the items in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the first n items from the list.
+    """
+    first: Int
+
+    """
+    Returns the items in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the last n items from the list.
+    """
     last: Int
   ): PageConnection
 }
 
-"""A connection to a list of items."""
-type PageConnection {
-  """Information to aid in pagination."""
+"""
+A connection to a list of items.
+"""
+type BlockNodeConnection {
+  """
+  Information to aid in pagination.
+  """
   pageInfo: PageInfo!
 
-  """A list of edges."""
-  edges: [PageEdge]
+  """
+  A list of edges.
+  """
+  edges: [BlockNodeEdge]
 }
 
-"""Information about pagination in a connection."""
+"""
+Information about pagination in a connection.
+"""
 type PageInfo {
-  """When paginating forwards, are there more items?"""
+  """
+  When paginating forwards, are there more items?
+  """
   hasNextPage: Boolean!
 
-  """When paginating backwards, are there more items?"""
+  """
+  When paginating backwards, are there more items?
+  """
   hasPreviousPage: Boolean!
 
-  """When paginating backwards, the cursor to continue."""
+  """
+  When paginating backwards, the cursor to continue.
+  """
   startCursor: String
 
-  """When paginating forwards, the cursor to continue."""
+  """
+  When paginating forwards, the cursor to continue.
+  """
   endCursor: String
 }
 
-"""An edge in a connection."""
-type PageEdge {
-  """The item at the end of the edge"""
-  node: Page
+"""
+An edge in a connection.
+"""
+type BlockNodeEdge {
+  """
+  The item at the end of the edge
+  """
+  node: BlockNode
 
-  """A cursor for use in pagination"""
+  """
+  A cursor for use in pagination
+  """
   cursor: String!
 }
+
+type BlockNode implements Node {
+  id: ID!
+  type: String!
+  attrs: String
+  marks: String
+  pageId: CeramicStreamID
+  page: Page
+}
+
+"""
+A Ceramic Stream ID
+"""
+scalar CeramicStreamID
+  @specifiedBy(
+    url: "https://github.com/ceramicnetwork/CIP/blob/main/CIPs/CIP-59/CIP-59.md#streamid"
+  )
 
 type Page implements Node {
   id: ID!
@@ -91,19 +200,52 @@ type Page implements Node {
   createdAt: DateTime!
   deletedAt: DateTime
   updatedAt: DateTime
-  visibility: PageVisibility
 
-  """Current version of the document"""
+  """
+  Current version of the document
+  """
   version: CeramicCommitID!
 
-  """Account controlling the document"""
+  """
+  Account controlling the document
+  """
   createdBy: CeramicAccount!
 
-  """Account controlling the document"""
+  """
+  Account controlling the document
+  """
   deletedBy: CeramicAccount!
 
-  """Account controlling the document"""
+  """
+  Account controlling the document
+  """
   updatedBy: CeramicAccount!
+  blockNodes(
+    """
+    Returns the items in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the first n items from the list.
+    """
+    first: Int
+
+    """
+    Returns the items in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the last n items from the list.
+    """
+    last: Int
+
+    """
+    Returns only documents created by the provided account
+    """
+    account: ID
+  ): BlockNodeConnection!
 }
 
 enum PageType {
@@ -116,27 +258,141 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
-enum PageVisibility {
-  PRIVATE
-  PUBLIC
+"""
+A Ceramic Commit ID
+"""
+scalar CeramicCommitID
+  @specifiedBy(
+    url: "https://github.com/ceramicnetwork/CIP/blob/main/CIPs/CIP-59/CIP-59.md#commitid"
+  )
+
+"""
+A connection to a list of items.
+"""
+type PageConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  A list of edges.
+  """
+  edges: [PageEdge]
 }
 
-"""A Ceramic Commit ID"""
-scalar CeramicCommitID @specifiedBy(url: "https://github.com/ceramicnetwork/CIP/blob/main/CIPs/CIP-59/CIP-59.md#commitid")
+"""
+An edge in a connection.
+"""
+type PageEdge {
+  """
+  The item at the end of the edge
+  """
+  node: Page
+
+  """
+  A cursor for use in pagination
+  """
+  cursor: String!
+}
 
 type Mutation {
+  createBlockNode(input: CreateBlockNodeInput!): CreateBlockNodePayload
+  updateBlockNode(input: UpdateBlockNodeInput!): UpdateBlockNodePayload
   createPage(input: CreatePageInput!): CreatePagePayload
   updatePage(input: UpdatePageInput!): UpdatePagePayload
 }
 
-type CreatePagePayload {
-  """Fetches an object given its ID"""
+type CreateBlockNodePayload {
+  """
+  Fetches an object given its ID
+  """
   node(
-    """The ID of an object"""
+    """
+    The ID of an object
+    """
     id: ID!
   ): Node
 
-  """Account currently authenticated on the Ceramic instance, if set"""
+  """
+  Account currently authenticated on the Ceramic instance, if set
+  """
+  viewer: CeramicAccount
+  document: BlockNode!
+  clientMutationId: String
+}
+
+input CreateBlockNodeInput {
+  content: BlockNodeInput!
+  clientMutationId: String
+}
+
+input BlockNodeInput {
+  type: String!
+  attrs: String
+  marks: String
+  pageId: CeramicStreamID
+}
+
+type UpdateBlockNodePayload {
+  """
+  Fetches an object given its ID
+  """
+  node(
+    """
+    The ID of an object
+    """
+    id: ID!
+  ): Node
+
+  """
+  Account currently authenticated on the Ceramic instance, if set
+  """
+  viewer: CeramicAccount
+  document: BlockNode!
+  clientMutationId: String
+}
+
+input UpdateBlockNodeInput {
+  id: ID!
+  content: PartialBlockNodeInput!
+  options: UpdateOptionsInput
+  clientMutationId: String
+}
+
+input PartialBlockNodeInput {
+  type: String
+  attrs: String
+  marks: String
+  pageId: CeramicStreamID
+}
+
+input UpdateOptionsInput {
+  """
+  Fully replace the document contents instead of performing a shallow merge
+  """
+  replace: Boolean = false
+
+  """
+  Only perform mutation if the document matches the provided version
+  """
+  version: CeramicCommitID
+}
+
+type CreatePagePayload {
+  """
+  Fetches an object given its ID
+  """
+  node(
+    """
+    The ID of an object
+    """
+    id: ID!
+  ): Node
+
+  """
+  Account currently authenticated on the Ceramic instance, if set
+  """
   viewer: CeramicAccount
   document: Page!
   clientMutationId: String
@@ -153,17 +409,22 @@ input PageInput {
   createdAt: DateTime!
   deletedAt: DateTime
   updatedAt: DateTime
-  visibility: PageVisibility
 }
 
 type UpdatePagePayload {
-  """Fetches an object given its ID"""
+  """
+  Fetches an object given its ID
+  """
   node(
-    """The ID of an object"""
+    """
+    The ID of an object
+    """
     id: ID!
   ): Node
 
-  """Account currently authenticated on the Ceramic instance, if set"""
+  """
+  Account currently authenticated on the Ceramic instance, if set
+  """
   viewer: CeramicAccount
   document: Page!
   clientMutationId: String
@@ -182,15 +443,4 @@ input PartialPageInput {
   createdAt: DateTime
   deletedAt: DateTime
   updatedAt: DateTime
-  visibility: PageVisibility
-}
-
-input UpdateOptionsInput {
-  """
-  Fully replace the document contents instead of performing a shallow merge
-  """
-  replace: Boolean = false
-
-  """Only perform mutation if the document matches the provided version"""
-  version: CeramicCommitID
 }

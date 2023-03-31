@@ -4,7 +4,7 @@ enum PageType {
 }
 
 type Page @createModel(accountRelation: LIST, description: "Page Object") {
-  data: String! @string(maxLength: 2000000000)
+  key: String @string(maxLength: 256)
   type: PageType!
   version: CommitID! @documentVersion
   createdBy: DID! @documentAccount

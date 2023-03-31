@@ -4,26 +4,23 @@
   "main": "generated/*",
   "types": "generated/*",
   "license": "MIT",
+  "type": "module",
   "scripts": {
-    "node:local": "CERAMIC_ENABLE_EXPERIMENTAL_SYNC='true' CERAMIC_ENABLE_EXPERIMENTAL_COMPOSE_DB='true' npx @ceramicnetwork/cli daemon --network inmemory",
-    "node:testnet": "CERAMIC_ENABLE_EXPERIMENTAL_COMPOSE_DB=true npx @ceramicnetwork/cli daemon --network=testnet-clay",
-    "definitions": "source .env.local && composedb composite:compile ./generated/denoted-composite.json ../web/src/composedb/definition.ts -c $CERAMIC_API_URL",
-    "schema": "source .env.local && composedb composite:create src/denoted.graphql --did-private-key=$DID_PRIVATE_KEY --output=./generated/denoted-composite.json -c $CERAMIC_API_URL",
-    "schema:view": "composedb graphql:schema runtime-composite.json --output=./generated/schema.graphql",
-    "deploy": "source .env.local && composedb composite:deploy ./generated/denoted-composite.json --did-private-key=$DID_PRIVATE_KEY -c $CERAMIC_API_URL",
-    "compile": "source .env.local && composedb composite:compile ./generated/denoted-composite.json runtime-composite.json --did-private-key=$DID_PRIVATE_KEY -c $CERAMIC_API_URL",
-    "graphql": "source .env.local && composedb graphql:server --graphiql --port=5001 runtime-composite.json --did-private-key=$DID_PRIVATE_KEY -c $CERAMIC_API_URL",
-    "deploy-models:local": "source .env.local && yarn schema && yarn deploy && yarn compile && yarn definitions",
-    "deploy-models:production": "source .env.local && yarn schema && yarn deploy && yarn compile && yarn definitions",
-    "up:local": "docker-compose --env-file .env.local up"
+    "generate-graphql-schema": "composedb graphql:schema ./generated/runtime-composite.json --output=./generated/schema.graphql",
+    "start-graphql-playground": "source .env && composedb graphql:server --graphiql --port=5001 ./generated/runtime-composite.json --did-private-key=$DID_PRIVATE_KEY -c $CERAMIC_API_URL",
+    "generate-definitions": "composedb composite:compile ./generated/denoted-composite.json ../web/src/composedb/definition.ts",
+    "compile-composite": "composedb composite:compile ./generated/denoted-composite.json ./generated/runtime-composite.json",
+    "deploy-models": "npx ts-node --esm src/deploy-models.ts && yarn compile-composite && yarn generate-definitions"
   },
   "devDependencies": {
     "@ceramicnetwork/cli": "^2.22.0",
     "@composedb/devtools": "^0.4.0",
     "@composedb/devtools-node": "^0.4.0",
-    "@composedb/types": "^0.4.0"
+    "@composedb/types": "^0.4.0",
+    "ts-node": "^10.9.1"
   },
   "dependencies": {
+    "@ceramicnetwork/http-client": "2.20.0",
     "@composedb/cli": "^0.4.0",
     "@didtools/pkh-ethereum": "^0.1.0",
     "did-session": "^2.0.0"

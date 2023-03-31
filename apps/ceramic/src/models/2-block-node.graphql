@@ -1,0 +1,16 @@
+type Page
+  @loadModel(
+    id: "kjzl6hvfrbw6c5wtiw2a3z9ym8ph5wqhhx9t3wif1qr9123stnhj1y06t8ruqe1"
+  ) {
+  id: ID!
+}
+
+type BlockNode
+  @createModel(accountRelation: LIST, description: "BlockNode Object") {
+  pageId: StreamID @documentReference(model: "Page")
+  page: Page @relationDocument(property: "pageId")
+  content: String! @string(maxLength: 1000000)
+  type: String! @string(maxLength: 1000000)
+  attrs: String @string(maxLength: 1000000)
+  marks: String @string(maxLength: 1000000)
+}
