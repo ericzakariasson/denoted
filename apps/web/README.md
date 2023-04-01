@@ -16,7 +16,7 @@ npx dotenv-vault pull
 
 ## Adding a command
 
-> ⚠️ NOTE: This is very subject to change in order to improve developer experience
+> ⚠️ NOTE: This is likely subject to change in order to improve developer experience
 
 If you want to contribute with your own `/command`, you can follow these steps:
 
