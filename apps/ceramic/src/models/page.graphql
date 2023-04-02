@@ -1,8 +1,3 @@
-enum PageType {
-  COLLECTION
-  PAGE
-}
-
 type PageNode {
   type: String! @string(maxLength: 1000000)
   content: String! @string(maxLength: 1000000)
@@ -11,14 +6,15 @@ type PageNode {
 }
 
 type Page @createModel(accountRelation: LIST, description: "Page Object") {
-  type: PageType!
-  title: String! @string(maxLength: 128)
+  type: String! @string(maxLength: 1000000) # using string to allow encryption
+  key: String @string(maxLength: 1024)
+  title: String! @string(maxLength: 1000000)
   data: [PageNode!] @list(maxLength: 100000)
   version: CommitID! @documentVersion
   createdBy: DID! @documentAccount
-  createdAt: DateTime!
+  createdAt: String! @string(maxLength: 1000000)
   updatedBy: DID @documentAccount
-  updatedAt: DateTime
+  updatedAt: String @string(maxLength: 1000000)
   deletedBy: DID @documentAccount
-  deletedAt: DateTime
+  deletedAt: String @string(maxLength: 1000000)
 }
