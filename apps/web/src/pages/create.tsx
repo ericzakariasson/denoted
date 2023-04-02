@@ -7,9 +7,9 @@ import { useMutation } from "react-query";
 import { useAccount } from "wagmi";
 import { Editor } from "../components/Editor";
 import { createPage } from "../composedb/page";
-import { serializePageNode } from "../composedb/page-node";
 import { useCeramic } from "../hooks/useCeramic";
 import { composeClient } from "../lib/compose";
+import { encryptPage, serializePage } from "../utils/page-helper";
 
 const CreatePage: NextPage = () => {
   const [title, setTitle] = useState("");
@@ -28,14 +28,33 @@ const CreatePage: NextPage = () => {
     setAuthenticated(true);
   }
 
+  const { address } = useAccount();
+
+  const [isPublic, setPublic] = useState(false);
+
   const { mutate, isLoading } = useMutation(
     async () => {
-      const pageNodes =
-        json?.content?.map((node) => serializePageNode(node)) ?? [];
-      return await createPage(title, pageNodes, new Date().toISOString());
+      const pageInput = serializePage(
+        "PAGE",
+        title,
+        json?.content ?? [],
+        new Date()
+      );
+
+      if (isPublic) {
+        return await createPage(pageInput);
+      }
+
+      const encryptedPageInput = await encryptPage(pageInput, address!);
+      console.log(encryptedPageInput);
+      return await createPage(encryptedPageInput);
     },
     {
+      onError: (error) => {
+        console.error("Create error", error);
+      },
       onSuccess: async ({ data, errors }) => {
+        console.log(data, errors);
         const isNotAuthenticated = errors?.some((error) =>
           error.message.includes("Ceramic instance is not authenticated")
         );

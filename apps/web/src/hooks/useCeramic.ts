@@ -1,8 +1,8 @@
 import { ComposeClient } from "@composedb/client";
 import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
+import { InjectedConnector } from "@wagmi/core";
 import { DIDSession } from "did-session";
 import { useAccount } from "wagmi";
-import { InjectedConnector } from "@wagmi/core";
 import { trackEvent } from "../lib/analytics";
 
 export function useCeramic(composeClient: ComposeClient) {

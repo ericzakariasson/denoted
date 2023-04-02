@@ -1,9 +1,11 @@
 import { JSONContent } from "@tiptap/react";
 import { GetServerSideProps, NextPage } from "next/types";
 
+import { useCallback, useEffect, useState } from "react";
+import { useAccount } from "wagmi";
 import { Viewer } from "../components/Viewer";
 import { getPageQuery, Page } from "../composedb/page";
-import { parsePageNode } from "../composedb/page-node";
+import { decryptPage, deserializePage } from "../utils/page-helper";
 
 type Props = {
   page: Page;
@@ -36,18 +38,40 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   };
 };
 
-const DocumentPage: NextPage<Props> = ({ page, isEditor }) => {
-  const pageNodes = page.data.map((pageNode) => parsePageNode(pageNode));
+const DocumentPage: NextPage<Props> = ({ page: initialPage, isEditor }) => {
+  const [page, setPage] = useState<ReturnType<typeof deserializePage> | null>(
+    null
+  );
+  const { address } = useAccount();
+
+  const handlePageLoad = useCallback(async () => {
+    if (!initialPage.key) {
+      const deserializedPage = deserializePage(initialPage);
+      setPage(deserializedPage);
+    }
+
+    if (!address) {
+      return;
+    }
+
+    const decryptedPage = await decryptPage(initialPage, address);
+    const deserializedPage = deserializePage(decryptedPage);
+    setPage(deserializedPage);
+  }, [initialPage, address]);
+
+  useEffect(() => {
+    handlePageLoad();
+  }, [initialPage, handlePageLoad]);
 
   const json: JSONContent = {
     type: "doc",
-    content: pageNodes,
+    content: page?.data ?? [],
   };
 
   return (
     <div>
       <div className="flex items-start justify-between">
-        <h1 className="mb-8 text-5xl font-bold">{page.title}</h1>
+        <h1 className="mb-8 text-5xl font-bold">{page?.title}</h1>
         {isEditor && (
           <span className="mb-1 inline-block rounded-full border px-2 py-0">
             owner
