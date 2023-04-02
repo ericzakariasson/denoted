@@ -10,7 +10,7 @@
     "start-graphql-playground": "source .env && composedb graphql:server --graphiql --port=5001 ./generated/runtime-composite.json --did-private-key=$DID_PRIVATE_KEY -c $CERAMIC_API_URL",
     "generate-definitions": "composedb composite:compile ./generated/denoted-composite.json ../web/src/composedb/definition.ts",
     "compile-composite": "composedb composite:compile ./generated/denoted-composite.json ./generated/runtime-composite.json",
-    "deploy-models": "npx ts-node --esm src/deploy-models.ts && yarn compile-composite && yarn generate-definitions"
+    "deploy-models": "npx ts-node --esm src/deploy-models.ts && yarn compile-composite && yarn generate-definitions && yarn generate-graphql-schema"
   },
   "devDependencies": {
     "@ceramicnetwork/cli": "^2.22.0",

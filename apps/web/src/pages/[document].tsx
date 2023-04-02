@@ -1,26 +1,28 @@
+import { JSONContent } from "@tiptap/react";
 import { GetServerSideProps, NextPage } from "next/types";
 
 import { Viewer } from "../components/Viewer";
 import { getPageQuery, Page } from "../composedb/page";
+import { parsePageNode } from "../composedb/page-node";
 
 type Props = {
-  doc: Page;
+  page: Page;
   isEditor: boolean;
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
-  const documentId = ctx.params?.document?.toString();
+  const pageId = ctx.params?.document?.toString();
 
-  if (!documentId) {
+  if (!pageId) {
     return {
       notFound: true,
     };
   }
 
-  const query = await getPageQuery(documentId);
-  const doc = query.data?.node;
+  const query = await getPageQuery(pageId);
+  const page = query.data?.node;
 
-  if (!doc) {
+  if (!page) {
     return {
       notFound: true,
     };
@@ -29,24 +31,30 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   return {
     props: {
       isEditor: true,
-      doc,
+      page,
     },
   };
 };
 
-const DocumentPage: NextPage<Props> = ({ doc, isEditor }) => {
-  const { title, body } = JSON.parse(doc.data);
+const DocumentPage: NextPage<Props> = ({ page, isEditor }) => {
+  const pageNodes = page.data.map((pageNode) => parsePageNode(pageNode));
+
+  const json: JSONContent = {
+    type: "doc",
+    content: pageNodes,
+  };
+
   return (
     <div>
       <div className="flex items-start justify-between">
-        <h1 className="mb-8 text-5xl font-bold">{title}</h1>
+        <h1 className="mb-8 text-5xl font-bold">{page.title}</h1>
         {isEditor && (
           <span className="mb-1 inline-block rounded-full border px-2 py-0">
             owner
           </span>
         )}
       </div>
-      <Viewer json={JSON.parse(JSON.parse(body))} />
+      <Viewer json={json} />
     </div>
   );
 };

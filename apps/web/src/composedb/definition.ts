@@ -1,3 +1,46 @@
 // This is an auto-generated file, do not edit manually
-import type { RuntimeCompositeDefinition } from '@composedb/types'
-export const definition: RuntimeCompositeDefinition = {"models":{"Page":{"id":"kjzl6hvfrbw6c5wtiw2a3z9ym8ph5wqhhx9t3wif1qr9123stnhj1y06t8ruqe1","accountRelation":{"type":"list"}},"BlockNode":{"id":"kjzl6hvfrbw6c8v61orm3mq298rqj7vk3xkboonyr0an076eot41hgj32ujuxmr","accountRelation":{"type":"list"}}},"objects":{"Page":{"data":{"type":"string","required":true},"type":{"type":"reference","refType":"enum","refName":"PageType","required":false},"createdAt":{"type":"datetime","required":true},"deletedAt":{"type":"datetime","required":false},"updatedAt":{"type":"datetime","required":false},"version":{"type":"view","viewType":"documentVersion"},"createdBy":{"type":"view","viewType":"documentAccount"},"deletedBy":{"type":"view","viewType":"documentAccount"},"updatedBy":{"type":"view","viewType":"documentAccount"},"blockNodes":{"type":"view","viewType":"relation","relation":{"source":"queryConnection","model":"kjzl6hvfrbw6c8v61orm3mq298rqj7vk3xkboonyr0an076eot41hgj32ujuxmr","property":"pageId"}}},"BlockNode":{"type":{"type":"string","required":true},"attrs":{"type":"string","required":false},"marks":{"type":"string","required":false},"pageId":{"type":"streamid","required":false},"page":{"type":"view","viewType":"relation","relation":{"source":"document","model":"kjzl6hvfrbw6c5wtiw2a3z9ym8ph5wqhhx9t3wif1qr9123stnhj1y06t8ruqe1","property":"pageId"}}}},"enums":{"PageType":["COLLECTION","PAGE"]},"accountData":{"pageList":{"type":"connection","name":"Page"},"blockNodeList":{"type":"connection","name":"BlockNode"}}}
+import type { RuntimeCompositeDefinition } from "@composedb/types";
+export const definition: RuntimeCompositeDefinition = {
+  models: {
+    Page: {
+      id: "kjzl6hvfrbw6camd36yujz27qkterrhi6btylq9peb24erpntq9ftojw165vqhz",
+      accountRelation: { type: "list" },
+    },
+  },
+  objects: {
+    PageNode: {
+      type: { type: "string", required: true },
+      attrs: { type: "string", required: false },
+      marks: { type: "string", required: false },
+      content: { type: "string", required: true },
+    },
+    Page: {
+      data: {
+        type: "list",
+        required: false,
+        item: {
+          type: "reference",
+          refType: "object",
+          refName: "PageNode",
+          required: false,
+        },
+      },
+      type: {
+        type: "reference",
+        refType: "enum",
+        refName: "PageType",
+        required: false,
+      },
+      title: { type: "string", required: true },
+      createdAt: { type: "datetime", required: true },
+      deletedAt: { type: "datetime", required: false },
+      updatedAt: { type: "datetime", required: false },
+      version: { type: "view", viewType: "documentVersion" },
+      createdBy: { type: "view", viewType: "documentAccount" },
+      deletedBy: { type: "view", viewType: "documentAccount" },
+      updatedBy: { type: "view", viewType: "documentAccount" },
+    },
+  },
+  enums: { PageType: ["COLLECTION", "PAGE"] },
+  accountData: { pageList: { type: "connection", name: "Page" } },
+};
