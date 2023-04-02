@@ -8,10 +8,9 @@
   "scripts": {
     "generate-graphql-schema": "composedb graphql:schema ./generated/runtime-composite.json --output=./generated/schema.graphql",
     "start-graphql-playground": "source .env && composedb graphql:server --graphiql --port=5001 ./generated/runtime-composite.json --did-private-key=$DID_PRIVATE_KEY -c $CERAMIC_API_URL",
-    "generate-definitions": "composedb composite:compile ./generated/denoted-composite.json ../web/src/composedb/definition.ts",
-    "compile-composite": "composedb composite:compile ./generated/denoted-composite.json ./generated/runtime-composite.json",
-    "deploy-models": "npx ts-node --esm src/deploy-models.ts && yarn compile-composite && yarn generate-definitions && yarn generate-graphql-schema",
-    "deploy-models:production": "npx ts-node --esm src/deploy-models.ts --production && yarn compile-composite && yarn generate-definitions && yarn generate-graphql-schema"
+    "generate-definitions": "source .env && composedb composite:compile ./generated/denoted-composite.json ../web/src/composedb/definition.ts -c $CERAMIC_API_URL",
+    "compile-composite": "source .env && composedb composite:compile ./generated/denoted-composite.json ./generated/runtime-composite.json -c $CERAMIC_API_URL",
+    "deploy-models": "npx ts-node --esm src/deploy-models.ts && yarn compile-composite && yarn generate-definitions && yarn generate-graphql-schema"
   },
   "devDependencies": {
     "@ceramicnetwork/cli": "^2.22.0",
