@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useQuery } from "react-query";
-import { lensClient } from "../../../lib/lens";
-import { DataPill } from "../../DataPill";
+import { lensClient } from "../../../../../lib/lens";
+import { DataPill } from "../../../../DataPill";
 
 export type LensWidgetProps = {
   handle: string;

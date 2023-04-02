@@ -5,8 +5,8 @@ import React, { useEffect } from "react";
 import * as Popover from "@radix-ui/react-popover";
 import { useState } from "react";
 import { LensWidget, LensWidgetProps } from "./Lens";
-import { CommandExtensionProps } from "../../../lib/tiptap/types";
-import { Label } from "../../Label";
+import { CommandExtensionProps } from "../../../../../lib/tiptap/types";
+import { Label } from "../../../../Label";
 
 export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {

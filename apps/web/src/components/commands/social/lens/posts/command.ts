@@ -1,4 +1,4 @@
-import { CommandConfiguration } from "../types";
+import { CommandConfiguration } from "../../../types";
 import { LensConfig } from "./Config";
 
 import icon from "./icon.svg";
