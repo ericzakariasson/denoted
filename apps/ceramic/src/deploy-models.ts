@@ -12,7 +12,15 @@ import {
   writeEncodedComposite,
 } from "@composedb/devtools-node";
 
-import "dotenv/config";
+import { config } from "dotenv";
+
+const isProduction = process.argv.slice(2).includes("--production");
+
+if (isProduction) {
+  config({ path: ".env.production" });
+} else {
+  config({ path: ".env" });
+}
 
 export async function createAndDeploy() {
   const privateKey = fromString(process.env.DID_PRIVATE_KEY as string, "hex");
@@ -58,4 +66,4 @@ export async function createAndDeploy() {
   await mergedComposite.startIndexingOn(ceramic);
 }
 
-createAndDeploy();
+// createAndDeploy();
