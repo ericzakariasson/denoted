@@ -86,12 +86,12 @@ type PageEdge {
 
 type Page implements Node {
   id: ID!
-  data: String!
+  data: [PageNode]
   type: PageType
+  title: String!
   createdAt: DateTime!
   deletedAt: DateTime
   updatedAt: DateTime
-  visibility: PageVisibility
 
   """Current version of the document"""
   version: CeramicCommitID!
@@ -106,6 +106,13 @@ type Page implements Node {
   updatedBy: CeramicAccount!
 }
 
+type PageNode {
+  type: String!
+  attrs: String
+  marks: String
+  content: String!
+}
+
 enum PageType {
   COLLECTION
   PAGE
@@ -115,11 +122,6 @@ enum PageType {
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar DateTime
-
-enum PageVisibility {
-  PRIVATE
-  PUBLIC
-}
 
 """A Ceramic Commit ID"""
 scalar CeramicCommitID @specifiedBy(url: "https://github.com/ceramicnetwork/CIP/blob/main/CIPs/CIP-59/CIP-59.md#commitid")
@@ -148,12 +150,19 @@ input CreatePageInput {
 }
 
 input PageInput {
-  data: String!
+  data: [PageNodeInput]
   type: PageType
+  title: String!
   createdAt: DateTime!
   deletedAt: DateTime
   updatedAt: DateTime
-  visibility: PageVisibility
+}
+
+input PageNodeInput {
+  type: String!
+  attrs: String
+  marks: String
+  content: String!
 }
 
 type UpdatePagePayload {
@@ -177,12 +186,12 @@ input UpdatePageInput {
 }
 
 input PartialPageInput {
-  data: String
+  data: [PageNodeInput]
   type: PageType
+  title: String
   createdAt: DateTime
   deletedAt: DateTime
   updatedAt: DateTime
-  visibility: PageVisibility
 }
 
 input UpdateOptionsInput {

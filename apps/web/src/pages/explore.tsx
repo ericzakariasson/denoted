@@ -3,26 +3,26 @@ import { Card } from "../components/Card";
 import { getPagesQuery, Page } from "../composedb/page";
 
 type Props = {
-  documents: Page[];
+  pages: Page[];
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async () => {
   const query = await getPagesQuery();
-  const documents = query.data?.pageIndex?.edges.map((edge) => edge.node) ?? [];
+  const pages = query.data?.pageIndex?.edges.map((edge) => edge.node) ?? [];
 
   return {
     props: {
-      documents,
+      pages,
     },
   };
 };
 
-const Page: NextPage<Props> = ({ documents }) => {
-  if (documents.length === 0) {
+const Page: NextPage<Props> = ({ pages }) => {
+  if (pages.length === 0) {
     return (
       <div className="rounded-2xl bg-gray-100 p-8">
         <h1 className="text-center text-lg font-normal text-gray-500">
-          no documents
+          no pages
         </h1>
       </div>
     );
@@ -30,8 +30,8 @@ const Page: NextPage<Props> = ({ documents }) => {
 
   return (
     <div className="grid gap-4 md:grid-cols-3">
-      {documents.map((doc) => (
-        <Card key={doc.id} doc={doc} />
+      {pages.map((page) => (
+        <Card key={page.id} page={page} />
       ))}
     </div>
   );

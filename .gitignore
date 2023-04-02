@@ -28,7 +28,8 @@ yarn-error.log*
 .flaskenv*
 !.env.project
 !.env.vault
-!.env.local.example
+!.envlocal.example
+!.env.example
 
 # turbo
 .turbo

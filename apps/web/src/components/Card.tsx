@@ -6,23 +6,22 @@ import { Page } from "../composedb/page";
 import { formatEthAddress } from "../utils/index";
 
 type CardProps = {
-  doc: Page;
+  page: Page;
 };
 
-export const Card = ({ doc }: CardProps) => {
-  const { title } = JSON.parse(doc.data);
-  const address = doc.createdBy.id.split(":")[4];
+export const Card = ({ page }: CardProps) => {
+  const address = page.createdBy.id.split(":")[4];
   const { data: ensName } = useEnsName({
     address,
   });
 
   return (
-    <Link href={`/${doc.id}`}>
+    <Link href={`/${page.id}`}>
       <div className="flex flex-col justify-between gap-4 rounded-xl border border-gray-700 bg-white p-5">
         <div className="flex flex-col items-start">
-          <p className="mb-1 text-lg font-medium">{title}</p>
+          <p className="mb-1 text-lg font-medium">{page.title}</p>
           <p className="text-gray-400">
-            <TimeAgo date={new Date(doc.createdAt)} />
+            <TimeAgo date={new Date(page.createdAt)} />
           </p>
         </div>
         <div className="flex gap-2">

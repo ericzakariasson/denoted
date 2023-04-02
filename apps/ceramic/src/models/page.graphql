@@ -3,9 +3,17 @@ enum PageType {
   PAGE
 }
 
+type PageNode {
+  type: String! @string(maxLength: 1000000)
+  content: String! @string(maxLength: 1000000)
+  attrs: String @string(maxLength: 1000000)
+  marks: String @string(maxLength: 1000000)
+}
+
 type Page @createModel(accountRelation: LIST, description: "Page Object") {
-  data: String! @string(maxLength: 2000000000)
   type: PageType!
+  title: String! @string(maxLength: 128)
+  data: [PageNode!] @list(maxLength: 100000)
   version: CommitID! @documentVersion
   createdBy: DID! @documentAccount
   createdAt: DateTime!

@@ -1,5 +1,6 @@
 import { gql } from "graphql-request";
 import { composeClient } from "../lib/compose";
+import { PageNode } from "./page-node";
 
 type DID = {
   id: string;
@@ -10,7 +11,8 @@ type PageType = "COLLECTION" | "PAGE";
 export type Page = {
   id: string;
   type: PageType;
-  data: string;
+  title: string;
+  data: PageNode[];
   createdBy: DID;
   createdAt: string;
   updatedBy: DID;
@@ -23,14 +25,17 @@ type CreatePageMutation = {
   };
 };
 
-export async function createPage(data: string, createdAt: string) {
+export async function createPage(
+  title: string,
+  data: PageNode[],
+  createdAt: string
+) {
   return await composeClient.executeQuery<CreatePageMutation>(
     gql`
       mutation ($content: PageInput!) {
         createPage(input: { content: $content }) {
           document {
             id
-            data
             createdBy {
               id
             }
@@ -41,6 +46,7 @@ export async function createPage(data: string, createdAt: string) {
     `,
     {
       content: {
+        title,
         data,
         type: "PAGE",
         createdAt,
@@ -65,7 +71,6 @@ export async function getPagesQuery() {
           node {
             id
             type
-            data
             createdBy {
               id
             }
@@ -88,8 +93,14 @@ export async function getPageQuery(id: string) {
         node(id: $id) {
           ... on Page {
             id
+            title
             type
-            data
+            data {
+              type
+              content
+              attrs
+              marks
+            }
             createdBy {
               id
             }

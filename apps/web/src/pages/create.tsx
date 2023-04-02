@@ -1,17 +1,19 @@
+import { JSONContent } from "@tiptap/react";
 import { useRouter } from "next/router";
 import { NextPage } from "next/types";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useMutation } from "react-query";
 import { useAccount } from "wagmi";
 import { Editor } from "../components/Editor";
 import { createPage } from "../composedb/page";
+import { serializePageNode } from "../composedb/page-node";
 import { useCeramic } from "../hooks/useCeramic";
 import { composeClient } from "../lib/compose";
 
 const CreatePage: NextPage = () => {
   const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
+  const [json, setJson] = useState<JSONContent>();
 
   const ceramic = useCeramic(composeClient);
 
@@ -28,8 +30,9 @@ const CreatePage: NextPage = () => {
 
   const { mutate, isLoading } = useMutation(
     async () => {
-      const data = JSON.stringify({ title, body });
-      return await createPage(data, new Date().toISOString());
+      const pageNodes =
+        json?.content?.map((node) => serializePageNode(node)) ?? [];
+      return await createPage(title, pageNodes, new Date().toISOString());
     },
     {
       onSuccess: async ({ data, errors }) => {
@@ -49,7 +52,8 @@ const CreatePage: NextPage = () => {
     }
   );
 
-  const isEnabled = isAuthenticated && title.length > 0 && body.length > 0;
+  const isEnabled =
+    isAuthenticated && title.length > 0 && (json?.content ?? []).length > 0;
 
   const handleSubmit = () => {
     mutate();
@@ -87,9 +91,7 @@ const CreatePage: NextPage = () => {
           onChange={(event) => setTitle(event.target.value)}
           required
         />
-        <Editor
-          onUpdate={(json) => setBody(JSON.stringify(JSON.stringify(json)))}
-        />
+        <Editor onUpdate={(json) => setJson(json)} />
       </div>
       <button
         className="rounded-full border border-black bg-black px-2 text-white disabled:opacity-50"
