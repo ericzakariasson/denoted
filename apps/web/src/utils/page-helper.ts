@@ -97,7 +97,6 @@ export async function encryptPage(
   userAddress: string
 ): Promise<CreatePageInput> {
   const { key, exportedKey } = await generateEncryptionKey();
-  const { encryptedKey } = await storeEncryptionKey(exportedKey, userAddress);
 
   const [title, type, createdAt] = await Promise.all([
     await encryptString(page.title, key),
@@ -115,6 +114,8 @@ export async function encryptPage(
     data: encryptedPageNodes,
     createdAt,
   };
+
+  const { encryptedKey } = await storeEncryptionKey(exportedKey, userAddress);
 
   input.key = encryptedKey;
 
