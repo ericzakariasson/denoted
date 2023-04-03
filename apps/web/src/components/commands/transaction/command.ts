@@ -1,5 +1,4 @@
-import { CommandConfiguration } from "../types";
-
+import type { CommandConfiguration } from "../types";
 import { mainnet } from "wagmi/chains";
 import { NetWorthConfig } from "./TransactionConfig";
 import icon from "./icon.svg";
@@ -10,7 +9,7 @@ export const transactionCommand: CommandConfiguration<TransactionWidgetProps> = 
   title: "Transaction (tx)",
   description: "Gets from, to and amount in a transaction",
   icon,
-  blockType: "inline",
+  blockType: "block",
   defaultValues: {
     txHash: undefined,
     chain: mainnet.id,
