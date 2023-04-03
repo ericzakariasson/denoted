@@ -12,6 +12,7 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+    console.log({ formData })
     props.updateAttributes({
       handle: formData.get("handle")?.toString() ?? "",
     });
@@ -22,7 +23,7 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
   const handle = props.node.attrs.handle;
 
   const isConfigured = handle !== undefined;
-
+  console.log({ handle, isConfigured})
   const [isOpen, setOpen] = useState(false);
 
   useEffect(() => {
