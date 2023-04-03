@@ -58,7 +58,7 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
                 className="flex flex-col items-start gap-4"
                 name="lens-post-setup"
               >
-                <Label label="PublicationId">
+                <Label label="Publication ID">
                   <input
                     name="publicationId"
                     placeholder="0x0f-0x01"

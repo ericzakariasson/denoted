@@ -5,5 +5,5 @@ export type LensWidgetProps = {
 };
 
 export const LensWidget = ({ publicationId }: LensWidgetProps) => {
-  return <Publication publicationId={publicationId} theme={Theme.light} />;
+  return <Publication publicationId={publicationId} theme={Theme.dark} />;
 };
