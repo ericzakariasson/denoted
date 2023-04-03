@@ -1,2 +1,1 @@
-export { lensProfileCommand } from "./profile/command";
-export { lensPostCommand } from "./post/command";
+export { lensPostCommand, lensProfileCommand } from "./command";
