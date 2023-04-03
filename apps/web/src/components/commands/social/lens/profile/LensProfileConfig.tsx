@@ -1,10 +1,9 @@
-import { Editor } from "@tiptap/core";
 import { NodeViewWrapper } from "@tiptap/react";
 import React, { useEffect } from "react";
 
 import * as Popover from "@radix-ui/react-popover";
 import { useState } from "react";
-import { LensWidget, LensWidgetProps } from "./Lens";
+import { LensWidget, LensWidgetProps } from "./LensProfile";
 import { CommandExtensionProps } from "../../../../../lib/tiptap/types";
 import { Label } from "../../../../Label";
 
@@ -12,16 +11,16 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    console.log({ formData })
     props.updateAttributes({
-      publicationId: formData.get("publicationId")?.toString() ?? "",
+      handle: formData.get("handle")?.toString() ?? "",
     });
     setOpen(false);
     props.editor.view.dom.focus();
   }
-  const publicationId = props.node.attrs.publicationId;
-  const isConfigured = publicationId !== undefined;
-  console.log({ publicationId, isConfigured })
+
+  const handle = props.node.attrs.handle;
+
+  const isConfigured = handle !== undefined;
   const [isOpen, setOpen] = useState(false);
 
   useEffect(() => {
@@ -33,7 +32,7 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
   return (
     <NodeViewWrapper as="span">
       {isConfigured && !props.editor.isEditable && (
-        <LensWidget publicationId={publicationId} />
+        <LensWidget handle={handle} />
       )}
       {props.editor.isEditable && (
         <Popover.Root
@@ -43,7 +42,7 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
         >
           <Popover.Trigger>
             {isConfigured ? (
-              <LensWidget publicationId={publicationId} />
+              <LensWidget handle={handle} />
             ) : (
               <span className="rounded-full border border-gray-300 py-0 px-1 leading-normal text-gray-500">
                 setup
@@ -59,14 +58,14 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
               <form
                 onSubmit={handleSubmit}
                 className="flex flex-col items-start gap-4"
-                name="lens-setup"
+                name="lens-profile-setup"
               >
-                <Label label="PublicationId">
+                <Label label="Handle">
                   <input
-                    name="publicationId"
-                    placeholder="0x0f-0x01"
+                    name="handle"
+                    placeholder="ericz.lens"
                     className="rounded-lg bg-gray-200 px-3 py-2"
-                    defaultValue={publicationId}
+                    defaultValue={handle}
                     required
                   />
                 </Label>

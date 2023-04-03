@@ -1,11 +1,11 @@
 import { CommandConfiguration } from "../../../types";
-import { LensConfig } from "./Config";
+import { LensConfig } from "./LensProfileConfig";
 
 import icon from "./icon.svg";
-import { LensWidgetProps } from "./Lens";
+import { LensWidgetProps } from "./LensProfile";
 
 export const lensProfileCommand: CommandConfiguration<LensWidgetProps> = {
-  command: "lens",
+  command: "lens-profile",
   title: "Lens Profile",
   description: "Lens statistics for a profile",
   icon,
