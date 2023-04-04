@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
   reactStrictMode: true,
-  transpilePackages: ["ui", "@lens-protocol"],
+  transpilePackages: ["ui", "@lens-protocol", "@ipld"],
   async rewrites() {
     return [
       {
