@@ -20,11 +20,9 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
   }
 
   const { property, publicationId, handle } = props.node.attrs;
-  console.log({ props })
   const isConfigured =
     publicationId !== undefined || handle !== undefined;
 
-    console.log("isConfigured", isConfigured)
   const [isOpen, setOpen] = useState(false);
 
   useEffect(() => {
