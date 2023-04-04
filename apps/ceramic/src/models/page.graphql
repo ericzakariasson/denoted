@@ -13,9 +13,9 @@ type Page @createModel(accountRelation: LIST, description: "Page Object") {
   data: [PageNode!] @list(maxLength: 100000)
   version: CommitID! @documentVersion
   createdBy: DID! @documentAccount
-  createdAt: String! @string(maxLength: 1000000)
+  createdAt: DateTime!
   updatedBy: DID @documentAccount
-  updatedAt: String @string(maxLength: 1000000)
+  updatedAt: DateTime
   deletedBy: DID @documentAccount
-  deletedAt: String @string(maxLength: 1000000)
+  deletedAt: DateTime
 }

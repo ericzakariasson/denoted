@@ -131,10 +131,9 @@ export async function encryptPage(
 ): Promise<CreatePageInput> {
   const { key, exportedKey } = await generateEncryptionKey();
 
-  const [title, type, createdAt] = await Promise.all([
+  const [title, type] = await Promise.all([
     await encryptString(page.title, key),
     await encryptString(page.type, key),
-    await encryptString(page.createdAt, key),
   ]);
 
   const encryptedPageNodes = await Promise.all(
@@ -145,7 +144,7 @@ export async function encryptPage(
     type: type as PageType,
     title,
     data: encryptedPageNodes,
-    createdAt,
+    createdAt: page.createdAt,
   };
 
   const { encryptedKey } = await storeEncryptionKey(exportedKey, userAddress);
@@ -166,10 +165,9 @@ export async function decryptPage(
 
   const { key } = await importEncryptionKey(encryptionKey);
 
-  const [title, type, createdAt] = await Promise.all([
+  const [title, type] = await Promise.all([
     await decryptString(page.title, key),
     await decryptString<PageType>(page.type, key),
-    await decryptString(page.createdAt, key),
   ]);
 
   const decryptedPageNodes = await Promise.all(
@@ -181,7 +179,7 @@ export async function decryptPage(
     type,
     title,
     data: decryptedPageNodes,
-    createdAt: new Date(createdAt).toISOString(),
+    createdAt: new Date(page.createdAt).toISOString(),
     createdBy: page.createdBy,
   };
 }

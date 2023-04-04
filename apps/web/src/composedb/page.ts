@@ -9,14 +9,14 @@ export type PageType = "COLLECTION" | "PAGE";
 
 export type Page = {
   id: string;
-  key?: string;
+  key?: string | null;
   type: PageType;
   title: string;
   data: PageNode[];
   createdBy: DID;
   createdAt: string;
-  updatedBy?: DID;
-  updatedAt?: string;
+  updatedBy?: DID | null;
+  updatedAt?: string | null;
 };
 
 type CreatePageMutation = {
