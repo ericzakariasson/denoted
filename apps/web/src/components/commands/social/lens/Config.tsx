@@ -28,7 +28,7 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
   const placeHolder = useMemo(() => {
     switch (property) {
       case "handle":
-        return "E.g. 0x0f-0x01";
+        return "E.g. ericz.lens";
       case "publicationId":
         return "E.g. 0x0f-0x01";
       default:
