@@ -30,8 +30,6 @@ const CreatePage: NextPage = () => {
 
   const { address } = useAccount();
 
-  const [isPublic, setPublic] = useState(false);
-
   const { mutate, isLoading } = useMutation(
     async () => {
       const pageInput = serializePage(
@@ -40,10 +38,6 @@ const CreatePage: NextPage = () => {
         json?.content ?? [],
         new Date()
       );
-
-      if (isPublic) {
-        return await createPage(pageInput);
-      }
 
       const encryptedPageInput = await encryptPage(pageInput, address!);
       console.log(encryptedPageInput);
