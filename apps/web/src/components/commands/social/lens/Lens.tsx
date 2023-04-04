@@ -26,6 +26,7 @@ export const LensHandleWidget = ({
       handle={handle.replace(".lens", "")}
       hideFollowButton={true}
       theme={Theme.dark}
+      containerStyle={{ width: "100%" }}
     />
   );
 };
@@ -33,5 +34,7 @@ export const LensHandleWidget = ({
 export const LensPublicationWidget = ({
   publicationId,
 }: Pick<LensWidgetProps, "publicationId" | "handle">) => {
-  return <Publication publicationId={publicationId} theme={Theme.light} />;
+  return (
+      <Publication publicationId={publicationId} theme={Theme.dark}/>
+  );
 };
