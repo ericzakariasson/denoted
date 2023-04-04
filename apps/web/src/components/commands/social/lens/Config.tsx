@@ -1,5 +1,5 @@
 import { NodeViewWrapper } from "@tiptap/react";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 
 import * as Popover from "@radix-ui/react-popover";
 import { useState } from "react";
@@ -24,6 +24,17 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
     publicationId !== undefined || handle !== undefined;
 
   const [isOpen, setOpen] = useState(false);
+
+  const placeHolder = useMemo(() => {
+    switch (property) {
+      case "handle":
+        return "E.g. ericz.lens";
+      case "publicationId":
+        return "E.g. 0x0f-0x01";
+      default:
+        return "";
+    }
+  }, [property])
 
   useEffect(() => {
     if (!isConfigured) {
@@ -73,7 +84,7 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
                 <Label label={property}>
                   <input
                     name={property}
-                    placeholder={`Enter ${property}`}
+                    placeholder={placeHolder}
                     className="rounded-lg bg-gray-200 px-3 py-2"
                     required
                   />
