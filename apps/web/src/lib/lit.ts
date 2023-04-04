@@ -1,7 +1,5 @@
 import {
   checkAndSignAuthMessage,
-  decryptString,
-  encryptString,
   LitNodeClient,
   uint8arrayToString,
 } from "@lit-protocol/lit-node-client";
