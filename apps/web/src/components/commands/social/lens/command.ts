@@ -10,7 +10,7 @@ export const lensProfileCommand: CommandConfiguration<LensWidgetProps> = {
   description: "Lens statistics for a profile",
   icon,
 
-  blockType: "inline",
+  blockType: "block",
   defaultValues: {
     property: "handle",
     handle: undefined
@@ -24,7 +24,7 @@ export const lensPostCommand: CommandConfiguration<LensWidgetProps> = {
   description: "Lens post for a profile",
   icon,
 
-  blockType: "inline",
+  blockType: "block",
   defaultValues: {
     property: "publicationId",
     publicationId: undefined

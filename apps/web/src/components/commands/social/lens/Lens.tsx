@@ -1,8 +1,4 @@
-import { Publication, Theme } from "@lens-protocol/widgets-react";
-import Link from "next/link";
-import { useQuery } from "react-query";
-import { lensClient } from "../../../../lib/lens";
-import { DataPill } from "../../../DataPill"
+import { Publication, Profile, Theme } from "@lens-protocol/widgets-react";
 
 export type LensWidgetProps = {
   property: "publicationId" | "handle";
@@ -22,29 +18,20 @@ export const LensWidget = ({ property, ...props }: LensWidgetProps) => {
   }
 };
 
-export const LensHandleWidget = ({ handle }: Pick<LensWidgetProps, "publicationId" | "handle">) => {
-  console.log("handle", handle)
-  const query = useQuery(["LENS", "PROFILE", handle], async () => {
-    return lensClient.profile.fetch({ handle });
-  });
-
+export const LensHandleWidget = ({
+  handle,
+}: Pick<LensWidgetProps, "publicationId" | "handle">) => {
   return (
-    <DataPill query={query} className="bg-green-100">
-      <Link
-        href={`https://lenster.xyz/u/${handle.replace(".lens", "")}`}
-        className="no-underline"
-        target="_blank"
-      >
-        🌿
-      </Link>{" "}
-      {query.data?.name ? `${query.data?.name} (${handle})` : handle}
-    </DataPill>
+    <Profile
+      handle={handle.replace(".lens", "")}
+      hideFollowButton={true}
+      theme={Theme.dark}
+    />
   );
 };
 
 export const LensPublicationWidget = ({
   publicationId,
 }: Pick<LensWidgetProps, "publicationId" | "handle">) => {
-  console.log("publicationId", publicationId)
-  return <Publication publicationId={publicationId} theme={Theme.dark} />;
+  return <Publication publicationId={publicationId} theme={Theme.light} />;
 };
