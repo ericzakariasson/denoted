@@ -78,7 +78,7 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage, isEditor }) => {
           </span>
         )}
       </div>
-      <Viewer json={json} />
+      {page && <Viewer json={json} />}
     </div>
   );
 };

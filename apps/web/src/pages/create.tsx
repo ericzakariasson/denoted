@@ -40,7 +40,6 @@ const CreatePage: NextPage = () => {
       );
 
       const encryptedPageInput = await encryptPage(pageInput, address!);
-      console.log(encryptedPageInput);
       return await createPage(encryptedPageInput);
     },
     {
@@ -48,7 +47,7 @@ const CreatePage: NextPage = () => {
         console.error("Create error", error);
       },
       onSuccess: async ({ data, errors }) => {
-        console.log(data, errors);
+        console.log("create", data, errors);
         const isNotAuthenticated = errors?.some((error) =>
           error.message.includes("Ceramic instance is not authenticated")
         );

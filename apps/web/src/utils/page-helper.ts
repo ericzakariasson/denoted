@@ -12,8 +12,11 @@ import { getStoredEncryptionKey, storeEncryptionKey } from "../lib/lit";
 export function serializePageNode(node: JSONContent): PageNode {
   const pageNode: PageNode = {
     type: node.type!,
-    content: JSON.stringify(node.content),
   };
+
+  if (node.content) {
+    pageNode.content = JSON.stringify(node.content);
+  }
 
   if (node.attrs) {
     pageNode.attrs = JSON.stringify(node.attrs);
@@ -23,16 +26,36 @@ export function serializePageNode(node: JSONContent): PageNode {
     pageNode.marks = JSON.stringify(node.marks);
   }
 
+  if (node.text) {
+    pageNode.text = JSON.stringify(node.text);
+  }
+
   return pageNode;
 }
 
 export function deserializePageNode(pageNode: PageNode): JSONContent {
-  return {
+  const json: JSONContent = {
     type: pageNode.type,
-    content: JSON.parse(pageNode.content),
-    attrs: pageNode.attrs ? JSON.parse(pageNode.attrs) : undefined,
-    marks: pageNode.marks ? JSON.parse(pageNode.marks) : pageNode.marks,
   };
+  if (pageNode.content) {
+    json.content = JSON.parse(
+      pageNode.content
+    ) as unknown as JSONContent["content"];
+  }
+
+  if (pageNode.attrs) {
+    json.attrs = JSON.parse(pageNode.attrs) as unknown as JSONContent["attrs"];
+  }
+
+  if (pageNode.marks) {
+    json.marks = JSON.parse(pageNode.marks) as unknown as JSONContent["marks"];
+  }
+
+  if (pageNode.text) {
+    json.text = JSON.parse(pageNode.text) as unknown as JSONContent["text"];
+  }
+
+  return json;
 }
 
 export function serializePage(
@@ -66,12 +89,17 @@ export async function encryptPageNode(
 ): Promise<PageNode> {
   return {
     type: await encryptString(pageNode.type!, key),
-    content: await encryptString(JSON.stringify(pageNode.content), key),
+    content: pageNode.content
+      ? await encryptString(JSON.stringify(pageNode.content), key)
+      : undefined,
     attrs: pageNode.attrs
       ? await encryptString(JSON.stringify(pageNode.attrs), key)
       : undefined,
     marks: pageNode.marks
       ? await encryptString(JSON.stringify(pageNode.marks), key)
+      : undefined,
+    text: pageNode.text
+      ? await encryptString(JSON.stringify(pageNode.text), key)
       : undefined,
   };
 }
@@ -82,12 +110,17 @@ export async function decryptPageNode(
 ): Promise<PageNode> {
   return {
     type: await decryptString(pageNode.type!, key),
-    content: JSON.parse(await decryptString(pageNode.content, key)),
+    content: pageNode.content
+      ? JSON.parse(await decryptString(pageNode.content, key))
+      : undefined,
     attrs: pageNode.attrs
       ? JSON.parse(await decryptString(pageNode.attrs, key))
       : undefined,
     marks: pageNode.marks
       ? JSON.parse(await decryptString(pageNode.marks, key))
+      : undefined,
+    text: pageNode.text
+      ? JSON.parse(await decryptString(pageNode.text, key))
       : undefined,
   };
 }
@@ -126,7 +159,6 @@ export async function decryptPage(
   page: Page,
   userAddress: string
 ): Promise<Page> {
-  console.log("page.key", page.key);
   const { encryptionKey } = await getStoredEncryptionKey(
     page.key!,
     userAddress

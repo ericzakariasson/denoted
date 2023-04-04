@@ -1,5 +1,4 @@
 import type { JSONContent } from "@tiptap/core";
-import { generateHTML } from "@tiptap/html";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { extensions } from "./Editor";
 

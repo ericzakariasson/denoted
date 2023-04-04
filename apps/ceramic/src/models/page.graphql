@@ -1,8 +1,9 @@
 type PageNode {
   type: String! @string(maxLength: 1000000)
-  content: String! @string(maxLength: 1000000)
+  content: String @string(maxLength: 1000000)
   attrs: String @string(maxLength: 1000000)
   marks: String @string(maxLength: 1000000)
+  text: String @string(maxLength: 1000000)
 }
 
 type Page @createModel(accountRelation: LIST, description: "Page Object") {

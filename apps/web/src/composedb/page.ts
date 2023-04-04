@@ -70,6 +70,8 @@ export async function getPagesQuery() {
           node {
             id
             type
+            key
+            title
             createdBy {
               id
             }

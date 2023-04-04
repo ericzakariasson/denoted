@@ -1,6 +1,7 @@
 export type PageNode = {
-  content: string;
+  content?: string;
   type: string;
   attrs?: string;
   marks?: string;
+  text?: string;
 };

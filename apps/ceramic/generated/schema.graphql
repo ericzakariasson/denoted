@@ -108,10 +108,11 @@ type Page implements Node {
 }
 
 type PageNode {
+  text: String
   type: String!
   attrs: String
   marks: String
-  content: String!
+  content: String
 }
 
 """A Ceramic Commit ID"""
@@ -151,10 +152,11 @@ input PageInput {
 }
 
 input PageNodeInput {
+  text: String
   type: String!
   attrs: String
   marks: String
-  content: String!
+  content: String
 }
 
 type UpdatePagePayload {

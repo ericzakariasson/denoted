@@ -10,9 +10,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
   const query = await getPagesQuery();
   const pages = query.data?.pageIndex?.edges.map((edge) => edge.node) ?? [];
 
+  const publicPages = pages.filter((page) => !page.key);
+
   return {
     props: {
-      pages,
+      pages: publicPages,
     },
   };
 };
