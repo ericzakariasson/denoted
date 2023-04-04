@@ -8,6 +8,7 @@ const isProductionRuntime = process.env.NODE_ENV === "production";
 if (isProductionRuntime) {
   mixpanel.init(process.env.NEXT_PUBLIC_MIXPANEL_TOKEN as string, {
     api_host: `${getBaseUrl()}/mp`,
+    ignore_dnt: true, // since we're one way hashing this it's fine
   });
 }
 
