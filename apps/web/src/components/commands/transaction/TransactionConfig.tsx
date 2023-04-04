@@ -87,6 +87,7 @@ export const NetWorthConfig = (
                       .filter(
                         (chain) =>
                           !chain.testnet &&
+                          chain.network !== "foundry" &&
                           chain.network !== "localhost" &&
                           chain.network !== "hardhat"
                       )

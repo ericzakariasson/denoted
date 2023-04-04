@@ -17,7 +17,7 @@ export const DataStack = ({
   status,
   children,
 }: DataStackProps) => {
-  const base = "rounded-full px-1 py-0";
+  const base = "rounded-md px-4 py-0";
 
   const isStatus = (s: QueryStatus) =>
     [query.status, status].some((x) => x === s);
@@ -63,9 +63,9 @@ export const DataStack = ({
   }
 
   return (
-    <div className="bg-gray-100 rounded-md px-4">
+    <div className={cn(base, "bg-gray-100", className)}>
       <ul className="list-none px-0 divide-y divide-solid divide-gray-200 dark:divide-gray-700">
-        <li className="py-3 sm:py-4">
+        <li className="py-3 px-0 sm:py-4">
           {children}
         </li>
       </ul>
