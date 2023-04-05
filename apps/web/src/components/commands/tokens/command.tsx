@@ -11,8 +11,9 @@ export const tokenPriceCommand: CommandConfiguration<TokenWidgetProps> = {
   blockType: "inline",
   defaultValues: {
     property: "price",
-    address: undefined,
-    chain: mainnet.id,
+    chainName: mainnet.name,
+    token: undefined,
+    platforms: "basic"
   },
   ConfigComponent: TokenPriceConfig,
 };

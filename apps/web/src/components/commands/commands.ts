@@ -6,10 +6,12 @@ import { lensCommand } from "./lens/command";
 import { netWorthCommand } from "./net-worth/command";
 import { nftFloorPriceCommand } from "./nft/command";
 import { tallyCommand } from "./tally/command";
+import { tokenPriceCommand } from "./tokens/command";
 
 export const COMMANDS: CommandGroup[] = [
   { name: "Wallet", items: [balanceCommand, netWorthCommand] },
   { name: "Social", items: [lensCommand] },
   { name: "Other", items: [graphCommand, duneCommand, tallyCommand] },
   { name: "NFT", items: [nftFloorPriceCommand] },
+  { name: "Tokens", items: [tokenPriceCommand]}
 ];

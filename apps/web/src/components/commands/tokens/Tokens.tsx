@@ -1,10 +1,13 @@
 import { DataPill } from "../../DataPill";
 import { useQuery } from "react-query";
+import { Tokens } from "./types";
+import { findToken } from "./tokenHelpers";
 
 export type TokenWidgetProps = {
   property: "price";
-  address: string;
-  chain: number;
+  chainName: string;
+  token: string;
+  platforms: "native" | "basic";
 };
 
 export const TokenWidget = ({ property, ...props }: TokenWidgetProps) => {
@@ -16,29 +19,40 @@ export const TokenWidget = ({ property, ...props }: TokenWidgetProps) => {
   }
 };
 
-const NFT_PORT_CHAINS: Record<number, string> = {
-  1: "ethereum",
-};
-
 const TokenPriceWidget = ({
-  address,
-  chain,
-}: Pick<TokenWidgetProps, "address" | "chain">) => {
-  const query = useQuery(["TOKEN", "PRICE", address, chain], async () => {
-    const response = await fetch(
-      `https://api.nftport.xyz/v0/transactions/stats/${address}?chain=${NFT_PORT_CHAINS[chain]}`,
-      {
-        headers: {
-          Authorization: process.env.NEXT_PUBLIC_NFT_PORT_API_KEY as string,
-        },
+  chainName,
+  token,
+  platforms,
+}: Pick<TokenWidgetProps, "chainName" | "token" | "platforms">) => {
+  console.log({ chainName })
+
+  const query = useQuery(
+    ["TOKEN", "PRICE", chainName, token, platforms],
+    async () => {
+      if(token.toLowerCase().trim() === "eth") {
+        platforms = "native"
       }
-    );
-    const json = await response.json();
+      const url = `https://api.portals.fi/v2/tokens?search=${token}&platforms=${platforms}&networks=${chainName}`
+      const response = await fetch(url);
+      console.log({ url })
+      console.log({response})
+      const json = await response.json();
 
-    return {
-      floorPrice: json.statistics.floor_price as number,
-    };
-  });
+      const tokenData: Tokens = findToken({query: token, tokenList: json.tokens}) 
+      console.log({ tokenData })
 
-  return <DataPill query={query}>{query.data?.floorPrice}</DataPill>;
+      return {
+        tokenSymbol: tokenData.symbol,
+        tokenPrice: tokenData.price,
+        tokenImage: tokenData.image
+      }
+    }
+  );
+
+  return (
+    
+    <DataPill query={query}>
+      {query.data?.tokenPrice} {query.data?.tokenSymbol}
+    </DataPill>
+  );
 };

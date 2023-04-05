@@ -1,5 +1,5 @@
 import { NodeViewWrapper } from "@tiptap/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import * as Popover from "@radix-ui/react-popover";
 import * as chains from "wagmi/chains";
@@ -7,7 +7,9 @@ import { CommandExtensionProps } from "../../../lib/tiptap/types";
 import { TokenWidget, TokenWidgetProps } from "./Tokens";
 import { Label } from "../../Label";
 
-export const TokenPriceConfig = (props: CommandExtensionProps<TokenWidgetProps>) => {
+export const TokenPriceConfig = (
+  props: CommandExtensionProps<TokenWidgetProps>
+) => {
   const [isOpen, setOpen] = useState(false);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -15,10 +17,8 @@ export const TokenPriceConfig = (props: CommandExtensionProps<TokenWidgetProps>)
 
     const formData = new FormData(event.currentTarget);
     props.updateAttributes({
-      address: formData.get("address")?.toString() ?? undefined,
-      chain: formData.get("chain")
-        ? Number(formData.get("chain")?.toString())
-        : undefined,
+      chainName: formData.get("chainName")?.toString() ?? undefined,
+      token: formData.get("token")?.toString() ?? undefined
     });
 
     setOpen(false);
@@ -26,10 +26,13 @@ export const TokenPriceConfig = (props: CommandExtensionProps<TokenWidgetProps>)
     props.editor.view.dom.focus();
   }
 
-  const { property, address, chain } = props.node.attrs;
+  const { property, chainName, token, platforms } = props.node.attrs;
 
   const isConfigured =
-    property !== undefined && address !== undefined && chain !== undefined;
+    property !== undefined &&
+    chainName !== undefined &&
+    token !== undefined &&
+    platforms !== undefined;
 
   useEffect(() => {
     if (!isConfigured) {
@@ -40,7 +43,12 @@ export const TokenPriceConfig = (props: CommandExtensionProps<TokenWidgetProps>)
   return (
     <NodeViewWrapper as="span">
       {isConfigured && !props.editor.isEditable && (
-        <TokenWidget property={property} address={address} chain={chain} />
+        <TokenWidget
+          property={property}
+          chainName={chainName.toLowerCase()}
+          token={token}
+          platforms={platforms}
+        />
       )}
       {props.editor.isEditable && (
         <Popover.Root
@@ -50,7 +58,12 @@ export const TokenPriceConfig = (props: CommandExtensionProps<TokenWidgetProps>)
         >
           <Popover.Trigger>
             {isConfigured ? (
-              <TokenWidget property={property} address={address} chain={chain} />
+              <TokenWidget
+                property={property}
+                chainName={chainName.toLowerCase()}
+                token={token}
+                platforms={platforms}
+              />
             ) : (
               <span className="rounded-full border border-gray-300 py-0 px-1 leading-normal text-gray-500">
                 setup
@@ -68,27 +81,14 @@ export const TokenPriceConfig = (props: CommandExtensionProps<TokenWidgetProps>)
                 className="flex flex-col items-start gap-4"
                 name="graph-setup"
               >
-                <Label label="Address">
+                <Label label="Token">
                   <input
-                    name="address"
-                    placeholder="0x"
-                    defaultValue={address ?? ""}
+                    name="token"
+                    placeholder="E.g. ETH, USDC, USDT, etc."
                     className="rounded-lg bg-gray-200 px-3 py-2"
+                    defaultValue={token}
                     required
                   />
-                </Label>
-                <Label label="Chain">
-                  <select
-                    name="chain"
-                    defaultValue={chain ?? ""}
-                    className="rounded-lg border-none bg-gray-200"
-                  >
-                    {[chains.mainnet, chains.polygon].map((chain) => (
-                      <option key={chain.id} value={chain.id}>
-                        {chain.name}
-                      </option>
-                    ))}
-                  </select>
                 </Label>
                 <button
                   type="submit"
