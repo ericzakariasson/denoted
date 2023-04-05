@@ -8,7 +8,7 @@ import { CommandExtensionProps } from "../../../lib/tiptap/types";
 import { TransactionWidget, TransactionWidgetProps } from "./Transaction";
 import { Label } from "../../Label";
 
-export const NetWorthConfig = (
+export const TransactionConfig = (
   props: CommandExtensionProps<TransactionWidgetProps>
 ) => {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
