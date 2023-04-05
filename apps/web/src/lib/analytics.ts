@@ -17,7 +17,13 @@ type EventName =
   | "Wallet Connected"
   | "Wallet Disconnected"
   | "Command Handled"
-  | "Ceramic Authenticated";
+  | "Ceramic Authenticated"
+  | "Ceramic Authenticate Clicked"
+  | "Create Page Link Clicked"
+  | "Lit Authenticate Clicked"
+  | "Save Page Clicked"
+  | "Saved Page"
+  | "Lit Authenticated";
 
 export function trackEvent(
   event: EventName,
