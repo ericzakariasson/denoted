@@ -2,7 +2,7 @@ import { JSONContent } from "@tiptap/react";
 import { useRouter } from "next/router";
 import { NextPage } from "next/types";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useMutation } from "react-query";
 import { useAccount } from "wagmi";
 import { Editor } from "../components/Editor";
@@ -69,10 +69,10 @@ const CreatePage: NextPage = () => {
 
   return (
     <div>
-      {requiresResourceSignature && (
+      {/* {requiresResourceSignature && (
         <div className="mb-8 flex flex-col items-start gap-4 rounded-2xl border p-4">
           <div className="flex flex-col gap-1">
-            <h2 className="text-lg font-medium ">Updated model</h2>
+            <h2 className="text-lg font-medium ">Updated storage</h2>
             <p className="text-gray-600">
               We have updated the storage model, please sign again in order to
               save your page
@@ -88,7 +88,7 @@ const CreatePage: NextPage = () => {
             Sign message
           </button>
         </div>
-      )}
+      )} */}
 
       <Dialog.Root open={!isAuthenticated} modal={false}>
         <Dialog.Portal>

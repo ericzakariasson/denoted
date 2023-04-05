@@ -83,8 +83,6 @@ export function AuthSteps() {
     },
   });
 
-  console.log("connectedRef", connectedRef.current);
-
   const ceramic = useCeramic();
   const lit = useLit();
 
