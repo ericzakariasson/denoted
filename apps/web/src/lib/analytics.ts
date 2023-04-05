@@ -21,8 +21,8 @@ type EventName =
   | "Ceramic Authenticate Clicked"
   | "Create Page Link Clicked"
   | "Lit Authenticate Clicked"
-  | "Save Page Clicked"
-  | "Saved Page"
+  | "Page Save Clicked"
+  | "Page Saved"
   | "Lit Authenticated";
 
 export function trackEvent(

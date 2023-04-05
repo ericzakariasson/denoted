@@ -44,7 +44,7 @@ const CreatePage: NextPage = () => {
       return await createPage(encryptedPageInput);
     },
     {
-      onMutate: () => trackEvent("Save Page Clicked"),
+      onMutate: () => trackEvent("Page Save Clicked"),
       onError: (error) => {
         console.error("Create error", error);
       },
@@ -53,7 +53,7 @@ const CreatePage: NextPage = () => {
 
         const id = data?.createPage?.document?.id ?? null;
         if (id) {
-          trackEvent("Saved Page", { pageId: id });
+          trackEvent("Page Saved", { pageId: id });
           router.push(id);
         }
       },
