@@ -25,6 +25,19 @@ export const Connect = () => {
     address,
   });
 
+  if (isConnected && address) {
+    return (
+      <button
+        onClick={() => disconnect()}
+        className={cn(
+          "rounded-xl from-gray-100 to-gray-200 px-5 py-2 leading-tight text-gray-800 enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-gray-300"
+        )}
+      >
+        {ensName ?? formatEthAddress(address, 5, 40)}
+      </button>
+    );
+  }
+
   return (
     <>
       {connectors.map((connector) => (
@@ -35,11 +48,6 @@ export const Connect = () => {
           key={connector?.id}
           onClick={() => connect({ connector })}
         >
-          {isConnected && address && (
-            <p onClick={() => disconnect()}>
-              {ensName ?? formatEthAddress(address, 5, 40)}
-            </p>
-          )}
           {isConnecting && <p>Connecting...</p>}
           {!isConnected && !isConnecting && <p>Connect</p>}
         </button>

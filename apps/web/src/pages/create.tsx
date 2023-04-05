@@ -12,24 +12,18 @@ import { useLit } from "../hooks/useLit";
 import { cn } from "../utils/classnames";
 import { encryptPage, serializePage } from "../utils/page-helper";
 import { trackEvent } from "../lib/analytics";
+import { AuthSteps } from "../components/AuthSteps";
+import * as Dialog from "@radix-ui/react-dialog";
 
 const CreatePage: NextPage = () => {
   const [title, setTitle] = useState("");
   const [json, setJson] = useState<JSONContent>();
 
   const ceramic = useCeramic();
-
-  const { isConnected } = useAccount();
+  const lit = useLit();
+  const account = useAccount();
 
   const router = useRouter();
-
-  useEffect(() => {
-    if (!isConnected) {
-      router.replace("/get-started");
-    }
-  }, [isConnected, router]);
-
-  const { address } = useAccount();
 
   const savePageMutation = useMutation(
     async () => {
@@ -40,7 +34,7 @@ const CreatePage: NextPage = () => {
         new Date()
       );
 
-      const encryptedPageInput = await encryptPage(pageInput, address!);
+      const encryptedPageInput = await encryptPage(pageInput, account.address!);
       return await createPage(encryptedPageInput);
     },
     {
@@ -60,17 +54,22 @@ const CreatePage: NextPage = () => {
     }
   );
 
-  const lit = useLit();
-
   const isAuthenticated =
-    ceramic.isComposeResourcesSigned && lit.isLitAuthenticated;
+    account.isConnected &&
+    ceramic.isComposeResourcesSigned &&
+    lit.isLitAuthenticated;
+
+  const requiresResourceSignature =
+    account.isConnected &&
+    lit.isLitAuthenticated &&
+    !ceramic.isComposeResourcesSigned;
 
   const isEnabled =
     isAuthenticated && title.length > 0 && (json?.content ?? []).length > 0;
 
   return (
     <div>
-      {!ceramic.isComposeResourcesSigned && (
+      {requiresResourceSignature && (
         <div className="mb-8 flex flex-col items-start gap-4 rounded-2xl border p-4">
           <div className="flex flex-col gap-1">
             <h2 className="text-lg font-medium ">Updated model</h2>
@@ -90,6 +89,18 @@ const CreatePage: NextPage = () => {
           </button>
         </div>
       )}
+
+      <Dialog.Root open={!isAuthenticated} modal={false}>
+        <Dialog.Portal>
+          <Dialog.Content className="fixed top-[50%] left-[50%] mx-auto max-w-3xl translate-x-[-50%] translate-y-[-50%] rounded-2xl bg-white p-8 shadow-lg ">
+            <Dialog.Title className="text-3xl font-bold text-gray-800">
+              Setup account
+            </Dialog.Title>
+            <Dialog.Close />
+            <AuthSteps />
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
       <div className="mb-4">
         <input
           placeholder="Untitled"

@@ -22,7 +22,6 @@ export function getIsLitAuthenticated() {
       LOCAL_STORAGE_KEYS.AUTH_SIGNATURE,
       LOCAL_STORAGE_KEYS.KEY_PAIR,
     ].every((key) => {
-      console.log(key, Boolean(localStorage.getItem(key)));
       return Boolean(localStorage.getItem(key));
     });
   } catch {

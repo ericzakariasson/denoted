@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useRef } from "react";
 import { useMutation } from "react-query";
 import { useAccount, useConnect } from "wagmi";
 import { useCeramic } from "../hooks/useCeramic";
@@ -7,29 +7,50 @@ import { useLit } from "../hooks/useLit";
 import { identify, trackEvent } from "../lib/analytics";
 import { cn } from "../utils/classnames";
 
-type GetStartedStepProps = PropsWithChildren<{
-  step: number;
+type AuthStepProps = PropsWithChildren<{
   title: string;
   description: string;
   completed: boolean;
 }>;
 
-function GetStartedStep({
-  step,
-  title,
-  description,
-  completed,
-  children,
-}: GetStartedStepProps) {
+function AuthStep({ title, description, completed, children }: AuthStepProps) {
   return (
     <li className="flex gap-4">
       <span
         className={cn(
-          "block h-8 w-8 flex-shrink-0 rounded-lg bg-gray-100 text-center font-medium leading-8 text-gray-500",
+          " flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg  bg-gray-100 text-center font-medium text-gray-500",
           completed && "bg-green-400 text-white"
         )}
       >
-        {step}
+        {completed ? (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+          </svg>
+        )}
       </span>
       <div className="flex flex-col items-start gap-4">
         <div className="gap-2">
@@ -42,21 +63,27 @@ function GetStartedStep({
   );
 }
 
-const fromGetStarted = {
-  from: "Get started",
+const fromAuthSteps = {
+  from: "Auth Steps Modal",
 };
 
-export function GetStarted() {
+export function AuthSteps() {
   const { isConnected } = useAccount();
+
+  // store the connected state in a ref to prevent it from being removed when connecting from the modal
+  const connectedRef = useRef(isConnected);
+
   const { connect, isLoading, connectors } = useConnect({
     onSuccess: (data) => {
       identify(data.account);
       trackEvent("Wallet Connected", {
         chainId: data.chain.id,
-        ...fromGetStarted,
+        ...fromAuthSteps,
       });
     },
   });
+
+  console.log("connectedRef", connectedRef.current);
 
   const ceramic = useCeramic();
   const lit = useLit();
@@ -67,7 +94,7 @@ export function GetStarted() {
     },
     {
       onMutate: () => {
-        trackEvent("Ceramic Authenticate Clicked", fromGetStarted);
+        trackEvent("Ceramic Authenticate Clicked", fromAuthSteps);
       },
     }
   );
@@ -78,33 +105,32 @@ export function GetStarted() {
     },
     {
       onMutate: () => {
-        trackEvent("Lit Authenticate Clicked", fromGetStarted);
+        trackEvent("Lit Authenticate Clicked", fromAuthSteps);
       },
     }
   );
 
   return (
     <div className="mb-2 rounded-3xl">
-      <h1 className="mb-8 text-4xl font-bold text-gray-800">Get started</h1>
       <ul className="flex flex-col gap-12">
-        <GetStartedStep
-          step={1}
-          title="Connect wallet"
-          description="You need to connect your wallet in order to continue!"
-          completed={isConnected}
-        >
-          <button
-            className={cn(
-              "rounded-xl from-gray-700 to-gray-900 px-6 py-3 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-gray-300"
-            )}
-            disabled={isConnected}
-            onClick={() => connect({ connector: connectors[0] })}
+        {!connectedRef.current && (
+          <AuthStep
+            title="Connect wallet"
+            description="You need to connect your wallet in order to continue!"
+            completed={isConnected}
           >
-            {isLoading ? "Connecting..." : "Connect"}
-          </button>
-        </GetStartedStep>
-        <GetStartedStep
-          step={2}
+            <button
+              className={cn(
+                "rounded-xl from-gray-700 to-gray-900 px-6 py-3 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-gray-300"
+              )}
+              disabled={isConnected}
+              onClick={() => connect({ connector: connectors[0] })}
+            >
+              {isLoading ? "Connecting..." : "Connect"}
+            </button>
+          </AuthStep>
+        )}
+        <AuthStep
           title="Enable storage of pages"
           description="This ensures the integrity and immutability of your data by proving that you are the owner and authorizing any changes."
           completed={isConnected && ceramic.isComposeResourcesSigned}
@@ -120,32 +146,23 @@ export function GetStarted() {
               ? "Waiting..."
               : "Sign message"}
           </button>
-        </GetStartedStep>
-        <GetStartedStep
-          step={3}
+        </AuthStep>
+        <AuthStep
           title="Enable private pages"
           description="This ensures that even though your data is stored on the blockchain, it remains private and secure, with only authorized users having access to it."
-          completed={
-            isConnected &&
-            ceramic.isComposeResourcesSigned &&
-            lit.isLitAuthenticated
-          }
+          completed={isConnected && lit.isLitAuthenticated}
         >
           <button
             className={cn(
               "rounded-xl from-gray-700 to-gray-900 px-6 py-3 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-gray-300"
             )}
-            disabled={
-              lit.isLitAuthenticated ||
-              !ceramic.isComposeResourcesSigned ||
-              !isConnected
-            }
+            disabled={lit.isLitAuthenticated || !isConnected}
             onClick={() => authenticateLitMutation.mutate()}
           >
             {authenticateLitMutation.isLoading ? "Waiting..." : "Sign message"}
           </button>
-        </GetStartedStep>
-        <GetStartedStep
+        </AuthStep>
+        {/* <GetStartedStep
           step={4}
           title="Create a page!"
           description="Write away!"
@@ -166,7 +183,7 @@ export function GetStarted() {
           >
             {"Create page ->"}
           </Link>
-        </GetStartedStep>
+        </GetStartedStep> */}
       </ul>
     </div>
   );
