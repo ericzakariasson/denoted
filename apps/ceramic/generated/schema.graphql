@@ -90,9 +90,9 @@ type Page implements Node {
   data: [PageNode]
   type: String!
   title: String!
-  createdAt: String!
-  deletedAt: String
-  updatedAt: String
+  createdAt: DateTime!
+  deletedAt: DateTime
+  updatedAt: DateTime
 
   """Current version of the document"""
   version: CeramicCommitID!
@@ -114,6 +114,11 @@ type PageNode {
   marks: String
   content: String
 }
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
 
 """A Ceramic Commit ID"""
 scalar CeramicCommitID @specifiedBy(url: "https://github.com/ceramicnetwork/CIP/blob/main/CIPs/CIP-59/CIP-59.md#commitid")
@@ -146,9 +151,9 @@ input PageInput {
   data: [PageNodeInput]
   type: String!
   title: String!
-  createdAt: String!
-  deletedAt: String
-  updatedAt: String
+  createdAt: DateTime!
+  deletedAt: DateTime
+  updatedAt: DateTime
 }
 
 input PageNodeInput {
@@ -184,9 +189,9 @@ input PartialPageInput {
   data: [PageNodeInput]
   type: String
   title: String
-  createdAt: String
-  deletedAt: String
-  updatedAt: String
+  createdAt: DateTime
+  deletedAt: DateTime
+  updatedAt: DateTime
 }
 
 input UpdateOptionsInput {
