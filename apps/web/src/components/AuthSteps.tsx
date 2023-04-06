@@ -160,28 +160,6 @@ export function AuthSteps() {
             {authenticateLitMutation.isLoading ? "Waiting..." : "Sign message"}
           </button>
         </AuthStep>
-        {/* <GetStartedStep
-          step={4}
-          title="Create a page!"
-          description="Write away!"
-          completed={false}
-        >
-          <Link
-            className={cn(
-              "rounded-xl bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] from-gray-700 to-gray-900 px-6 py-3 leading-tight text-white shadow-md",
-              (!lit.isLitAuthenticated ||
-                !ceramic.isComposeResourcesSigned ||
-                !isConnected) &&
-                "bg-gray-300"
-            )}
-            onClick={() =>
-              trackEvent("Create Page Link Clicked", fromGetStarted)
-            }
-            href={"/create"}
-          >
-            {"Create page ->"}
-          </Link>
-        </GetStartedStep> */}
       </ul>
     </div>
   );
