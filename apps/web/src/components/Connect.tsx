@@ -1,18 +1,13 @@
 "use client";
 
-import { useAccount, useConnect, useDisconnect, useEnsName } from "wagmi";
-import { identify, trackEvent } from "../lib/analytics";
+import { useAccount, useDisconnect, useEnsName } from "wagmi";
+import { useCustomConnect } from "../hooks/useConnect";
+import { trackEvent } from "../lib/analytics";
 import { formatEthAddress } from "../utils";
+import { cn } from "../utils/classnames";
 export const Connect = () => {
   const { isConnected, address, isConnecting } = useAccount();
-  const { connect, connectors } = useConnect({
-    onSuccess: (data) => {
-      identify(data.account);
-      trackEvent("Wallet Connected", {
-        chainId: data.chain.id,
-      });
-    },
-  });
+  const { connect, connectors } = useCustomConnect();
   const { disconnect } = useDisconnect({
     onSuccess: () => {
       trackEvent("Wallet Disconnected");
@@ -24,21 +19,31 @@ export const Connect = () => {
     address,
   });
 
+  if (isConnected && address) {
+    return (
+      <button
+        onClick={() => disconnect()}
+        className={cn(
+          "rounded-xl from-gray-100 to-gray-200 px-5 py-2 leading-tight text-gray-800 enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-gray-300"
+        )}
+      >
+        {ensName ?? formatEthAddress(address, 5, 40)}
+      </button>
+    );
+  }
+
   return (
     <>
       {connectors.map((connector) => (
         <button
-          className="rounded-full border border-black px-2 py-0"
+          className={cn(
+            "rounded-xl from-gray-700 to-gray-900 px-5 py-2 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-gray-300"
+          )}
           key={connector?.id}
           onClick={() => connect({ connector })}
         >
-          {isConnected && address && (
-            <p onClick={() => disconnect()}>
-              {ensName ?? formatEthAddress(address, 5, 40)}
-            </p>
-          )}
-          {isConnecting && <p>connecting...</p>}
-          {!isConnected && !isConnecting && <p>connect</p>}
+          {isConnecting && <p>Connecting...</p>}
+          {!isConnected && !isConnecting && <p>Connect</p>}
         </button>
       ))}
     </>
