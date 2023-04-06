@@ -17,20 +17,25 @@ export function useCeramic() {
   const connector = new InjectedConnector();
 
   async function hasSession() {
+    const session = await getSession();
+    return session && session.hasSession && !session.isExpired;
+  }
+
+  async function getSession() {
     if (!address) {
-      throw new Error("Address is undefined");
+      return null;
     }
 
     // for production you will want a better place than localStorage for your sessions.
     const sessionStr = localStorage.getItem("did");
 
     if (!sessionStr) {
-      return false;
+      return null;
     }
 
     const session = await DIDSession.fromSession(sessionStr);
 
-    return session.hasSession && !session.isExpired;
+    return session;
   }
 
   function getIsResourcesSigned(resources: string[]) {
@@ -62,12 +67,7 @@ export function useCeramic() {
     const provider = await connector.getProvider();
 
     // for production you will want a better place than localStorage for your sessions.
-    const sessionStr = localStorage.getItem(LOCAL_STORAGE_KEYS.DID);
-    let session;
-
-    if (sessionStr) {
-      session = await DIDSession.fromSession(sessionStr);
-    }
+    let session = await getSession();
 
     const isResourcesSigned = isComposeResourcesSignedQuery.data;
 

@@ -1,9 +1,8 @@
-import { useCeramic } from "../hooks/useCeramic";
-import { composeClient } from "../lib/compose";
 import { useEffect } from "react";
+import { useCeramic } from "../hooks/useCeramic";
 
 export function InitializeCeramic() {
-  const ceramic = useCeramic(composeClient);
+  const ceramic = useCeramic();
 
   useEffect(() => {
     async function run() {
