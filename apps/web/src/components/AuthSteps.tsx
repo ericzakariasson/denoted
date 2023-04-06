@@ -1,10 +1,10 @@
-import Link from "next/link";
 import { PropsWithChildren, useRef } from "react";
 import { useMutation } from "react-query";
-import { useAccount, useConnect } from "wagmi";
+import { useAccount } from "wagmi";
 import { useCeramic } from "../hooks/useCeramic";
+import { useCustomConnect } from "../hooks/useConnect";
 import { useLit } from "../hooks/useLit";
-import { identify, trackEvent } from "../lib/analytics";
+import { trackEvent } from "../lib/analytics";
 import { cn } from "../utils/classnames";
 
 type AuthStepProps = PropsWithChildren<{
@@ -73,14 +73,8 @@ export function AuthSteps() {
   // store the connected state in a ref to prevent it from being removed when connecting from the modal
   const connectedRef = useRef(isConnected);
 
-  const { connect, isLoading, connectors } = useConnect({
-    onSuccess: (data) => {
-      identify(data.account);
-      trackEvent("Wallet Connected", {
-        chainId: data.chain.id,
-        ...fromAuthSteps,
-      });
-    },
+  const { connect, isLoading, connectors } = useCustomConnect({
+    eventProperties: fromAuthSteps,
   });
 
   const ceramic = useCeramic();
