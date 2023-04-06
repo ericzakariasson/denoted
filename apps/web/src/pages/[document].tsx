@@ -5,11 +5,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { Viewer } from "../components/Viewer";
 import { getPageQuery, Page } from "../composedb/page";
+import { composeClient } from "../lib/compose";
 import { decryptPage, deserializePage } from "../utils/page-helper";
 
 type Props = {
   page: Page;
-  isEditor: boolean;
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
@@ -32,16 +32,16 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 
   return {
     props: {
-      isEditor: true,
       page,
     },
   };
 };
 
-const DocumentPage: NextPage<Props> = ({ page: initialPage, isEditor }) => {
+const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
   const [page, setPage] = useState<ReturnType<typeof deserializePage> | null>(
     null
   );
+
   const { address } = useAccount();
 
   const handlePageLoad = useCallback(async () => {
@@ -68,17 +68,18 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage, isEditor }) => {
     content: page?.data ?? [],
   };
 
+  const isOwner = page?.createdBy.id === composeClient.id;
+
+  if (!page) {
+    return null;
+  }
+
   return (
     <div>
       <div className="flex items-start justify-between">
-        <h1 className="mb-8 text-5xl font-bold">{page?.title}</h1>
-        {isEditor && (
-          <span className="mb-1 inline-block rounded-full border px-2 py-0">
-            owner
-          </span>
-        )}
+        <h1 className="mb-8 text-5xl font-bold">{page.title}</h1>
       </div>
-      {page && <Viewer json={json} />}
+      <Viewer json={json} />
     </div>
   );
 };
