@@ -1,14 +1,42 @@
-import { ComposeClient } from "@composedb/client";
 import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
 import { InjectedConnector } from "@wagmi/core";
 import { DIDSession } from "did-session";
+import { useQuery } from "react-query";
 import { useAccount } from "wagmi";
 import { trackEvent } from "../lib/analytics";
+import { composeClient } from "../lib/compose";
 
-export function useCeramic(composeClient: ComposeClient) {
+export const LOCAL_STORAGE_KEYS = {
+  DID: "denoted.ceramic.did",
+  SIGNED_RESOURCES: "denoted.ceramic.signed-resources",
+};
+
+export function useCeramic() {
   const { address } = useAccount();
 
   const connector = new InjectedConnector();
+
+  function getIsResourcesSigned(resources: string[]) {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    const signedResources = JSON.parse(
+      localStorage.getItem(LOCAL_STORAGE_KEYS.SIGNED_RESOURCES) ?? "[]"
+    ) as string[];
+
+    return resources.every((resource) => {
+      return signedResources.includes(resource);
+    });
+  }
+
+  const isComposeResourcesSignedQuery = useQuery(
+    ["CERAMIC", "AUTHENTICATED"],
+    async () => {
+      return getIsResourcesSigned(composeClient.resources);
+    },
+    { cacheTime: 0 }
+  );
 
   async function authenticate() {
     if (!address) {
@@ -18,14 +46,20 @@ export function useCeramic(composeClient: ComposeClient) {
     const provider = await connector.getProvider();
 
     // for production you will want a better place than localStorage for your sessions.
-    const sessionStr = localStorage.getItem("did");
+    const sessionStr = localStorage.getItem(LOCAL_STORAGE_KEYS.DID);
     let session;
 
     if (sessionStr) {
       session = await DIDSession.fromSession(sessionStr);
     }
 
-    if (!session || (session.hasSession && session.isExpired)) {
+    const isResourcesSigned = isComposeResourcesSignedQuery.data;
+
+    if (
+      !isResourcesSigned ||
+      !session ||
+      (session.hasSession && session.isExpired)
+    ) {
       fromLocalStorage = false;
       const accountId = await getAccountId(provider, address);
       const authMethod = await EthereumWebAuth.getAuthMethod(
@@ -42,14 +76,22 @@ export function useCeramic(composeClient: ComposeClient) {
         resources: composeClient.resources,
       });
       // Set the session in localStorage.
-      localStorage.setItem("did", session.serialize());
+      localStorage.setItem(LOCAL_STORAGE_KEYS.DID, session.serialize());
+      localStorage.setItem(
+        LOCAL_STORAGE_KEYS.SIGNED_RESOURCES,
+        JSON.stringify(composeClient.resources)
+      );
     }
 
     // Set our Ceramic DID to be our session DID.
     composeClient.setDID(session.did as any);
+    isComposeResourcesSignedQuery.refetch();
     trackEvent("Ceramic Authenticated", {
       fromStorage: fromLocalStorage,
     });
   }
-  return { authenticate };
+  return {
+    authenticate,
+    isComposeResourcesSigned: isComposeResourcesSignedQuery.data ?? false,
+  };
 }
