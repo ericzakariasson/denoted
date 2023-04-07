@@ -18,10 +18,16 @@ import * as Dialog from "@radix-ui/react-dialog";
 const CreatePage: NextPage = () => {
   const [title, setTitle] = useState("");
   const [json, setJson] = useState<JSONContent>();
+  const [isCeramicSessionValid, setIsCeramicSessionValid] = useState<boolean>(false);
 
   const ceramic = useCeramic();
   const lit = useLit();
   const account = useAccount();
+
+  useEffect(() => {
+    const run = async () => setIsCeramicSessionValid(await ceramic.hasSession());
+    run();
+  }, [ceramic]);
 
   const router = useRouter();
 
@@ -57,6 +63,7 @@ const CreatePage: NextPage = () => {
   const isAuthenticated =
     account.isConnected &&
     ceramic.isComposeResourcesSigned &&
+    isCeramicSessionValid &&
     lit.isLitAuthenticated;
 
   const requiresResourceSignature =
