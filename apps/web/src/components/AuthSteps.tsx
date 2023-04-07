@@ -2,7 +2,7 @@ import { PropsWithChildren, useRef } from "react";
 import { useMutation } from "react-query";
 import { useAccount } from "wagmi";
 import { useCeramic } from "../hooks/useCeramic";
-import { useCustomConnect } from "../hooks/useConnect";
+import { useCustomConnect } from "../hooks/useCustomConnect";
 import { useLit } from "../hooks/useLit";
 import { trackEvent } from "../lib/analytics";
 import { cn } from "../utils/classnames";

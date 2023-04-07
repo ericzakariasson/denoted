@@ -54,6 +54,38 @@ export async function createPage(input: CreatePageInput) {
   );
 }
 
+export type UpdatePageInput = Partial<Omit<Page, "id">>;
+
+type UpdatePageMutation = {
+  updatePage: {
+    document: Page;
+  };
+};
+
+export async function updatePage(id: string, input: UpdatePageInput) {
+  return await composeClient.executeQuery<UpdatePageMutation>(
+    gql`
+      mutation ($id: ID!, $content: PartialPageInput!) {
+        updatePage(input: { id: $id, content: $content }) {
+          document {
+            id
+            createdBy {
+              id
+            }
+            createdAt
+            updatedAt
+            updatedBy
+          }
+        }
+      }
+    `,
+    {
+      id,
+      content: input,
+    }
+  );
+}
+
 export type GetPagesQuery = {
   pageIndex: {
     edges: {

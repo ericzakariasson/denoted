@@ -1,7 +1,7 @@
 "use client";
 
 import { useAccount, useDisconnect, useEnsName } from "wagmi";
-import { useCustomConnect } from "../hooks/useConnect";
+import { useCustomConnect } from "../hooks/useCustomConnect";
 import { trackEvent } from "../lib/analytics";
 import { formatEthAddress } from "../utils";
 import { cn } from "../utils/classnames";

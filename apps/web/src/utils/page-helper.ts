@@ -154,17 +154,20 @@ export async function encryptPage(
   return input;
 }
 
+export async function getStoredPageEncryptionKey(
+  pageKey: string,
+  userAddress: string
+) {
+  const { encryptionKey } = await getStoredEncryptionKey(pageKey, userAddress);
+
+  return await importEncryptionKey(encryptionKey);
+}
+
 export async function decryptPage(
   page: Page,
   userAddress: string
 ): Promise<Page> {
-  const { encryptionKey } = await getStoredEncryptionKey(
-    page.key!,
-    userAddress
-  );
-
-  const { key } = await importEncryptionKey(encryptionKey);
-
+  const { key } = await getStoredPageEncryptionKey(page.key!, userAddress);
   const [title, type] = await Promise.all([
     await decryptString(page.title, key),
     await decryptString<PageType>(page.type, key),

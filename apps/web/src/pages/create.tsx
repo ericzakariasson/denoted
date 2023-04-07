@@ -6,7 +6,7 @@ import { useEffect, useState, useRef } from "react";
 import { useMutation } from "react-query";
 import { useAccount } from "wagmi";
 import { Editor } from "../components/Editor";
-import { createPage } from "../composedb/page";
+import { createPage, updatePage } from "../composedb/page";
 import { useCeramic } from "../hooks/useCeramic";
 import { useLit } from "../hooks/useLit";
 import { cn } from "../utils/classnames";

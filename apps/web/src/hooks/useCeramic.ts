@@ -16,6 +16,28 @@ export function useCeramic() {
 
   const connector = new InjectedConnector();
 
+  async function hasSession() {
+    const session = await getSession();
+    return session && session.hasSession && !session.isExpired;
+  }
+
+  async function getSession() {
+    if (!address) {
+      return null;
+    }
+
+    // for production you will want a better place than localStorage for your sessions.
+    const sessionStr = localStorage.getItem("did");
+
+    if (!sessionStr) {
+      return null;
+    }
+
+    const session = await DIDSession.fromSession(sessionStr);
+
+    return session;
+  }
+
   function getIsResourcesSigned(resources: string[]) {
     if (typeof window === "undefined") {
       return false;
@@ -42,16 +64,10 @@ export function useCeramic() {
     if (!address) {
       throw new Error("Address is undefined");
     }
-    let fromLocalStorage = true;
     const provider = await connector.getProvider();
 
     // for production you will want a better place than localStorage for your sessions.
-    const sessionStr = localStorage.getItem(LOCAL_STORAGE_KEYS.DID);
-    let session;
-
-    if (sessionStr) {
-      session = await DIDSession.fromSession(sessionStr);
-    }
+    let session = await getSession();
 
     const isResourcesSigned = isComposeResourcesSignedQuery.data;
 
@@ -60,7 +76,6 @@ export function useCeramic() {
       !session ||
       (session.hasSession && session.isExpired)
     ) {
-      fromLocalStorage = false;
       const accountId = await getAccountId(provider, address);
       const authMethod = await EthereumWebAuth.getAuthMethod(
         provider,
@@ -75,6 +90,7 @@ export function useCeramic() {
       session = await DIDSession.authorize(authMethod, {
         resources: composeClient.resources,
       });
+      trackEvent("Ceramic Authenticated");
       // Set the session in localStorage.
       localStorage.setItem(LOCAL_STORAGE_KEYS.DID, session.serialize());
       localStorage.setItem(
@@ -86,12 +102,12 @@ export function useCeramic() {
     // Set our Ceramic DID to be our session DID.
     composeClient.setDID(session.did as any);
     isComposeResourcesSignedQuery.refetch();
-    trackEvent("Ceramic Authenticated", {
-      fromStorage: fromLocalStorage,
-    });
   }
+
   return {
     authenticate,
+    hasSession,
+    isInitialized: Boolean(composeClient.id),
     isComposeResourcesSigned: isComposeResourcesSignedQuery.data ?? false,
   };
 }
