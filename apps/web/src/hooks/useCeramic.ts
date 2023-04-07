@@ -1,6 +1,7 @@
 import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
 import { InjectedConnector } from "@wagmi/core";
 import { DIDSession } from "did-session";
+import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useAccount } from "wagmi";
 import { trackEvent } from "../lib/analytics";
@@ -16,9 +17,13 @@ export function useCeramic() {
 
   const connector = new InjectedConnector();
 
+  function isSessionValid(session: DIDSession | null) {
+    return !!session && session.hasSession && !session.isExpired;
+  }
+
   async function hasSession() {
     const session = await getSession();
-    return session && session.hasSession && !session.isExpired;
+    return isSessionValid(session);
   }
 
   async function getSession() {
@@ -27,7 +32,7 @@ export function useCeramic() {
     }
 
     // for production you will want a better place than localStorage for your sessions.
-    const sessionStr = localStorage.getItem("did");
+    const sessionStr = localStorage.getItem(LOCAL_STORAGE_KEYS.DID);
 
     if (!sessionStr) {
       return null;
@@ -69,12 +74,12 @@ export function useCeramic() {
     // for production you will want a better place than localStorage for your sessions.
     let session = await getSession();
 
-    const isResourcesSigned = isComposeResourcesSignedQuery.data;
+    const isResourcesSigned = getIsResourcesSigned(composeClient.resources);
 
     if (
       !isResourcesSigned ||
       !session ||
-      (session.hasSession && session.isExpired)
+      !isSessionValid(session)
     ) {
       const accountId = await getAccountId(provider, address);
       const authMethod = await EthereumWebAuth.getAuthMethod(
@@ -90,7 +95,7 @@ export function useCeramic() {
       session = await DIDSession.authorize(authMethod, {
         resources: composeClient.resources,
       });
-      trackEvent("Ceramic Authenticated");
+      trackEvent("Ceramic Authenticated", { from: 'authenticate' });
       // Set the session in localStorage.
       localStorage.setItem(LOCAL_STORAGE_KEYS.DID, session.serialize());
       localStorage.setItem(
@@ -101,6 +106,7 @@ export function useCeramic() {
 
     // Set our Ceramic DID to be our session DID.
     composeClient.setDID(session.did as any);
+    trackEvent("Ceramic Authenticated", { from: 'session' });
     isComposeResourcesSignedQuery.refetch();
   }
 
