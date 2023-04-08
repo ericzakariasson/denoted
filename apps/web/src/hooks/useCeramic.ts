@@ -72,15 +72,14 @@ export function useCeramic() {
     const provider = await connector.getProvider();
 
     // for production you will want a better place than localStorage for your sessions.
-    let session = await getSession();
+    const session = await getSession();
 
     const isResourcesSigned = getIsResourcesSigned(composeClient.resources);
 
-    if (
-      !isResourcesSigned ||
-      !session ||
-      !isSessionValid(session)
-    ) {
+    if (isResourcesSigned && session && isSessionValid(session)) {
+      composeClient.setDID(session.did);
+      trackEvent("Ceramic Authenticated", { from: 'session' });
+    } else {
       const accountId = await getAccountId(provider, address);
       const authMethod = await EthereumWebAuth.getAuthMethod(
         provider,
@@ -92,21 +91,22 @@ export function useCeramic() {
        * @NOTE: Any production applications will want to provide a more complete list of capabilities.
        *        This is not done here to allow you to add more datamodels to your application.
        */
-      session = await DIDSession.authorize(authMethod, {
+      const newSession = await DIDSession.authorize(authMethod, {
         resources: composeClient.resources,
       });
+      
+      // Set our Ceramic DID to be our session DID.
+      composeClient.setDID(newSession.did);
       trackEvent("Ceramic Authenticated", { from: 'authenticate' });
+
       // Set the session in localStorage.
-      localStorage.setItem(LOCAL_STORAGE_KEYS.DID, session.serialize());
+      localStorage.setItem(LOCAL_STORAGE_KEYS.DID, newSession.serialize());
       localStorage.setItem(
         LOCAL_STORAGE_KEYS.SIGNED_RESOURCES,
         JSON.stringify(composeClient.resources)
       );
     }
-
-    // Set our Ceramic DID to be our session DID.
-    composeClient.setDID(session.did as any);
-    trackEvent("Ceramic Authenticated", { from: 'session' });
+  
     isComposeResourcesSignedQuery.refetch();
   }
 
