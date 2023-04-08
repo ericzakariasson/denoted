@@ -1,4 +1,4 @@
-import { PropsWithChildren, useRef } from "react";
+import { PropsWithChildren, useRef, useEffect, useState } from "react";
 import { useMutation } from "react-query";
 import { useAccount } from "wagmi";
 import { useCeramic } from "../hooks/useCeramic";
@@ -69,6 +69,7 @@ const fromAuthSteps = {
 
 export function AuthSteps() {
   const { isConnected } = useAccount();
+  const [isCeramicSessionValid, setIsCeramicSessionValid] = useState<boolean>(false);
 
   // store the connected state in a ref to prevent it from being removed when connecting from the modal
   const connectedRef = useRef(isConnected);
@@ -79,6 +80,11 @@ export function AuthSteps() {
 
   const ceramic = useCeramic();
   const lit = useLit();
+
+  useEffect(() => {
+    const run = async () => setIsCeramicSessionValid(await ceramic.hasSession());
+    run();
+  }, [ceramic]);
 
   const authenticateCeramicMutation = useMutation(
     async () => {
@@ -101,6 +107,8 @@ export function AuthSteps() {
       },
     }
   );
+
+  const isCeramicConnected = ceramic.isComposeResourcesSigned && isCeramicSessionValid;
 
   return (
     <div className="mb-2 rounded-3xl">
@@ -125,13 +133,13 @@ export function AuthSteps() {
         <AuthStep
           title="Enable storage of pages"
           description="This ensures the integrity and immutability of your data by proving that you are the owner and authorizing any changes."
-          completed={isConnected && ceramic.isComposeResourcesSigned}
+          completed={isConnected && isCeramicConnected}
         >
           <button
             className={cn(
               "rounded-xl from-gray-700 to-gray-900 px-6 py-3 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-gray-300"
             )}
-            disabled={ceramic.isComposeResourcesSigned || !isConnected}
+            disabled={(ceramic.isComposeResourcesSigned && isCeramicConnected) || !isConnected}
             onClick={() => authenticateCeramicMutation.mutate()}
           >
             {authenticateCeramicMutation.isLoading
