@@ -2,6 +2,7 @@ import { cn } from "../utils/classnames";
 import { PropsWithChildren } from "react";
 import { QueryStatus, UseQueryResult } from "react-query";
 import ContentLoader from "react-content-loader";
+import * as Sentry from "@sentry/nextjs";
 
 import * as Tooltip from "@radix-ui/react-tooltip";
 
@@ -42,6 +43,7 @@ export const DataPill = ({
   }
 
   if (isStatus("error")) {
+    Sentry.captureException(query.error);
     const message =
       "message" in (query.error as any)
         ? (query.error as any).message
