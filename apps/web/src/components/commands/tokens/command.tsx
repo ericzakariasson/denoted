@@ -1,8 +1,8 @@
-import { mainnet } from "wagmi/chains";
 import { CommandConfiguration } from "../types";
 import { TokenPriceConfig } from "./Config";
 import { TokenWidgetProps } from "./Tokens";
 import icon from "./icon.svg";
+import { supportedChains } from "./helpers";
 
 export const tokenPriceCommand: CommandConfiguration<TokenWidgetProps> = {
   command: "token-price",
@@ -12,7 +12,7 @@ export const tokenPriceCommand: CommandConfiguration<TokenWidgetProps> = {
   blockType: "inline",
   defaultValues: {
     property: "price",
-    chainName: mainnet.name.toLowerCase(),
+    chainName: supportedChains.ETHEREUM,
     token: undefined,
     platforms: "basic"
   },

@@ -1,7 +1,7 @@
 import { DataPill } from "../../DataPill";
 import { useQuery } from "react-query";
 import { Tokens } from "./types";
-import { findToken } from "./tokenHelpers";
+import { findToken } from "./helpers";
 import Image from "next/image";
 
 export type TokenWidgetProps = {
@@ -34,7 +34,6 @@ const TokenPriceWidget = ({
       const url = `https://api.portals.fi/v2/tokens?search=${token}&platforms=${platforms}&networks=${chainName}`;
       const response = await fetch(url);
       const json = await response.json();
-
       const tokenData: Tokens = findToken({
         query: token,
         tokenList: json.tokens,

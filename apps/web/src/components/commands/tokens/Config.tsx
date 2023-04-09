@@ -6,6 +6,7 @@ import * as chains from "wagmi/chains";
 import { CommandExtensionProps } from "../../../lib/tiptap/types";
 import { TokenWidget, TokenWidgetProps } from "./Tokens";
 import { Label } from "../../Label";
+import { supportedChains } from "./helpers";
 
 export const TokenPriceConfig = (
   props: CommandExtensionProps<TokenWidgetProps>
@@ -19,6 +20,7 @@ export const TokenPriceConfig = (
     props.updateAttributes({
       chainName: formData.get("chainName")?.toString() ?? undefined,
       token: formData.get("token")?.toString() ?? undefined
+
     });
 
     setOpen(false);
@@ -88,6 +90,19 @@ export const TokenPriceConfig = (
                     defaultValue={token}
                     required
                   />
+                </Label>
+                <Label label="Chain">
+                  <select
+                    name="chainName"
+                    defaultValue={supportedChains.ETHEREUM ?? ""}
+                    className="rounded-lg border-none bg-gray-200"
+                  >
+                    {Object.values(supportedChains).map((chainName) => (
+                      <option key={chainName} value={chainName}>
+                        {chainName}
+                      </option>
+                    ))}
+                  </select>
                 </Label>
                 <button
                   type="submit"
