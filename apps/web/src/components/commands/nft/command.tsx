@@ -31,20 +31,6 @@ export const nftTotalSalesVolumeCommand: CommandConfiguration<NftWidgetProps> = 
   ConfigComponent: NftConfig,
 };
 
-// export const nftHoldersCommand: CommandConfiguration<NftWidgetProps> = {
-//   command: "holders",
-//   title: "NFT Holders",
-//   description: "Amount of Holders for NFT",
-//   icon: null,
-//   blockType: "inline",
-//   defaultValues: {
-//     property: "holders",
-//     address: undefined,
-//     chain: mainnet.id,
-//   },
-//   ConfigComponent: NftConfig,
-// };
-
 export const nftImageCommand: CommandConfiguration<NftWidgetProps> = {
   command: "nft-image",
   title: "NFT Image",

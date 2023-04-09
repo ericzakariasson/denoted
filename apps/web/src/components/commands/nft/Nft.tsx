@@ -1,6 +1,7 @@
 import { DataPill } from "../../DataPill";
 import { useQuery } from "react-query";
 import Image from "next/image";
+import { NftPortAPIAssetResponse, NftPortAPIStatsResponse } from "./types";
 
 export type NftWidgetProps = {
   property: "holders" | "floor" | "total-sales-volume" | "image";
@@ -14,7 +15,7 @@ export const NftWidget = ({ property, ...props }: NftWidgetProps) => {
     case "floor":
       return <NftFloorWidget {...props} />;
     case "holders":
-      // return <NftHoldersWidget {...props} />;
+      return null;
     case "total-sales-volume":
       return <NftTotalSalesVolumeWidget {...props} />;
     case "image":
@@ -34,16 +35,16 @@ const NftFloorWidget = ({
 }: Pick<NftWidgetProps, "address" | "chain">) => {
   const query = useQuery(["NFT", "FLOOR", address, chain], async () => {
     const url = `https://api.nftport.xyz/v0/transactions/stats/${address}?chain=${NFT_PORT_CHAINS[chain]}`;
-    const response = await fetch(
-      url,
-      {
-        headers: {
-          Authorization: process.env.NEXT_PUBLIC_NFT_PORT_API_KEY as string,
-        },
-      }
-    );
-      console.log({ url })
-    const json = await response.json();
+    const response = await fetch(url, {
+      headers: {
+        Authorization: process.env.NEXT_PUBLIC_NFT_PORT_API_KEY as string,
+      },
+    });
+    console.log("response", response)
+    if (!response.ok) {
+      throw new Error(`NFT Port API error. Status: ${response.status} ${response.statusText}`);
+    }
+    const json: NftPortAPIStatsResponse = await response.json();
 
     return {
       floorPrice: json.statistics.floor_price as number,
@@ -66,63 +67,52 @@ const NftTotalSalesVolumeWidget = ({
         },
       }
     );
-    const json = await response.json();
+    if (!response.ok) {
+      throw new Error(`NFT Port API error. Status: ${response.status} ${response.statusText}`);
+    }
+
+    const json: NftPortAPIStatsResponse = await response.json();
 
     return {
       totalSalesVolume: json.statistics.total_volume as number,
     };
   });
 
-  return <DataPill query={query}>{`${query.data?.totalSalesVolume} ETH`}</DataPill>;
+  return (
+    <DataPill query={query}>{`${query.data?.totalSalesVolume} ETH`}</DataPill>
+  );
 };
-
-// const NftHoldersWidget = ({
-//   address,
-//   chain,
-// }: Pick<NftWidgetProps, "address" | "chain">) => {
-//   const query = useQuery(["NFT", "HOLDERS", address, chain], async () => {
-//     const url = `https://api.nftport.xyz/v0/nfts/${address}?chain=${NFT_PORT_CHAINS[chain]}`
-//     const response = await fetch(
-//       url,
-//       {
-//         headers: {
-//           Authorization: process.env.NEXT_PUBLIC_NFT_PORT_API_KEY as string,
-//         },
-//       }
-//     );
-//     const json = await response.json();
-//     console.log({ url })
-
-//     console.log({ json })
-//     return {
-//       holders: json as number,
-//     };
-//   });
-
-//   return <DataPill query={query}>{""}</DataPill>;
-// };
 
 const NftImageWidget = ({
   address,
   chain,
-  tokenId
+  tokenId,
 }: Pick<NftWidgetProps, "address" | "chain" | "tokenId">) => {
   const query = useQuery(["NFT", "IMAGE", address, chain], async () => {
-    const url = `https://api.nftport.xyz/v0/nfts/${address}/${tokenId}?chain=${NFT_PORT_CHAINS[chain]}`
-    const response = await fetch(
-      url,
-      {
-        headers: {
-          Authorization: process.env.NEXT_PUBLIC_NFT_PORT_API_KEY as string,
-        },
-      }
-    );
-    const json = await response.json();
+    const url = `https://api.nftport.xyz/v0/nfts/${address}/${tokenId}?chain=${NFT_PORT_CHAINS[chain]}`;
+    const response = await fetch(url, {
+      headers: {
+        Authorization: process.env.NEXT_PUBLIC_NFT_PORT_API_KEY as string,
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`NFT Port API error. Status: ${response.status} ${response.statusText}`);
+    }
+
+    const json: NftPortAPIAssetResponse = await response.json();
     return {
       image: json.nft.cached_file_url as string,
-      collectionName: json.contract.name as string
+      collectionName: json.contract.name as string,
     };
   });
-  if(!query.data) return null
-  return <Image src={query.data.image} alt={query.data.collectionName} width={100} height={100} style={{margin: 0}}/>
+  if (!query.data) return null;
+  return (
+    <Image
+      src={query.data.image}
+      alt={query.data.collectionName}
+      width={100}
+      height={100}
+      style={{ margin: 0 }}
+    />
+  );
 };
