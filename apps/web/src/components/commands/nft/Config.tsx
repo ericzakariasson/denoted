@@ -19,6 +19,7 @@ export const NftConfig = (props: CommandExtensionProps<NftWidgetProps>) => {
       chain: formData.get("chain")
         ? Number(formData.get("chain")?.toString())
         : undefined,
+      tokenId: Number(formData.get("tokenId")?.toString()) ?? undefined,
     });
 
     setOpen(false);
@@ -26,10 +27,10 @@ export const NftConfig = (props: CommandExtensionProps<NftWidgetProps>) => {
     props.editor.view.dom.focus();
   }
 
-  const { property, address, chain } = props.node.attrs;
+  const { property, address, chain, tokenId } = props.node.attrs;
 
   const isConfigured =
-    property !== undefined && address !== undefined && chain !== undefined;
+    property !== undefined && address !== undefined && chain !== undefined || tokenId !== undefined
 
   useEffect(() => {
     if (!isConfigured) {
@@ -50,7 +51,7 @@ export const NftConfig = (props: CommandExtensionProps<NftWidgetProps>) => {
         >
           <Popover.Trigger>
             {isConfigured ? (
-              <NftWidget property={property} address={address} chain={chain} />
+              <NftWidget property={property} address={address} chain={chain} tokenId={tokenId} />
             ) : (
               <span className="rounded-full border border-gray-300 py-0 px-1 leading-normal text-gray-500">
                 setup
@@ -77,6 +78,15 @@ export const NftConfig = (props: CommandExtensionProps<NftWidgetProps>) => {
                     required
                   />
                 </Label>
+                {property === "image"  && <Label label="Token Id">
+                  <input
+                    name="tokenId"
+                    placeholder="1337"
+                    defaultValue={tokenId ?? ""}
+                    className="rounded-lg bg-gray-200 px-3 py-2"
+                    required
+                  />
+                </Label>}
                 <Label label="Chain">
                   <select
                     name="chain"
