@@ -12,7 +12,11 @@ import {
   writeEncodedComposite,
 } from "@composedb/devtools-node";
 
-import "dotenv/config";
+import { config } from "dotenv";
+
+config({
+  path: process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : ".env",
+});
 
 export async function createAndDeploy() {
   const privateKey = fromString(process.env.DID_PRIVATE_KEY as string, "hex");

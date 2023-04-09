@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 // import { Connect } from "./Connect";
+import { cn } from "../utils/classnames";
 import { Logo } from "./Logo";
 
 const Connect = dynamic(() => import("./Connect").then((x) => x.Connect), {
@@ -18,15 +19,15 @@ export const Navbar = ({ className }: NavbarProps) => {
         <Link href={`/`}>
           <Logo />
         </Link>
-        <div className="flex gap-2">
-          <Link href={`/explore`} className="px-2 py-0 text-black">
-            explore
-          </Link>
+        <div className="flex items-center gap-4">
+          <Link href={`/explore`}>Explore</Link>
           <Link
             href={`/create`}
-            className="rounded-full border border-black bg-black px-2 py-0 text-white"
+            className={cn(
+              "rounded-xl border border-gray-700 bg-white px-5 py-2 leading-tight text-gray-700 shadow-sm"
+            )}
           >
-            create
+            Create
           </Link>
           <Connect />
         </div>

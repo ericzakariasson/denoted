@@ -40,7 +40,6 @@ type EditorProps = {
 };
 
 const commandExtensions = getCommandExtensions();
-
 export const extensions = [
   StarterKit,
   Highlight,
