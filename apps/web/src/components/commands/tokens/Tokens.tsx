@@ -1,6 +1,6 @@
 import { DataPill } from "../../DataPill";
 import { useQuery } from "react-query";
-import { Tokens } from "./types";
+import { PortalsResponse, Token } from "./types";
 import { findToken } from "./helpers";
 import Image from "next/image";
 
@@ -33,8 +33,14 @@ const TokenPriceWidget = ({
       }
       const url = `https://api.portals.fi/v2/tokens?search=${token}&platforms=${platforms}&networks=${chainName}`;
       const response = await fetch(url);
-      const json = await response.json();
-      const tokenData: Tokens = findToken({
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch token data. Status: ${response.status} ${response.statusText}`
+        );
+      }
+      const json: PortalsResponse = await response.json();
+      
+      const tokenData: Token = findToken({
         query: token,
         tokenList: json.tokens,
       });
@@ -48,19 +54,19 @@ const TokenPriceWidget = ({
     }
   );
 
-  if (!query.data) return <div>Loading...</div>;
+  if (!query.data) return <div>No data returned</div>;
 
   return (
     <>
       <DataPill query={query} className="flex flex-row">
-          <Image
-            src={query.data.tokenImage}
-            alt={query.data.tokenName}
-            width={30}
-            height={0}
-            style={{ margin: 0, marginRight: 8 }}
-          />
-          {query.data?.tokenPrice} {query.data?.tokenSymbol}
+        <Image
+          src={query.data.tokenImage}
+          alt={query.data.tokenName}
+          width={30}
+          height={0}
+          style={{ margin: 0, marginRight: 8 }}
+        />
+        {query.data?.tokenPrice} {query.data?.tokenSymbol}
       </DataPill>
     </>
   );

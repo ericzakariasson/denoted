@@ -25,7 +25,7 @@ export const DataPill = ({
   if (isStatus("loading")) {
     return (
       <span
-        className={cn(base, "relative top-1 inline-flex overflow-hidden p-0 width-0")}
+        className={cn(base, "relative top-1 inline-flex overflow-hidden p-0")}
       >
         <ContentLoader
           speed={2}

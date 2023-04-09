@@ -1,8 +1,6 @@
 import { NodeViewWrapper } from "@tiptap/react";
-import React, { useEffect, useMemo, useState } from "react";
-
+import React, { useEffect, useState } from "react";
 import * as Popover from "@radix-ui/react-popover";
-import * as chains from "wagmi/chains";
 import { CommandExtensionProps } from "../../../lib/tiptap/types";
 import { TokenWidget, TokenWidgetProps } from "./Tokens";
 import { Label } from "../../Label";
@@ -94,12 +92,12 @@ export const TokenPriceConfig = (
                 <Label label="Chain">
                   <select
                     name="chainName"
-                    defaultValue={supportedChains.ETHEREUM ?? ""}
+                    defaultValue={chainName}
                     className="rounded-lg border-none bg-gray-200"
                   >
-                    {Object.values(supportedChains).map((chainName) => (
-                      <option key={chainName} value={chainName}>
-                        {chainName}
+                    {Object.values(supportedChains).map((name) => (
+                      <option key={name} value={name}>
+                        {name}
                       </option>
                     ))}
                   </select>

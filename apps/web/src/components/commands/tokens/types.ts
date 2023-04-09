@@ -1,4 +1,12 @@
-export interface Tokens {
+export interface PortalsResponse {
+    more: boolean;
+    page: number;
+    pageItems: number;
+    tokens : Token[];
+    totalItems: number;
+}
+
+export interface Token {
     address: string; 
     addresses: Record<string, string>;
     createdAt: Date;
