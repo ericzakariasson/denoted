@@ -26,10 +26,10 @@ module.exports = {
       },
       {
         protocol: 'https',
-      hostname: 'storage.googleapis.com',
-      port: '',
-      pathname: '/**',
-    },
+        hostname: 'storage.googleapis.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   }
 };
