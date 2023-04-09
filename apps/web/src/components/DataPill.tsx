@@ -1,5 +1,5 @@
 import { cn } from "../utils/classnames";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useEffect } from "react";
 import { QueryStatus, UseQueryResult } from "react-query";
 import ContentLoader from "react-content-loader";
 import * as Sentry from "@sentry/nextjs";
@@ -23,6 +23,12 @@ export const DataPill = ({
   const isStatus = (s: QueryStatus) =>
     [query.status, status].some((x) => x === s);
 
+  useEffect(() => {
+    if (query.isError) {
+      Sentry.captureException(query.error);
+    }
+  }, [query.isError, query.error]);
+
   if (isStatus("loading")) {
     return (
       <span
@@ -43,7 +49,6 @@ export const DataPill = ({
   }
 
   if (isStatus("error")) {
-    Sentry.captureException(query.error);
     const message =
       "message" in (query.error as any)
         ? (query.error as any).message
