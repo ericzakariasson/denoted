@@ -27,7 +27,6 @@ export const TokenPriceConfig = (
   }
 
   const { property, chainName, token, platforms } = props.node.attrs;
-
   const isConfigured =
     property !== undefined &&
     chainName !== undefined &&
@@ -45,7 +44,7 @@ export const TokenPriceConfig = (
       {isConfigured && !props.editor.isEditable && (
         <TokenWidget
           property={property}
-          chainName={chainName.toLowerCase()}
+          chainName={chainName}
           token={token}
           platforms={platforms}
         />
@@ -60,7 +59,7 @@ export const TokenPriceConfig = (
             {isConfigured ? (
               <TokenWidget
                 property={property}
-                chainName={chainName.toLowerCase()}
+                chainName={chainName}
                 token={token}
                 platforms={platforms}
               />
