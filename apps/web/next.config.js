@@ -20,12 +20,18 @@ module.exports = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: 'assets.coingecko.com',
+        port: '',
+        pathname: '/coins/images/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'storage.googleapis.com',
         port: '',
         pathname: '/**',
       },
     ],
-  },
+  }
 };
 
 module.exports = withSentryConfig(
