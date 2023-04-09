@@ -124,5 +124,5 @@ const NftImageWidget = ({
     };
   });
   if(!query.data) return null
-  return <Image src={query.data.image} alt={query.data.collectionName} width={100} height={100} />
+  return <Image src={query.data.image} alt={query.data.collectionName} width={100} height={100} style={{margin: 0}}/>
 };
