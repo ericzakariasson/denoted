@@ -1,29 +1,35 @@
-import { Editor } from "@tiptap/core";
 import { NodeViewWrapper } from "@tiptap/react";
-import React, { useEffect } from "react";
+
+import * as chains from "wagmi/chains";
 
 import * as Popover from "@radix-ui/react-popover";
-import { useState } from "react";
-import { LensWidget, LensWidgetProps } from "./Lens";
+import { useEffect, useState } from "react";
 import { CommandExtensionProps } from "../../../lib/tiptap/types";
+import { TransactionWidget, TransactionWidgetProps } from "./Transaction";
 import { Label } from "../../Label";
 
-export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+export const TransactionConfig = (
+  props: CommandExtensionProps<TransactionWidgetProps>
+) => {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+
     props.updateAttributes({
-      handle: formData.get("handle")?.toString() ?? "",
+      txHash: formData.get("txHash")?.toString() ?? "",
+      chain: Number(formData.get("chain")?.toString() ?? ""),
     });
+
     setOpen(false);
+
     props.editor.view.dom.focus();
   }
 
-  const handle = props.node.attrs.handle;
-
-  const isConfigured = handle !== undefined;
+  const { txHash, chain } = props.node.attrs;
 
   const [isOpen, setOpen] = useState(false);
+
+  const isConfigured = txHash !== undefined;
 
   useEffect(() => {
     if (!isConfigured) {
@@ -34,7 +40,7 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
   return (
     <NodeViewWrapper as="span">
       {isConfigured && !props.editor.isEditable && (
-        <LensWidget handle={handle} />
+        <TransactionWidget txHash={txHash} chain={Number(chain)} />
       )}
       {props.editor.isEditable && (
         <Popover.Root
@@ -44,7 +50,7 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
         >
           <Popover.Trigger>
             {isConfigured ? (
-              <LensWidget handle={handle} />
+              <TransactionWidget txHash={txHash} chain={Number(chain)} />
             ) : (
               <span className="rounded-full border border-gray-300 py-0 px-1 leading-normal text-gray-500">
                 setup
@@ -60,16 +66,37 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
               <form
                 onSubmit={handleSubmit}
                 className="flex flex-col items-start gap-4"
-                name="lens-setup"
+                name="transaction-setup"
               >
-                <Label label="Handle">
+                <Label label="Transaction hash">
                   <input
-                    name="handle"
-                    placeholder="ericz.lens"
+                    name="txHash"
+                    placeholder="0x4ca7..."
+                    defaultValue={txHash ?? ""}
                     className="rounded-lg bg-gray-200 px-3 py-2"
-                    defaultValue={handle}
                     required
                   />
+                </Label>
+                <Label label="Chain">
+                  <select
+                    name="chain"
+                    defaultValue={chain ?? ""}
+                    className="rounded-lg border-none bg-gray-200"
+                  >
+                    {Object.values(chains)
+                      .filter(
+                        (chain) =>
+                          !chain.testnet &&
+                          chain.network !== "foundry" &&
+                          chain.network !== "localhost" &&
+                          chain.network !== "hardhat"
+                      )
+                      .map((chain) => (
+                        <option key={chain.id} value={chain.id}>
+                          {chain.name}
+                        </option>
+                      ))}
+                  </select>
                 </Label>
                 <button
                   type="submit"

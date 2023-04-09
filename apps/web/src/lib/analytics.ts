@@ -8,6 +8,7 @@ const isProductionRuntime = process.env.NODE_ENV === "production";
 if (isProductionRuntime) {
   mixpanel.init(process.env.NEXT_PUBLIC_MIXPANEL_TOKEN as string, {
     api_host: `${getBaseUrl()}/mp`,
+    ignore_dnt: true, // since we're one way hashing this it's fine
   });
 }
 
@@ -16,12 +17,17 @@ type EventName =
   | "Wallet Connected"
   | "Wallet Disconnected"
   | "Command Handled"
-  | "Ceramic Authenticated";
+  | "Ceramic Authenticated"
+  | "Ceramic Authenticate Clicked"
+  | "Create Page Link Clicked"
+  | "Lit Authenticate Clicked"
+  | "Page Save Clicked"
+  | "Page Saved"
+  | "Lit Authenticated";
 
-export function trackEvent(
-  event: EventName,
-  properties?: Record<string, unknown>
-) {
+export type EventProperties = Record<string, unknown>;
+
+export function trackEvent(event: EventName, properties?: EventProperties) {
   if (isProductionRuntime) {
     mixpanel.track(event, properties);
   }
