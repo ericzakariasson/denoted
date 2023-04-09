@@ -26,12 +26,11 @@ export const TokenPriceConfig = (
     props.editor.view.dom.focus();
   }
 
-  const { property, chainName, token, platforms } = props.node.attrs;
+  const { property, chainName, token } = props.node.attrs;
   const isConfigured =
     property !== undefined &&
     chainName !== undefined &&
-    token !== undefined &&
-    platforms !== undefined;
+    token !== undefined
 
   useEffect(() => {
     if (!isConfigured) {
@@ -46,7 +45,6 @@ export const TokenPriceConfig = (
           property={property}
           chainName={chainName}
           token={token}
-          platforms={platforms}
         />
       )}
       {props.editor.isEditable && (
@@ -61,7 +59,6 @@ export const TokenPriceConfig = (
                 property={property}
                 chainName={chainName}
                 token={token}
-                platforms={platforms}
               />
             ) : (
               <span className="rounded-full border border-gray-300 py-0 px-1 leading-normal text-gray-500">

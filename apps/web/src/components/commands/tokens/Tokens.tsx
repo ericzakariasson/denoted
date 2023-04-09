@@ -8,7 +8,6 @@ export type TokenWidgetProps = {
   property: "price";
   chainName: string;
   token: string;
-  platforms: "native" | "basic";
 };
 
 export const TokenWidget = ({ property, ...props }: TokenWidgetProps) => {
@@ -23,51 +22,50 @@ export const TokenWidget = ({ property, ...props }: TokenWidgetProps) => {
 const TokenPriceWidget = ({
   chainName,
   token,
-  platforms,
-}: Pick<TokenWidgetProps, "chainName" | "token" | "platforms">) => {
-  const query = useQuery(
-    ["TOKEN", "PRICE", chainName, token, platforms],
-    async () => {
-      if (token.toLowerCase().trim() === "eth") {
-        platforms = "native";
-      }
-      const url = `https://api.portals.fi/v2/tokens?search=${token}&platforms=${platforms}&networks=${chainName}`;
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(
-          `Failed to fetch token data. Status: ${response.status} ${response.statusText}`
-        );
-      }
-      const json: PortalsResponse = await response.json();
-      
-      const tokenData: Token = findToken({
-        query: token,
-        tokenList: json.tokens,
-      });
-
-      return {
-        tokenSymbol: tokenData.symbol,
-        tokenPrice: tokenData.price,
-        tokenImage: tokenData.image,
-        tokenName: tokenData.name,
-      };
+}: Pick<TokenWidgetProps, "chainName" | "token">) => {
+  const query = useQuery(["TOKEN", "PRICE", chainName, token], async () => {
+    let platforms;
+    if (token.toLowerCase().trim() === "eth") {
+      platforms = "native";
     }
-  );
+    if (token.toLowerCase().trim() !== "eth") {
+      platforms = "basic";
+    }
+    const url = `https://api.portals.fi/v2/tokens?search=${token}&platforms=${platforms}&networks=${chainName}`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch token data. Status: ${response.status} ${response.statusText}`
+      );
+    }
+    const json: PortalsResponse = await response.json();
 
-  if (!query.data) return <div>No data returned</div>;
+    const tokenData: Token = findToken({
+      query: token,
+      tokenList: json.tokens,
+    });
 
+    if(!tokenData) return null;
+
+    return {
+      tokenSymbol: tokenData?.symbol,
+      tokenPrice: tokenData?.price,
+      tokenImage: tokenData?.image,
+      tokenName: tokenData?.name,
+    };
+  });
+
+  if (!query.data) return <DataPill query={query}>{"No token data returned"}</DataPill>;
   return (
-    <>
-      <DataPill query={query} className="flex flex-row">
-        <Image
-          src={query.data.tokenImage}
-          alt={query.data.tokenName}
-          width={30}
-          height={0}
-          style={{ margin: 0, marginRight: 8 }}
-        />
-        {query.data?.tokenPrice} {query.data?.tokenSymbol}
-      </DataPill>
-    </>
+    <DataPill query={query} className="flex flex-row">
+      <Image
+        src={query.data.tokenImage}
+        alt={query.data.tokenName}
+        width={30}
+        height={0}
+        style={{ margin: 0, marginRight: 8 }}
+      />
+      {query.data?.tokenPrice} {query.data?.tokenSymbol}
+    </DataPill>
   );
 };

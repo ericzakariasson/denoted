@@ -14,7 +14,6 @@ export const tokenPriceCommand: CommandConfiguration<TokenWidgetProps> = {
     property: "price",
     chainName: supportedChains.ETHEREUM,
     token: undefined,
-    platforms: "basic"
   },
   ConfigComponent: TokenPriceConfig,
 };
