@@ -10,6 +10,8 @@ import { Analytics } from "../components/Analytics";
 import { Navbar } from "../components/Navbar";
 import WagmiProvider from "../components/Web3Provider";
 import { InitializeCeramic } from "../components/Sessions";
+import { Sidebar } from "../components/Sidebar";
+import { cn } from "../utils/classnames";
 
 const queryClient = new QueryClient({});
 
@@ -19,12 +21,14 @@ function MyApp({ Component, pageProps }: AppProps) {
       <Hydrate state={pageProps.dehydratedState}>
         <WagmiProvider>
           <InitializeCeramic />
-          <Navbar className={inter.className} />
-          <main
-            className={"m-auto max-w-3xl px-4 py-8" + " " + inter.className}
-          >
-            <Component {...pageProps} />
-          </main>
+          <div className={cn("min-h-screen", inter.className)}>
+            <Sidebar className="fixed w-64" />
+            <div className="pl-64">
+              <main className="m-auto max-w-3xl p-4 px-4 py-8">
+                <Component {...pageProps} />
+              </main>
+            </div>
+          </div>
           <Analytics />
           <VercelAnalytics />
         </WagmiProvider>
