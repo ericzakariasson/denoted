@@ -7,9 +7,11 @@ const inter = Inter({ subsets: ["latin"] });
 import type { AppProps } from "next/app";
 import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 import { Analytics } from "../components/Analytics";
-import { Navbar } from "../components/Navbar";
-import WagmiProvider from "../components/Web3Provider";
 import { InitializeCeramic } from "../components/Sessions";
+import { Sidebar } from "../components/Sidebar";
+import { Web3Provider } from "../components/Web3Provider";
+import { cn } from "../utils/classnames";
+import { Header } from "../components/Header";
 
 const queryClient = new QueryClient({});
 
@@ -17,17 +19,20 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <Hydrate state={pageProps.dehydratedState}>
-        <WagmiProvider>
+        <Web3Provider>
           <InitializeCeramic />
-          <Navbar className={inter.className} />
-          <main
-            className={"m-auto max-w-3xl px-4 py-8" + " " + inter.className}
-          >
-            <Component {...pageProps} />
-          </main>
+          <div className={cn("min-h-screen", inter.className)}>
+            <Sidebar className="fixed w-64" />
+            <div className="py-4 pl-64">
+              <Header className="px-4" />
+              <main className="m-auto max-w-3xl px-4 py-8">
+                <Component {...pageProps} />
+              </main>
+            </div>
+          </div>
           <Analytics />
           <VercelAnalytics />
-        </WagmiProvider>
+        </Web3Provider>
       </Hydrate>
     </QueryClientProvider>
   );

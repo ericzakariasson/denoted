@@ -1,35 +1,45 @@
 import { JSONContent } from "@tiptap/react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { NextPage } from "next/types";
 
-import { useEffect, useState, useRef } from "react";
-import { useMutation } from "react-query";
+import { useEffect, useState } from "react";
+import { useMutation, useQueryClient } from "react-query";
 import { useAccount } from "wagmi";
 import { Editor } from "../components/Editor";
-import { createPage, updatePage } from "../composedb/page";
+import { createPage } from "../composedb/page";
 import { useCeramic } from "../hooks/useCeramic";
 import { useLit } from "../hooks/useLit";
+import { trackEvent } from "../lib/analytics";
+import { composeClient } from "../lib/compose";
 import { cn } from "../utils/classnames";
 import { encryptPage, serializePage } from "../utils/page-helper";
-import { trackEvent } from "../lib/analytics";
-import { AuthSteps } from "../components/AuthSteps";
-import * as Dialog from "@radix-ui/react-dialog";
+
+const AuthDialog = dynamic(
+  async () =>
+    import("../components/AuthDialog").then((module) => module.AuthDialog),
+  { ssr: false }
+);
 
 const CreatePage: NextPage = () => {
   const [title, setTitle] = useState("");
   const [json, setJson] = useState<JSONContent>();
-  const [isCeramicSessionValid, setIsCeramicSessionValid] = useState<boolean>(false);
+  const [isCeramicSessionValid, setIsCeramicSessionValid] =
+    useState<boolean>(false);
 
   const ceramic = useCeramic();
   const lit = useLit();
   const account = useAccount();
 
   useEffect(() => {
-    const run = async () => setIsCeramicSessionValid(await ceramic.hasSession());
+    const run = async () =>
+      setIsCeramicSessionValid(await ceramic.hasSession());
     run();
   }, [ceramic]);
 
   const router = useRouter();
+
+  const queryClient = useQueryClient();
 
   const savePageMutation = useMutation(
     async () => {
@@ -53,6 +63,9 @@ const CreatePage: NextPage = () => {
 
         const id = data?.createPage?.document?.id ?? null;
         if (id) {
+          queryClient.refetchQueries({
+            queryKey: ["PAGES", composeClient.id],
+          });
           trackEvent("Page Saved", { pageId: id });
           router.push(id);
         }
@@ -76,38 +89,7 @@ const CreatePage: NextPage = () => {
 
   return (
     <div>
-      {/* {requiresResourceSignature && (
-        <div className="mb-8 flex flex-col items-start gap-4 rounded-2xl border p-4">
-          <div className="flex flex-col gap-1">
-            <h2 className="text-lg font-medium ">Updated storage</h2>
-            <p className="text-gray-600">
-              We have updated the storage model, please sign again in order to
-              save your page
-            </p>
-          </div>
-
-          <button
-            className={cn(
-              "rounded-xl from-gray-700 to-gray-900 px-6 py-3 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-gray-300"
-            )}
-            onClick={() => ceramic.authenticate()}
-          >
-            Sign message
-          </button>
-        </div>
-      )} */}
-
-      <Dialog.Root open={!isAuthenticated} modal={false}>
-        <Dialog.Portal>
-          <Dialog.Content className="fixed top-[50%] left-[50%] mx-auto max-w-3xl translate-x-[-50%] translate-y-[-50%] rounded-2xl bg-white p-8 shadow-lg ">
-            <Dialog.Title className="text-3xl font-bold text-gray-800">
-              Setup account
-            </Dialog.Title>
-            <Dialog.Close />
-            <AuthSteps />
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+      <AuthDialog open={!isAuthenticated} />
       <div className="mb-4">
         <input
           placeholder="Untitled"

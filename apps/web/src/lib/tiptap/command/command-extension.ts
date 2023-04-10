@@ -6,7 +6,7 @@ import { trackEvent } from "../../analytics";
 import { getCommandInsertAction } from "../tiptap";
 
 export const Command = Extension.create({
-  name: "commands",
+  name: "slash-commands",
 
   addOptions() {
     return {
