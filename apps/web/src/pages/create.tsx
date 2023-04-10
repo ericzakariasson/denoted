@@ -4,13 +4,14 @@ import { useRouter } from "next/router";
 import { NextPage } from "next/types";
 
 import { useEffect, useState } from "react";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { useAccount } from "wagmi";
 import { Editor } from "../components/Editor";
 import { createPage } from "../composedb/page";
 import { useCeramic } from "../hooks/useCeramic";
 import { useLit } from "../hooks/useLit";
 import { trackEvent } from "../lib/analytics";
+import { composeClient } from "../lib/compose";
 import { cn } from "../utils/classnames";
 import { encryptPage, serializePage } from "../utils/page-helper";
 
@@ -38,6 +39,8 @@ const CreatePage: NextPage = () => {
 
   const router = useRouter();
 
+  const queryClient = useQueryClient();
+
   const savePageMutation = useMutation(
     async () => {
       const pageInput = serializePage(
@@ -60,6 +63,9 @@ const CreatePage: NextPage = () => {
 
         const id = data?.createPage?.document?.id ?? null;
         if (id) {
+          queryClient.refetchQueries({
+            queryKey: ["PAGES", composeClient.id],
+          });
           trackEvent("Page Saved", { pageId: id });
           router.push(id);
         }
