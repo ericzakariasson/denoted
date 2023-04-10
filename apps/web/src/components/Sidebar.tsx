@@ -7,20 +7,29 @@ import { useQuery } from "react-query";
 import { getPagesQuery } from "../composedb/page";
 import { composeClient } from "../lib/compose";
 import { DecryptedText } from "./DecryptedText";
+import { useCeramic } from "../hooks/useCeramic";
+import { useAccount } from "wagmi";
 
 type SidebarProps = {
   className?: string;
 };
 
 export function Sidebar({ className }: SidebarProps) {
-  const myPagesQuery = useQuery([], async () => {
-    const query = await getPagesQuery();
-    const pages = query.data?.pageIndex?.edges.map((edge) => edge.node) ?? [];
-    const myPages = pages.filter(
-      (page) => page.createdBy.id === composeClient.id
-    );
-    return myPages;
-  });
+  const { isConnected } = useAccount();
+  const ceramic = useCeramic();
+  const myPagesQuery = useQuery(
+    ["PAGES", composeClient.id],
+    async () => {
+      const query = await getPagesQuery();
+      const pages = query.data?.pageIndex?.edges.map((edge) => edge.node) ?? [];
+      const myPages = pages.filter(
+        (page) => page.createdBy.id === composeClient.id
+      );
+      return myPages;
+    },
+    { enabled: isConnected && ceramic.isInitialized }
+  );
+
   return (
     <aside
       className={cn(
@@ -83,30 +92,32 @@ export function Sidebar({ className }: SidebarProps) {
               </svg>
             </Link>
           </li>
-          <li>
-            <span className="mb-4 block text-sm text-gray-400">Pages</span>
-            <ul className="flex flex-col gap-3">
-              {myPagesQuery.data?.map((page) => {
-                return (
-                  <li key={page.id}>
-                    <Link
-                      href={`/${page.id}`}
-                      className="block rounded-lg border border-gray-300 bg-gray-200 p-2 px-3"
-                    >
-                      {page.key ? (
-                        <DecryptedText
-                          encryptionKey={page.key}
-                          value={page.title}
-                        />
-                      ) : (
-                        page.title
-                      )}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </li>
+          {isConnected && ceramic.isInitialized && (
+            <li>
+              <span className="mb-4 block text-sm text-gray-400">Pages</span>
+              <ul className="flex flex-col gap-3">
+                {myPagesQuery.data?.map((page) => {
+                  return (
+                    <li key={page.id}>
+                      <Link
+                        href={`/${page.id}`}
+                        className="block rounded-lg border border-gray-300 bg-gray-200 p-2 px-3"
+                      >
+                        {page.key ? (
+                          <DecryptedText
+                            encryptionKey={page.key}
+                            value={page.title}
+                          />
+                        ) : (
+                          page.title
+                        )}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </li>
+          )}
         </ul>
       </nav>
     </aside>

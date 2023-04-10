@@ -59,7 +59,7 @@ export function useCeramic() {
 
   const isComposeResourcesSignedQuery = useQuery(
     ["CERAMIC", "AUTHENTICATED"],
-    async () => {
+    () => {
       return getIsResourcesSigned(composeClient.resources);
     },
     { cacheTime: 0 }
@@ -78,7 +78,7 @@ export function useCeramic() {
 
     if (isResourcesSigned && session && isSessionValid(session)) {
       composeClient.setDID(session.did);
-      trackEvent("Ceramic Authenticated", { from: 'session' });
+      trackEvent("Ceramic Authenticated", { from: "session" });
     } else {
       const accountId = await getAccountId(provider, address);
       const authMethod = await EthereumWebAuth.getAuthMethod(
@@ -94,10 +94,10 @@ export function useCeramic() {
       const newSession = await DIDSession.authorize(authMethod, {
         resources: composeClient.resources,
       });
-      
+
       // Set our Ceramic DID to be our session DID.
       composeClient.setDID(newSession.did);
-      trackEvent("Ceramic Authenticated", { from: 'authenticate' });
+      trackEvent("Ceramic Authenticated", { from: "authenticate" });
 
       // Set the session in localStorage.
       localStorage.setItem(LOCAL_STORAGE_KEYS.DID, newSession.serialize());
@@ -106,7 +106,7 @@ export function useCeramic() {
         JSON.stringify(composeClient.resources)
       );
     }
-  
+
     isComposeResourcesSignedQuery.refetch();
   }
 
