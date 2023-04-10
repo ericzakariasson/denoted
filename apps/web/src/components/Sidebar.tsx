@@ -1,22 +1,38 @@
-import React from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { Logo } from "./Logo";
-import { cn } from "../utils/classnames";
+import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { getPagesQuery } from "../composedb/page";
-import { composeClient } from "../lib/compose";
-import { DecryptedText } from "./DecryptedText";
-import { useCeramic } from "../hooks/useCeramic";
 import { useAccount } from "wagmi";
+import { getPagesQuery } from "../composedb/page";
+import { useCeramic } from "../hooks/useCeramic";
+import { useLit } from "../hooks/useLit";
+import { composeClient } from "../lib/compose";
+import { cn } from "../utils/classnames";
+import { DecryptedText } from "./DecryptedText";
+import { Logo } from "./Logo";
 
 type SidebarProps = {
   className?: string;
 };
 
 export function Sidebar({ className }: SidebarProps) {
-  const { isConnected } = useAccount();
+  const [isCeramicSessionValid, setIsCeramicSessionValid] = useState(false);
+
   const ceramic = useCeramic();
+  const lit = useLit();
+  const account = useAccount();
+
+  useEffect(() => {
+    const run = async () =>
+      setIsCeramicSessionValid(await ceramic.hasSession());
+    run();
+  }, [ceramic]);
+
+  const isAuthenticated =
+    account.isConnected &&
+    ceramic.isComposeResourcesSigned &&
+    isCeramicSessionValid &&
+    lit.isLitAuthenticated;
+
   const myPagesQuery = useQuery(
     ["PAGES", composeClient.id],
     async () => {
@@ -27,7 +43,9 @@ export function Sidebar({ className }: SidebarProps) {
       );
       return myPages;
     },
-    { enabled: isConnected && ceramic.isInitialized }
+    {
+      enabled: isAuthenticated,
+    }
   );
 
   return (
@@ -92,7 +110,7 @@ export function Sidebar({ className }: SidebarProps) {
               </svg>
             </Link>
           </li>
-          {isConnected && ceramic.isInitialized && (
+          {isAuthenticated && (
             <li>
               <span className="mb-4 block text-sm text-gray-400">Pages</span>
               <ul className="flex flex-col gap-3">
