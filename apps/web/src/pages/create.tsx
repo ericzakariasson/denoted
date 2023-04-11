@@ -14,6 +14,9 @@ import { trackEvent } from "../lib/analytics";
 import { composeClient } from "../lib/compose";
 import { cn } from "../utils/classnames";
 import { encryptPage, serializePage } from "../utils/page-helper";
+import { FiShare } from "react-icons/fi";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { Dialog, DialogContent } from "../components/Dialog";
 
 const AuthDialog = dynamic(
   async () =>
@@ -91,13 +94,23 @@ const CreatePage: NextPage = () => {
     <div>
       <AuthDialog open={!isAuthenticated} />
       <div className="mb-4">
-        <input
-          placeholder="Untitled"
-          className="mb-4 w-full text-5xl font-bold placeholder:text-gray-200 focus:outline-none"
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          required
-        />
+        <div className="flex flex-row">
+          <input
+            placeholder="Untitled"
+            className="mb-4 w-full text-5xl font-bold placeholder:text-gray-200 focus:outline-none"
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            required
+          />
+          <div className="flex flex-row h-fit">
+          <button className="flex flex-row bg-gray-100 rounded-lg p-2 w-fit mr-4 gap-2">
+            <FiShare size={20} color={"#6B7280"}/> <span className="text-[#6B7280]">Share</span>
+          </button>
+          <button className="bg-gray-100 rounded-lg p-2 w-fit">
+            <BsThreeDotsVertical size={20} color={"#6B7280"}/>
+          </button>
+          </div>
+        </div>
         <Editor onUpdate={(json) => setJson(json)} />
       </div>
       <button
