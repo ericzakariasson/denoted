@@ -69,12 +69,19 @@ export async function updatePage(id: string, input: UpdatePageInput) {
         updatePage(input: { id: $id, content: $content }) {
           document {
             id
+            type
+            key
+            title
+            data {
+              type
+              content
+              attrs
+              marks
+            }
             createdBy {
               id
             }
             createdAt
-            updatedAt
-            updatedBy
           }
         }
       }
