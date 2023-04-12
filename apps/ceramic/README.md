@@ -23,7 +23,7 @@ This is a short version of running a local development, please read the official
 }
 ```
 
-6. Restart the node with the updated config (run `npx @ceramicnetwork/cli daemon`) again.
+6. Restart the node with the updated config (run `npx @ceramicnetwork/cli daemon` again).
 7. Deploy your ComposeDB Model to the node by opening a new terminal and run the script `yarn deploy-models`. You'll have to do this after every change you make to your models.
 
 ### dotenv
