@@ -64,11 +64,15 @@ export const TransactionWidget = ({ txHash, chain }: TransactionWidgetProps) => 
       `https://api.covalenthq.com/v1/${chain}/transaction_v2/${txHash}/?key=${process.env.NEXT_PUBLIC_COVALENT_KEY}`
     );
     
-    if (!response.ok) {
+    if (response.status === 404) {
       return [];
     }
 
     const json = await response.json();
+
+    if (!response.ok) {
+      throw new Error(json?.error_message);
+    }
 
     return json.data?.items as CovalentResponse[];
   });

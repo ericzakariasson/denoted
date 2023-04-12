@@ -1,6 +1,13 @@
 // Path: https://api.nftport.xyz/v0/transactions/stats/{contract_address}
-export interface NftPortAPIStatsResponse {
-  response: "OK" | "NOK";
+interface NftPortAPIErrorResponse {
+  response: "NOK";
+  error?: {
+    message?: string;
+  }
+};
+
+export type NftPortAPIStatsResponse = {
+  response: "OK";
   statistics: {
     one_day_volume: number;
     one_day_change: number;
@@ -27,11 +34,11 @@ export interface NftPortAPIStatsResponse {
     floor_price_historic_thirty_day: number;
     updated_date: string;
   };
-}
+} | NftPortAPIErrorResponse;
 
 // Path: https://api.nftport.xyz/v0/nfts/{contract_address}/{token_id}
-export interface NftPortAPIAssetResponse {
-  response: "OK" | "NOK";
+export type NftPortAPIAssetResponse = {
+  response: "OK";
   nft: {
     chain: "ethereum" | "polygon" | "goerli";
     contract_address: string;
@@ -74,7 +81,7 @@ export interface NftPortAPIAssetResponse {
       status_message: string;
     };
   };
-}
+} | NftPortAPIErrorResponse;
 
 interface Attribute {
   trait_type: string;
