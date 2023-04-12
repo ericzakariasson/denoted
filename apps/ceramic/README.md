@@ -6,11 +6,10 @@
 This is a short version of running a local development, please read the official documentation if it doesn't work [here](https://composedb.js.org/docs/0.4.x/set-up-your-environment).
 
 ### Compose DB
-1. Start by running `docker compose up`. Make sure port 5432 is available.
-2. Start the ComposeDB node by running `npx @ceramicnetwork/cli daemon`. This will also generate a config file for you which we'll use later
-3. Create a developer account by first generating a private key with `npx composedb did:generate-private-key`. Make sure to store this key as `DID_PRIVATE_KEY` in `.env.local`
-4. Create a DID from you private key by running `npx composedb did:from-private-key <private-key-from-previous-step>`. Store this as `DID_KEY` in `.env.local`
-5. Update your ComposeDB config to allow your DID to be admin. Go to `~/.ceramic/daemon.config.json` and add your generated DID to `"http-api"."admin-dids"`. It should look like this:
+1. Start the ComposeDB node by running `npx @ceramicnetwork/cli daemon`. This will also generate a config file for you which we'll use later
+2. Create a developer account by first generating a private key with `npx composedb did:generate-private-key`. Make sure to store this key as `DID_PRIVATE_KEY` in `.env.local`
+3. Create a DID from you private key by running `npx composedb did:from-private-key <private-key-from-previous-step>`. Store this as `DID_KEY` in `.env.local`
+4. Update your ComposeDB config to allow your DID to be admin. Go to `~/.ceramic/daemon.config.json` and add your generated DID to `"http-api"."admin-dids"`. It should look like this:
 
 ```json
 {
