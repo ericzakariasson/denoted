@@ -29,6 +29,7 @@ export type SavePageData = {
     content: JSONContent[];
   };
   address: string;
+  isPublic: boolean;
 };
 
 type PageEditorProps = {
@@ -68,6 +69,7 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
         content: json?.content ?? [],
       },
       address: account.address as string,
+      isPublic: false,
     });
   }
 

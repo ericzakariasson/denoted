@@ -77,7 +77,7 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
   const queryClient = useQueryClient();
 
   const updatePageMutation = useMutation(
-    async ({ page: updatedPage, address }: SavePageData) => {
+    async ({ page: updatedPage, address, isPublic }: SavePageData) => {
       const pageInput = serializePage(
         "PAGE",
         updatedPage.title,
@@ -85,10 +85,12 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
         new Date()
       );
 
-      const encryptedPageInput = await encryptPage(pageInput, address);
+      const updateResult = await updatePage(
+        page!.id,
+        isPublic ? pageInput : await encryptPage(pageInput, address)
+      );
 
-      const updateResult = await updatePage(page!.id, encryptedPageInput);
-      // NOTE: Updating here instead of onSuccess to avoid decrpyting on every update
+      // NOTE: Updating here instead of onSuccess to avoid decrypting the returned result
       setPage((currentPage) =>
         currentPage
           ? {
@@ -120,6 +122,14 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
       },
     }
   );
+
+  if (initialPage.createdBy.id !== composeClient.id) {
+    return (
+      <div>
+        <h1 className="text-gray- text-3xl font-bold">Page not found</h1>
+      </div>
+    );
+  }
 
   if (!page) {
     return null;

@@ -26,7 +26,7 @@ type CreatePageMutation = {
 };
 
 export type CreatePageInput = {
-  key?: string;
+  key: string | null;
   title: string;
   data: PageNode[];
   createdAt: string;

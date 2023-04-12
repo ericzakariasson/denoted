@@ -13,7 +13,7 @@ const CreatePage: NextPage = () => {
   const router = useRouter();
 
   const createPageMutation = useMutation(
-    async ({ page, address }: SavePageData) => {
+    async ({ page, address, isPublic }: SavePageData) => {
       const pageInput = serializePage(
         "PAGE",
         page.title,
@@ -21,8 +21,9 @@ const CreatePage: NextPage = () => {
         new Date()
       );
 
-      const encryptedPageInput = await encryptPage(pageInput, address);
-      return await createPage(encryptedPageInput);
+      return await createPage(
+        isPublic ? pageInput : await encryptPage(pageInput, address)
+      );
     },
     {
       onMutate: () => trackEvent("Page Save Clicked"),
