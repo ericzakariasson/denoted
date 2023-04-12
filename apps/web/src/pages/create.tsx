@@ -14,13 +14,17 @@ import { trackEvent } from "../lib/analytics";
 import { composeClient } from "../lib/compose";
 import { cn } from "../utils/classnames";
 import { encryptPage, serializePage } from "../utils/page-helper";
-import { FiShare } from "react-icons/fi";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { Dialog, DialogContent } from "../components/Dialog";
 
 const AuthDialog = dynamic(
   async () =>
     import("../components/AuthDialog").then((module) => module.AuthDialog),
+  { ssr: false }
+);
+
+const ShareDialog: any = dynamic(
+  async () =>
+    import("../components/ShareDialog").then((module) => module.ShareDialog),
   { ssr: false }
 );
 
@@ -102,13 +106,8 @@ const CreatePage: NextPage = () => {
             onChange={(event) => setTitle(event.target.value)}
             required
           />
-          <div className="flex flex-row h-fit">
-          <button className="flex flex-row bg-gray-100 rounded-lg p-2 w-fit mr-4 gap-2">
-            <FiShare size={20} color={"#6B7280"}/> <span className="text-[#6B7280]">Share</span>
-          </button>
-          <button className="bg-gray-100 rounded-lg p-2 w-fit">
-            <BsThreeDotsVertical size={20} color={"#6B7280"}/>
-          </button>
+          <div className="flex flex-row">
+          <ShareDialog />
           </div>
         </div>
         <Editor onUpdate={(json) => setJson(json)} />
