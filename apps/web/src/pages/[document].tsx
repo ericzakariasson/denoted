@@ -1,5 +1,5 @@
 import { JSONContent } from "@tiptap/react";
-import { GetServerSideProps, NextPage, GetStaticPaths } from "next/types";
+import { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import { useCallback, useEffect, useState } from "react";
 import { useAccount, useMutation, useQueryClient } from "wagmi";
@@ -40,10 +40,13 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     };
   }
 
-  const query = await getPageQuery(pageId);
-  const page = query.data?.node;
+  const queryPage = await getPageQuery(pageId);
+  const page = queryPage.data?.node;
 
-  if (!page) {
+  const queryPageIds = await getPagesQuery();
+  const pageIds = queryPageIds.data?.pageIndex.edges.map(({ node }) => node.id);
+
+  if (!page || !pageIds?.includes(pageId)) {
     return {
       notFound: true,
     };
@@ -52,35 +55,10 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   return {
     props: {
       page,
+      pageIds,
     },
   };
 };
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  const { pageIds } = await fetchAllPageIds();
-
-  const paths = pageIds.map((id) => ({
-    params: { pageId: id },
-  }));
-
-  return {
-    paths,
-    fallback: true,
-  };
-};
-
-
-async function fetchAllPageIds(): Promise<PageIdList> {
-  const query = await getPagesQuery()
-  const pages = query.data?.pageIndex.edges
-  if(!pages) {
-      throw new Error("No pages found");
-  }
-  const pageIds = pages.map(({ node }) => node.id);
-  return {
-      pageIds,
-}
-}
 
 const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
   const [page, setPage] = useState<ReturnType<typeof deserializePage> | null>(
@@ -145,7 +123,7 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
           id: page!.id,
           title: updatedPage.title,
           description: updatedPage.content[0].text,
-          image: ""
+          image: "https://images.unsplash.com/photo-1561336313-0bd5e0b27ec8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2670&q=80"
         } : null)
       return updateResult;
     },
@@ -170,16 +148,12 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
     }
   );
 
-  if (initialPage.createdBy.id !== composeClient.id) {
+  if (!page || !metaTags) {
     return (
       <div>
-        <h1 className="text-gray- text-3xl font-bold">Page not found</h1>
+        <h1 className="text-gray-500 text-3xl font-bold">Page not found</h1>
       </div>
-    );
-  }
-
-  if (!page || !metaTags) {
-    return null;
+    );  
   }
 
   if (isEditing) {
@@ -207,7 +181,7 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
         <meta property="og:description" content={metaTags.description} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${getBaseUrl()}/${metaTags.id}`} />
-        <meta property="og:image" content={"imageHERE"} />
+        <meta property="og:image" content={metaTags.image} />
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={metaTags.title} />
