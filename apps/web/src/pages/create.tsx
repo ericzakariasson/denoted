@@ -14,7 +14,6 @@ import { trackEvent } from "../lib/analytics";
 import { composeClient } from "../lib/compose";
 import { cn } from "../utils/classnames";
 import { encryptPage, serializePage } from "../utils/page-helper";
-import { BsThreeDotsVertical } from "react-icons/bs";
 
 const AuthDialog = dynamic(
   async () =>
@@ -106,9 +105,7 @@ const CreatePage: NextPage = () => {
             onChange={(event) => setTitle(event.target.value)}
             required
           />
-          <div className="flex flex-row">
           <ShareDialog />
-          </div>
         </div>
         <Editor onUpdate={(json) => setJson(json)} />
       </div>
