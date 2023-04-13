@@ -26,7 +26,7 @@ type CreatePageMutation = {
 };
 
 export type CreatePageInput = {
-  key?: string;
+  key: string | null;
   title: string;
   data: PageNode[];
   createdAt: string;
@@ -69,12 +69,19 @@ export async function updatePage(id: string, input: UpdatePageInput) {
         updatePage(input: { id: $id, content: $content }) {
           document {
             id
+            type
+            key
+            title
+            data {
+              type
+              content
+              attrs
+              marks
+            }
             createdBy {
               id
             }
             createdAt
-            updatedAt
-            updatedBy
           }
         }
       }

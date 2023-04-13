@@ -2,11 +2,18 @@ import { JSONContent } from "@tiptap/react";
 import { GetServerSideProps, NextPage } from "next/types";
 
 import { useCallback, useEffect, useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useMutation, useQueryClient } from "wagmi";
+import { PageEditor, SavePageData } from "../components/PageEditor";
 import { Viewer } from "../components/Viewer";
-import { getPageQuery, Page } from "../composedb/page";
+import { getPageQuery, Page, updatePage } from "../composedb/page";
+import { trackEvent } from "../lib/analytics";
 import { composeClient } from "../lib/compose";
-import { decryptPage, deserializePage } from "../utils/page-helper";
+import {
+  decryptPage,
+  deserializePage,
+  encryptPage,
+  serializePage,
+} from "../utils/page-helper";
 
 type Props = {
   page: Page;
@@ -42,6 +49,8 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
     null
   );
 
+  const [isEditing, setIsEditing] = useState(false);
+
   const { address } = useAccount();
 
   const handlePageLoad = useCallback(async () => {
@@ -63,23 +72,100 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
     handlePageLoad();
   }, [initialPage, handlePageLoad]);
 
-  const json: JSONContent = {
-    type: "doc",
-    content: page?.data ?? [],
-  };
-
   const isOwner = page?.createdBy.id === composeClient.id;
+
+  const queryClient = useQueryClient();
+
+  const updatePageMutation = useMutation(
+    async ({ page: updatedPage, address, isPublic }: SavePageData) => {
+      const pageInput = serializePage(
+        "PAGE",
+        updatedPage.title,
+        updatedPage.content,
+        new Date()
+      );
+
+      const updateResult = await updatePage(
+        page!.id,
+        isPublic ? pageInput : await encryptPage(pageInput, address)
+      );
+
+      // NOTE: Updating here instead of onSuccess to avoid decrypting the returned result
+      setPage((currentPage) =>
+        currentPage
+          ? {
+              ...currentPage,
+              title: updatedPage.title,
+              data: updatedPage.content,
+            }
+          : null
+      );
+      return updateResult;
+    },
+    {
+      onMutate: () => trackEvent("Page Save Clicked"),
+      onError: (error) => {
+        console.error("Update Page Error", error);
+      },
+      onSuccess: async ({ data, errors }) => {
+        console.info("Update Page Success", data, errors);
+
+        const page = data?.updatePage?.document ?? null;
+
+        if (page) {
+          queryClient.invalidateQueries({
+            queryKey: ["PAGES", composeClient.id],
+          });
+          trackEvent("Page Saved", { pageId: page.id });
+          setIsEditing(false);
+        }
+      },
+    }
+  );
+
+  if (initialPage.createdBy.id !== composeClient.id) {
+    return (
+      <div>
+        <h1 className="text-gray- text-3xl font-bold">Page not found</h1>
+      </div>
+    );
+  }
 
   if (!page) {
     return null;
   }
+
+  if (isEditing) {
+    return (
+      <div>
+        <PageEditor
+          page={page}
+          onSave={updatePageMutation.mutate}
+          isSaving={updatePageMutation.isLoading}
+        />
+      </div>
+    );
+  }
+
+  const json: JSONContent = {
+    type: "doc",
+    content: page?.data ?? [],
+  };
 
   return (
     <div>
       <div className="flex items-start justify-between">
         <h1 className="mb-8 text-5xl font-bold">{page.title}</h1>
       </div>
-      <Viewer json={json} />
+      <Viewer key={page.id} json={json} />
+      {isOwner && (
+        <button
+          className="mt-4 flex justify-between rounded-xl border border-gray-700 px-4 py-3 leading-tight text-gray-700 shadow-sm"
+          onClick={() => setIsEditing(true)}
+        >
+          Edit page
+        </button>
+      )}
     </div>
   );
 };
