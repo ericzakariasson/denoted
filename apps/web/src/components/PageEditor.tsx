@@ -29,7 +29,6 @@ const ShareDialog: any = dynamic(
   { ssr: false }
 );
 
-
 export type SavePageData = {
   page: {
     title: string;
@@ -92,7 +91,7 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
   return (
     <div>
       <AuthDialog open={!isAuthenticated} />
-      <div className="mb-4">
+      <div className="flex flex-row justify-between mb-4">
         <input
           placeholder="Untitled"
           className="mb-4 w-full text-5xl font-bold placeholder:text-gray-200 focus:outline-none"
@@ -100,7 +99,9 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
           onChange={(event) => setTitle(event.target.value)}
           required
         />
-        <ShareDialog />
+        <ShareDialog title={page?.title} content={page?.data} />
+      </div>
+      <div>
         <Editor
           initialContent={
             page
