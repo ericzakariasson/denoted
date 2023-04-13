@@ -1,11 +1,11 @@
 import { JSONContent } from "@tiptap/react";
-import { GetServerSideProps, NextPage } from "next/types";
-
+import { GetServerSideProps, NextPage, GetStaticPaths } from "next/types";
+import Head from "next/head";
 import { useCallback, useEffect, useState } from "react";
 import { useAccount, useMutation, useQueryClient } from "wagmi";
 import { PageEditor, SavePageData } from "../components/PageEditor";
 import { Viewer } from "../components/Viewer";
-import { getPageQuery, Page, updatePage } from "../composedb/page";
+import { getPageQuery, getPagesQuery, Page, updatePage } from "../composedb/page";
 import { trackEvent } from "../lib/analytics";
 import { composeClient } from "../lib/compose";
 import {
@@ -14,10 +14,22 @@ import {
   encryptPage,
   serializePage,
 } from "../utils/page-helper";
+import { getBaseUrl } from "../utils/base-url";
 
 type Props = {
   page: Page;
 };
+
+type MetaTagsProps = {
+  id: string;
+  title: string;
+  description?: string;
+  image?: string;
+};
+
+type PageIdList = {
+  pageIds: string[];
+}
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const pageId = ctx.params?.document?.toString();
@@ -44,10 +56,37 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   };
 };
 
+export const getStaticPaths: GetStaticPaths = async () => {
+  const { pageIds } = await fetchAllPageIds();
+
+  const paths = pageIds.map((id) => ({
+    params: { pageId: id },
+  }));
+
+  return {
+    paths,
+    fallback: true,
+  };
+};
+
+
+async function fetchAllPageIds(): Promise<PageIdList> {
+  const query = await getPagesQuery()
+  const pages = query.data?.pageIndex.edges
+  if(!pages) {
+      throw new Error("No pages found");
+  }
+  const pageIds = pages.map(({ node }) => node.id);
+  return {
+      pageIds,
+}
+}
+
 const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
   const [page, setPage] = useState<ReturnType<typeof deserializePage> | null>(
     null
   );
+  const [metaTags, setMetaTags] = useState<MetaTagsProps | null>(null);
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -100,6 +139,14 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
             }
           : null
       );
+      setMetaTags((currentMetaTags) => 
+        currentMetaTags ? {
+          ...currentMetaTags,
+          id: page!.id,
+          title: updatedPage.title,
+          description: updatedPage.content[0].text,
+          image: ""
+        } : null)
       return updateResult;
     },
     {
@@ -131,7 +178,7 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
     );
   }
 
-  if (!page) {
+  if (!page || !metaTags) {
     return null;
   }
 
@@ -154,6 +201,20 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
 
   return (
     <div>
+      <Head>
+        <title>{page.title}</title>
+        <meta property="og:title" content={metaTags.title} />
+        <meta property="og:description" content={metaTags.description} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${getBaseUrl()}/${metaTags.id}`} />
+        <meta property="og:image" content={"imageHERE"} />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={metaTags.title} />
+        <meta name="twitter:description" content={metaTags.description} />
+        <meta name="twitter:url" content={`${getBaseUrl()}/${metaTags.id}`} />
+        <meta name="twitter:image" content={metaTags.image} />
+      </Head>
       <div className="flex items-start justify-between">
         <h1 className="mb-8 text-5xl font-bold">{page.title}</h1>
       </div>
