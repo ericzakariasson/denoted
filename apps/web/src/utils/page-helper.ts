@@ -69,6 +69,7 @@ export function serializePage(
     title,
     data: data.map((node) => serializePageNode(node)),
     createdAt: createdAt.toISOString(),
+    key: null,
   };
 }
 
@@ -140,16 +141,15 @@ export async function encryptPage(
     page.data.map(async (node) => await encryptPageNode(node, key))
   );
 
+  const { encryptedKey } = await storeEncryptionKey(exportedKey, userAddress);
+
   const input: CreatePageInput = {
     type: type as PageType,
     title,
     data: encryptedPageNodes,
     createdAt: page.createdAt,
+    key: encryptedKey,
   };
-
-  const { encryptedKey } = await storeEncryptionKey(exportedKey, userAddress);
-
-  input.key = encryptedKey;
 
   return input;
 }
@@ -177,6 +177,7 @@ export async function decryptPage(
   );
 
   return {
+    key: page.key,
     id: page.id,
     type,
     title,

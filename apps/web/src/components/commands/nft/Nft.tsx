@@ -40,18 +40,33 @@ const NftFloorWidget = ({
         Authorization: process.env.NEXT_PUBLIC_NFT_PORT_API_KEY as string,
       },
     });
-    console.log("response", response)
+
+    if (response.status === 404) {
+      return null;
+    }
+
+    const json: NftPortAPIStatsResponse = await response.json();
+
+    if (json.response === "NOK") {
+      throw new Error(json?.error?.message);
+    }
+
     if (!response.ok) {
       throw new Error(`NFT Port API error. Status: ${response.status} ${response.statusText}`);
     }
-    const json: NftPortAPIStatsResponse = await response.json();
 
     return {
       floorPrice: json.statistics.floor_price as number,
     };
   });
 
-  return <DataPill query={query}>{`${query.data?.floorPrice} ETH`}</DataPill>;
+  return (
+    <DataPill query={query}>{
+      query.data?.floorPrice !== undefined
+      ? `${query.data.floorPrice} ETH`
+      : "no data"
+    }</DataPill>
+  );
 };
 
 const NftTotalSalesVolumeWidget = ({
@@ -67,11 +82,20 @@ const NftTotalSalesVolumeWidget = ({
         },
       }
     );
-    if (!response.ok) {
-      throw new Error(`NFT Port API error. Status: ${response.status} ${response.statusText}`);
+
+    if (response.status === 404) {
+      return null;
     }
 
     const json: NftPortAPIStatsResponse = await response.json();
+
+    if (json.response === "NOK") {
+      throw new Error(json?.error?.message);
+    }
+
+    if (!response.ok) {
+      throw new Error(`NFT Port API error. Status: ${response.status} ${response.statusText}`);
+    }
 
     return {
       totalSalesVolume: json.statistics.total_volume as number,
@@ -79,7 +103,11 @@ const NftTotalSalesVolumeWidget = ({
   });
 
   return (
-    <DataPill query={query}>{`${query.data?.totalSalesVolume} ETH`}</DataPill>
+    <DataPill query={query}>{
+      query.data?.totalSalesVolume !== undefined
+      ? `${query.data.totalSalesVolume} ETH`
+      : "no data"
+    }</DataPill>
   );
 };
 
@@ -95,11 +123,21 @@ const NftImageWidget = ({
         Authorization: process.env.NEXT_PUBLIC_NFT_PORT_API_KEY as string,
       },
     });
+
+    if (response.status === 404) {
+      return null;
+    }
+
+    const json: NftPortAPIAssetResponse = await response.json();
+
+    if (json.response === "NOK") {
+      throw new Error(json?.error?.message);
+    }
+
     if (!response.ok) {
       throw new Error(`NFT Port API error. Status: ${response.status} ${response.statusText}`);
     }
 
-    const json: NftPortAPIAssetResponse = await response.json();
     return {
       image: json.nft.cached_file_url as string,
       collectionName: json.contract.name as string,

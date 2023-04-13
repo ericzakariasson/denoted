@@ -46,7 +46,16 @@ export const NetWorthWidget = ({ address, chain }: NetWorthWidgetProps) => {
     const response = await fetch(
       `https://api.covalenthq.com/v1/${chain}/address/${fullAddress}/balances_v2/?key=${process.env.NEXT_PUBLIC_COVALENT_KEY}`
     );
+
+    if (response.status === 404) {
+      return [];
+    }
+
     const json = await response.json();
+
+    if (!response.ok) {
+      throw new Error(json?.error_message);
+    }
 
     return json.data?.items as CovalentResponse[];
   });
