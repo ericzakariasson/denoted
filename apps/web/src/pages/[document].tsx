@@ -23,8 +23,8 @@ type Props = {
 type MetaTagsProps = {
   id: string;
   title: string;
-  description?: string;
-  image?: string;
+  description?: string | undefined;
+  image: string | undefined;
 };
 
 type PageIdList = {
@@ -83,6 +83,12 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
     const decryptedPage = await decryptPage(initialPage, address);
     const deserializedPage = deserializePage(decryptedPage);
     setPage(deserializedPage);
+    setMetaTags({
+      id: deserializedPage.id,
+      title: deserializedPage.title,
+      description: deserializedPage?.data[0]?.text ?? "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+      image: "https://images.unsplash.com/photo-156",
+    })
   }, [initialPage, address]);
 
   useEffect(() => {
@@ -122,9 +128,10 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
           ...currentMetaTags,
           id: page!.id,
           title: updatedPage.title,
-          description: updatedPage.content[0].text,
+          description: updatedPage?.content[0]?.text ?? "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
           image: "https://images.unsplash.com/photo-1561336313-0bd5e0b27ec8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2670&q=80"
         } : null)
+        console.log({ page, metaTags})
       return updateResult;
     },
     {
