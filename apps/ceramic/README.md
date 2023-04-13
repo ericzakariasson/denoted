@@ -7,7 +7,7 @@ This is a short version of running a local development, please read the official
 
 ### Compose DB
 1. Start the ComposeDB node by running `npx @ceramicnetwork/cli daemon`. This will also generate a config file for you which we'll use later. If the terminal shows that `Ceramic API is running on 0.0.0.0:xxxx` then you're set.
->**_NOTE:_** If this doesn't work you might need to delete your `.ceramic` file. Run `rm -rf ~/.ceramic` and try step 1 again.
+>**_NOTE:_** If this doesn't work you might need to delete your `.ceramic` directory. Run `rm -rf ~/.ceramic` and try step 1 again.
 2. Go to your `.env`. If you have a `DID_PRIVATE_KEY` and `DID_KEY` you can skip step 3 and 4.
 3. Create a developer account by first generating a private key with `npx composedb did:generate-private-key`. Make sure to store this key as `DID_PRIVATE_KEY` in `.env.local`
 4. Create a DID from you private key by running `npx composedb did:from-private-key <private-key-from-previous-step>`. Store this as `DID_KEY` in `.env.local`
