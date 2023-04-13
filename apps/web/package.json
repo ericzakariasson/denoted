@@ -22,6 +22,7 @@
     "@radix-ui/react-tooltip": "^1.0.4",
     "@sentry/nextjs": "^7.47.0",
     "@tiptap/extension-highlight": "^2.0.0-beta.220",
+    "@tiptap/extension-image": "^2.0.2",
     "@tiptap/extension-placeholder": "^2.0.0-beta.220",
     "@tiptap/extension-typography": "^2.0.0-beta.220",
     "@tiptap/html": "^2.0.0-beta.220",
