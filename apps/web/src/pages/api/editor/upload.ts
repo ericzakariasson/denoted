@@ -25,16 +25,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         fileWriteStreamHandler: ({ newFilename, originalFilename }) => {
             const pass = new PassThrough();
 
+            const Filename = originalFilename ?? newFilename;
+
             const promise = pinata.pinFileToIPFS(pass, {
                 pinataMetadata: {
-                    name: originalFilename,
+                    name: Filename,
                 },
             }).then((results) : IpfsUpload => ({
                 ...results,
-                Filename: originalFilename ?? newFilename,
+                Filename,
             })).catch((error) => {
                 throw new Error(
-                    `Cannot upload ${originalFilename} file to IPFS`,
+                    `Cannot upload ${Filename} file to IPFS`,
                     { cause: error }
                 );
             });
