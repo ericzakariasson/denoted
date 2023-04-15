@@ -1,4 +1,4 @@
-import * as chains from '@wagmi/chains';
+import * as chains from "@wagmi/chains";
 
 export const formatEthAddress = (
   address: string,
@@ -36,8 +36,8 @@ export const timeConverter = (timeStamp: number) => {
 };
 
 export const SUPPORTED_CHAINS = [
-  chains.arbitrum,
   chains.mainnet,
   chains.polygon,
-  chains.optimism
+  chains.optimism,
+  chains.arbitrum,
 ] as const;
