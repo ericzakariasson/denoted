@@ -107,7 +107,6 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(
           const cmd = COMMAND_ITEMS.find(
             (c) => c.command === data.output.command
           );
-          console.log("cmd", data, allCommands, cmd);
 
           if (cmd) {
             const insert = getCommandInsertAction(cmd, data.output.args);
