@@ -40,13 +40,13 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     };
   }
 
-  const queryPage = await getPageQuery(pageId);
-  const page = queryPage.data?.node;
+  const pageQuery = await getPageQuery(pageId);
+  const page = pageQuery.data?.node;
 
-  const queryPageIds = await getPagesQuery();
-  const pageIds = queryPageIds.data?.pageIndex.edges.map(({ node }) => node.id);
+  const pageQueryIds = await getPagesQuery();
+  const pageIds = pageQueryIds.data?.pageIndex.edges.map(({ node }) => node.id);
 
-  if (!page || !pageIds?.includes(pageId)) {
+  if (!page) {
     return {
       notFound: true,
     };

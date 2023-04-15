@@ -23,7 +23,7 @@ const AuthDialog = dynamic(
   { ssr: false }
 );
 
-const ShareDialog: any = dynamic(
+const ShareDialog = dynamic(
   async () =>
     import("../components/ShareDialog").then((module) => module.ShareDialog),
   { ssr: false }
@@ -87,7 +87,7 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
 
   const isEnabled =
     isAuthenticated && title.length > 0 && (json?.content ?? []).length > 0;
-
+  console.log(page, "page")
   return (
     <div>
       <AuthDialog open={!isAuthenticated} />
@@ -99,7 +99,7 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
           onChange={(event) => setTitle(event.target.value)}
           required
         />
-        <ShareDialog title={page?.title} content={page?.data} />
+        {page && <ShareDialog title={page.title} content={page.data} />}
       </div>
       <div>
         <Editor
