@@ -81,7 +81,6 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
 
   const isEnabled =
     isAuthenticated && title.length > 0 && (json?.content ?? []).length > 0;
-  console.log(page, "page")
   return (
     <div>
       <AuthDialog open={!isAuthenticated} />

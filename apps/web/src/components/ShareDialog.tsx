@@ -17,6 +17,7 @@ export type ShareDialogProps = {
 export const ShareDialog: React.FC<ShareDialogProps> = ({ title }) => {
   const [uniqueURL, setUniqueURL] = useState("");
   const [isCopied, setIsCopied] = useState(false);
+  //TODO: add logic for isPublished on IPFS
   const [isPublished, setIsPublished] = useState(false);
   const { asPath } = useRouter();
   const copyToClipboard = () => {
@@ -27,14 +28,7 @@ export const ShareDialog: React.FC<ShareDialogProps> = ({ title }) => {
     setUniqueURL(getBaseUrl + asPath);
   }, [title, uniqueURL, asPath]);
 
-  useEffect(() => {
-    const fetchPage = async () => {
-      const query = await getPageQuery(asPath);
-      const page = query.data?.node;
-      setIsPublished(!!page);
-    };
-    fetchPage();
-  }, [asPath]);
+
 
   return (
     <Popover.Root>

@@ -19,17 +19,11 @@ import {
   encryptPage,
   serializePage,
 } from "../utils/page-helper";
-// import { Seo } from "./seo";
-
+import { useRouter } from "next/router";
+import { getBaseUrl } from "../utils/base-url";
+import { formatMetaTags } from "../utils/metatags";
 type Props = {
   page: Page;
-};
-
-type MetaTagsProps = {
-  id: string;
-  title: string;
-  description?: string | undefined;
-  image?: string | undefined;
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
@@ -62,6 +56,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 };
 
 const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
+  const { asPath } = useRouter();
+  const origin = getBaseUrl();
+
   const [page, setPage] = useState<ReturnType<typeof deserializePage> | null>(
     null
   );
@@ -164,11 +161,34 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
     content: page?.data ?? [],
   };
 
+  const metaTags = formatMetaTags({ page });
+
   return (
     <div>
-      {/* <Head>
-        <Seo page={page} />
-      </Head> */}
+      <Head>
+        <meta
+          name="keywords"
+          content="web3, web3 document, web3 knowledge management, web3 data, web3 analytics, web3 documents, web3 onchain data, web3 sharing, web3 content, blockchain analytics, blockchain writing"
+        />
+        <meta name="robots" content="index, follow" />
+        <title>{metaTags.title}</title>
+
+        {/* open graph */}
+
+        <meta property="og:title" content={metaTags.title} />
+        <meta property="og:description" content={metaTags.description} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={origin + asPath} />
+        <meta property="og:image" content={metaTags.image} />
+
+        {/*twitter */}
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={metaTags.title} />
+        <meta name="twitter:description" content={metaTags.description} />
+        <meta name="twitter:url" content={origin + asPath} />
+        <meta name="twitter:image" content={metaTags.image} />
+      </Head>
       <div className="flex items-start justify-between">
         <h1 className="mb-8 text-5xl font-bold">{page.title}</h1>
       </div>
