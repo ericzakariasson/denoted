@@ -15,10 +15,10 @@ export const insertComponent = (component: string) => (ctx: CommandContext) => {
 
 export function getCommandInsertAction<
   Props extends Record<string, string | number | undefined>
->(command: CommandConfiguration<Props>) {
-  const attributes = Object.entries(command.defaultValues ?? {}).reduce<
-    string[]
-  >((attrs, [key, value]) => {
+>(command: CommandConfiguration<Props>, props?: Props) {
+  const attributes = Object.entries(
+    props ?? command.defaultValues ?? {}
+  ).reduce<string[]>((attrs, [key, value]) => {
     if (value !== undefined) {
       attrs.push(`${key}=${value}`);
     }

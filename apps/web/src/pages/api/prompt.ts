@@ -63,7 +63,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const results = { query: req.body.prompt, ...(await run(req.body.prompt)) };
+  const { output } = await run(req.body.prompt);
+  const results = { query: req.body.prompt, output: JSON.parse(output) };
 
   console.log(JSON.stringify(results, null, 4));
 

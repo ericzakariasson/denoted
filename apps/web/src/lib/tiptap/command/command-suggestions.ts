@@ -14,6 +14,7 @@ export const commandSuggestions: Omit<
   SuggestionOptions<CommandListItem>,
   "editor"
 > = {
+  allowSpaces: true,
   items: ({ query }) => {
     return COMMANDS.filter((group) =>
       group.items.some(

@@ -10,6 +10,9 @@ import React, {
 } from "react";
 import { cn } from "../utils/classnames";
 import { CommandConfiguration } from "./commands/types";
+import { useMutation } from "react-query";
+import { getCommandInsertAction } from "../lib/tiptap/tiptap";
+import { COMMAND_ITEMS } from "./commands/commands";
 
 export type CommandContext = {
   editor: Editor;
@@ -83,10 +86,43 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(
       },
     }));
 
+    const promptMutation = useMutation(
+      async (prompt: string) => {
+        const response = await fetch("/api/prompt", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            prompt,
+          }),
+        });
+
+        const data = await response.json();
+
+        return data;
+      },
+      {
+        onSuccess: (data) => {
+          const cmd = COMMAND_ITEMS.find(
+            (c) => c.command === data.output.command
+          );
+          console.log("cmd", data, allCommands, cmd);
+
+          if (cmd) {
+            const insert = getCommandInsertAction(cmd, data.output.args);
+            insert({ editor: props.editor, range: props.range });
+          }
+        },
+      }
+    );
+
     if (props.items.length === 0) {
       return (
-        <div className="w-64 overflow-hidden rounded-2xl bg-gray-100">
-          <p className="w-full px-3 py-2 text-left">no result</p>
+        <div className="w-64 overflow-hidden rounded-2xl bg-gray-100 p-4">
+          <button onClick={() => promptMutation.mutate(props.query)}>
+            proompt
+          </button>
         </div>
       );
     }
