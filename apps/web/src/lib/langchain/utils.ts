@@ -8,6 +8,6 @@ const chainTable = [
 ];
 
 export const CHAIN_CONTEXT = [
-  "Here are all the avaialbe chains and their respective information in a table:",
+  "Here are all the available chains and their respective information in a table:",
   ...chainTable,
 ].join("\n");
