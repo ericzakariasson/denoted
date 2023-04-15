@@ -9,7 +9,7 @@ Please provide the input to the tool as a JSON object containing address (string
     `;
   returnDirect = true;
   async _call(arg: string) {
-    const { address, chainId, tokenSymbol } = JSON.parse(arg);
+    const { address, chainId } = JSON.parse(arg);
     return JSON.stringify({
       command: nftFloorPriceCommand.command,
       args: {
