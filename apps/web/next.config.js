@@ -16,7 +16,6 @@ module.exports = {
       },
     ];
   },
-  swcMinify: false,
   images: {
     remotePatterns: [
       {
