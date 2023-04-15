@@ -2,26 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { OpenAI } from "langchain/llms/openai";
 import { CallbackManager } from "langchain/callbacks";
 import { AgentExecutor, ZeroShotAgent } from "langchain/agents";
-import { Tool } from "langchain/tools";
-import * as chains from "@wagmi/chains";
-import { balanceCommand } from "../../components/commands/balance/command";
-
-const SUPPORTED_CHAINS = [
-  chains.arbitrum,
-  chains.mainnet,
-  chains.polygon,
-  chains.optimism,
-] as const;
-
-const chainTable = SUPPORTED_CHAINS.map(
-  ({ id, name, network, nativeCurrency }) =>
-    [id, name, network, nativeCurrency.symbol].join(",")
-);
-
-const chainContext = [
-  ["chain id", "name", "network", "symbol"].join(","),
-  ...chainTable,
-].join("\n");
+import { BalanceTool } from "../../lib/langchain/tools/BalanceTool";
 
 const callbackManager = CallbackManager.fromHandlers({
   async handleLLMNewToken(token: string) {
@@ -40,27 +21,6 @@ const callbackManager = CallbackManager.fromHandlers({
     console.log("handleToolStart", { tool });
   },
 });
-
-class BalanceTool extends Tool {
-  name = "balance";
-  description = `
-Use the balance tool to lookup the balance of some cryptocurrency or token, i.e. ETH, OP, USDC etc., for a specific wallet address or ENS name and blockchain.
-${chainContext}
-Please provide the input to the tool as a JSON object containing address (string), chainId (number) & tokenSymbol (string).
-    `;
-  async _call(arg: string) {
-    const { address, chainId, tokenSymbol } = JSON.parse(arg);
-    return JSON.stringify({
-      command: balanceCommand.command,
-      args: {
-        address,
-        symbol: tokenSymbol,
-        chain: chainId,
-      },
-    });
-  }
-  returnDirect = true;
-}
 
 export const run = async (input: string) => {
   const llm = new OpenAI({
