@@ -5,6 +5,7 @@ import { AgentExecutor, ZeroShotAgent } from "langchain/agents";
 import { BalanceTool } from "../../lib/langchain/tools/BalanceTool";
 import { NetWorthTool } from "../../lib/langchain/tools/NetWorthTool";
 import { NftFloorPriceTool } from "../../lib/langchain/tools/NftTool";
+import { CHAIN_CONTEXT } from "../../lib/langchain/utils";
 
 const callbackManager = CallbackManager.fromHandlers({
   async handleLLMNewToken(token: string) {
@@ -38,7 +39,9 @@ export const run = async (input: string) => {
   ];
 
   const executor = AgentExecutor.fromAgentAndTools({
-    agent: ZeroShotAgent.fromLLMAndTools(llm, tools),
+    agent: ZeroShotAgent.fromLLMAndTools(llm, tools, {
+      prefix: [CHAIN_CONTEXT].join("\n\n"),
+    }),
     tools,
     returnIntermediateSteps: false,
     verbose: true,
