@@ -3,6 +3,7 @@ import { OpenAI } from "langchain/llms/openai";
 import { CallbackManager } from "langchain/callbacks";
 import { AgentExecutor, ZeroShotAgent } from "langchain/agents";
 import { BalanceTool } from "../../lib/langchain/tools/BalanceTool";
+import { NetWorthTool } from "../../lib/langchain/tools/NetWorthTool";
 
 const callbackManager = CallbackManager.fromHandlers({
   async handleLLMNewToken(token: string) {
@@ -29,7 +30,10 @@ export const run = async (input: string) => {
     callbackManager,
   });
 
-  const tools = [new BalanceTool(true)];
+  const tools = [
+    new BalanceTool(),
+    new NetWorthTool(),
+  ];
 
   const executor = AgentExecutor.fromAgentAndTools({
     agent: ZeroShotAgent.fromLLMAndTools(llm, tools),
