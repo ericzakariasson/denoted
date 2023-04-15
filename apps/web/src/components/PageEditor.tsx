@@ -2,17 +2,11 @@ import { JSONContent } from "@tiptap/react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { useQueryClient, useMutation } from "react-query";
 import { useAccount } from "wagmi";
-import { createPage, Page } from "../composedb/page";
 import { useCeramic } from "../hooks/useCeramic";
 import { useLit } from "../hooks/useLit";
-import { trackEvent } from "../lib/analytics";
-import { composeClient } from "../lib/compose";
 import { cn } from "../utils/classnames";
 import {
-  serializePage,
-  encryptPage,
   deserializePage,
 } from "../utils/page-helper";
 import { Editor } from "./Editor";
@@ -99,7 +93,7 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
           onChange={(event) => setTitle(event.target.value)}
           required
         />
-        {page && <ShareDialog title={page.title} content={page.data} />}
+        {page && <ShareDialog title={page.title} />}
       </div>
       <div>
         <Editor

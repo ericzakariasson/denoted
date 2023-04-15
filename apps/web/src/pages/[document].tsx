@@ -19,7 +19,7 @@ import {
   encryptPage,
   serializePage,
 } from "../utils/page-helper";
-import { Seo } from "./seo";
+// import { Seo } from "./seo";
 
 type Props = {
   page: Page;
@@ -166,9 +166,9 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
 
   return (
     <div>
-      <Head>
+      {/* <Head>
         <Seo page={page} />
-      </Head>
+      </Head> */}
       <div className="flex items-start justify-between">
         <h1 className="mb-8 text-5xl font-bold">{page.title}</h1>
       </div>

@@ -7,13 +7,11 @@ import { BiLink } from "react-icons/bi";
 import { AiOutlineCheck } from "react-icons/ai";
 import { TwitterIcon, TwitterShareButton } from "react-share";
 import { ShareToLens, Theme, Size } from "@lens-protocol/widgets-react";
-import { JSONContent } from "@tiptap/react";
 import { useRouter } from "next/router";
 import { getBaseUrl } from "../utils/base-url";
 
 export type ShareDialogProps = {
   title: string;
-  content: JSONContent[];
 };
 
 export const ShareDialog: React.FC<ShareDialogProps> = ({ title }) => {
