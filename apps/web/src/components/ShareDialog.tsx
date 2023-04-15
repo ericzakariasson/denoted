@@ -30,63 +30,61 @@ export const ShareDialog: React.FC<ShareDialogProps> = ({ title }) => {
 
   return (
     <Popover.Root>
-      <Popover.Trigger
-        asChild
-        className="flex h-fit items-center gap-2 rounded-lg bg-gray-100 p-2"
-      >
-        <button>
-          <FiShare size={20} className="text-gray-400" />
-          <span className="font-medium text-gray-400">Publish</span>
-        </button>
-      </Popover.Trigger>
-      <Popover.Content className="mt-2 w-[254px] gap-8 rounded-lg bg-gray-100 py-4 px-3">
+    <Popover.Trigger
+      asChild
+      className="flex h-fit items-center gap-2 rounded-lg bg-gray-100 p-2"
+    >
+      <button>
+        <FiShare size={20} className="text-gray-400" />
+        <span className="font-medium text-gray-400">Publish</span>
+      </button>
+    </Popover.Trigger>
+    <Popover.Content className="mt-2 w-[254px] rounded-lg bg-gray-100 py-4 px-3">
       <h3 className="text-sm font-semibold text-gray-400">Publications</h3>
-
-        <div className="mt-4 flex flex-col gap-4 w-full">
-
-        <button className="text-left text-white bg-gradient-radial from-[#4B5563] to-[#1F2937] py-2 px-3 rounded-lg">Publish New Version</button>
-
-            <div className="flex w-full flex-col gap-4 border-2 border-gray-200 rounded-lg px-2 py-3 font-semibold">
-            <h3 className="text-gray-500 size-medium text-sm">
-              VERSION 1
-            </h3>
-            <button
-              className={`flex flex-row items-center rounded-lg bg-gray-200 py-2 px-3 ${
-                isCopied ? `justify-center` : `justify-between`
-              }`}
-              onClick={copyToClipboard}
-            >
-              <span className="text-black-400 font-medium">{`${
-                isCopied ? "Copied!" : "Copy Link"
-              }`}</span>
-              {isCopied ? (
-                <AiOutlineCheck size={24} className="text-black-400" />
-              ) : (
-                <BiLink size={24} className="text-black-400" />
-              )}
-            </button>
-            <TwitterShareButton
-              url={uniqueURL}
-              title={title}
-              hashtags={["denoted,denotedxyz"]}
-            >
-              <div className="flex rounded-lg bg-[#1DA1F2] py-2 px-3 text-white">
-                <TwitterIcon size={24} round />
-                <span className="font-helvetica ml-2 font-semibold">
-                  Share to Twitter
-                </span>
-              </div>
-            </TwitterShareButton>
-            <ShareToLens
-              title={"Share to Lens"}
-              content={title}
-              theme={Theme.mint}
-              size={Size.medium}
-              url={uniqueURL}
-            />
-          </div>
+  
+      <div className="flex flex-col gap-4 mt-4 w-full">
+        <button className="text-left text-white bg-gradient-radial from-[#4B5563] to-[#1F2937] py-2 px-3 rounded-lg">
+          Publish New Version
+        </button>
+  
+        <div className="flex flex-col gap-4 w-full border-2 border-gray-200 rounded-lg p-3 font-semibold">
+          <h3 className="text-gray-500 text-sm">VERSION 1</h3>
+          <button
+            className={`flex items-center rounded-lg bg-gray-200 py-2 px-3 ${
+              isCopied ? "justify-center" : "justify-between"
+            }`}
+            onClick={copyToClipboard}
+          >
+            <span className="text-black-400 font-medium">{isCopied ? "Copied!" : "Copy Link"}</span>
+            {isCopied ? (
+              <AiOutlineCheck size={24} className="text-black-400" />
+            ) : (
+              <BiLink size={24} className="text-black-400" />
+            )}
+          </button>
+          <TwitterShareButton
+            url={uniqueURL}
+            title={title}
+            hashtags={["denoted,denotedxyz"]}
+          >
+            <div className="flex items-center rounded-lg bg-[#1DA1F2] py-2 px-3 text-white">
+              <TwitterIcon size={24} round />
+              <span className="font-helvetica ml-2 font-semibold">
+                Share to Twitter
+              </span>
+            </div>
+          </TwitterShareButton>
+          <ShareToLens
+            title={"Share to Lens"}
+            content={title}
+            theme={Theme.mint}
+            size={Size.medium}
+            url={uniqueURL}
+          />
         </div>
-      </Popover.Content>
-    </Popover.Root>
+      </div>
+    </Popover.Content>
+  </Popover.Root>
+  
   );
 };
