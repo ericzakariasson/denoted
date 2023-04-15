@@ -16,6 +16,7 @@ module.exports = {
       },
     ];
   },
+  swcMinify: false,
   images: {
     remotePatterns: [
       {
@@ -38,4 +39,5 @@ module.exports = withSentryConfig(
   module.exports,
   { silent: true },
   { hideSourcemaps: true },
+
 );
