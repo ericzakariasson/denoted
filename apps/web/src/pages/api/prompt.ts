@@ -4,6 +4,7 @@ import { CallbackManager } from "langchain/callbacks";
 import { AgentExecutor, ZeroShotAgent } from "langchain/agents";
 import { Tool } from "langchain/tools";
 import * as chains from '@wagmi/chains';
+import { balanceCommand } from "../../components/commands/balance/command";
 
 const chainContext = [chains.arbitrum, chains.mainnet, chains.polygon, chains.optimism]
   .map(({
@@ -45,9 +46,15 @@ ${chainContext}
 Please provide the input to the tool as a JSON object containing address (string), chainId (number) & tokenSymbol (string).
     `;
     async _call(arg: string) {
-        console.log(JSON.parse(arg));
-        console.log(`BlanceTool.call('${arg}') => `)
-        return "0";
+      const { address, chainId, tokenSymbol } = JSON.parse(arg);
+      return JSON.stringify({
+        command: balanceCommand.command,
+        args: {
+          address,
+          symbol: tokenSymbol,
+          chain: chainId,
+        }
+      });
     }
     returnDirect = true;
 }
@@ -66,7 +73,7 @@ export const run = async (input: string) => {
   const executor = AgentExecutor.fromAgentAndTools({
     agent: ZeroShotAgent.fromLLMAndTools(llm, tools),
     tools,
-    returnIntermediateSteps: true,
+    returnIntermediateSteps: false,
     verbose: true,
     callbackManager,
   });
@@ -87,5 +94,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   
   console.log(JSON.stringify(results, null, 4));
 
-  res.json(results);
+  return res.json(results);
 }
