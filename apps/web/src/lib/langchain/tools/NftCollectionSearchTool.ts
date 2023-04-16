@@ -24,6 +24,6 @@ Please provide the input to the tool as a JSON object (with quotes around proper
       .then((response) => response.json())
       .catch((err) => console.error(err));
 
-    return `"${result.search_results.at(0).contract_address}"`;
+    return `${result.search_results.at(0).contract_address}`;
   }
 }
