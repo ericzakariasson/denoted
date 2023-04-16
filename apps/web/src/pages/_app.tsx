@@ -12,6 +12,7 @@ import { Sidebar } from "../components/Sidebar";
 import { Web3Provider } from "../components/Web3Provider";
 import { cn } from "../utils/classnames";
 import { Header } from "../components/Header";
+import { Footer } from "../components/Footer";
 
 const queryClient = new QueryClient({});
 
@@ -28,6 +29,7 @@ function MyApp({ Component, pageProps }: AppProps) {
               <main className="m-auto max-w-3xl px-4 py-8">
                 <Component {...pageProps} />
               </main>
+              <Footer className="absolute bottom-0 right-[calc(50%_-_16rem)] mb-3"/>
             </div>
           </div>
           <Analytics />
