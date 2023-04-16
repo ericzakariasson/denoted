@@ -5,7 +5,7 @@ export class NftFloorPriceTool extends Tool {
   name = nftFloorPriceCommand.command;
   description = `
 Use this tool to lookup the floor price for a NFT address and blockchain.
-Please provide the input to the tool as a JSON object containing address (string) & chainId (number).
+Please provide the input to the tool formatted as JSON containing address (string) & chainId (number).
     `;
   returnDirect = true;
   async _call(arg: string) {

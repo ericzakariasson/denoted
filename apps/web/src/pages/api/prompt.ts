@@ -43,7 +43,7 @@ export const run = async (input: string) => {
       prefix: [CHAIN_CONTEXT].join("\n\n"),
     }),
     tools,
-    returnIntermediateSteps: false,
+    returnIntermediateSteps: true,
     verbose: true,
     callbackManager,
   });
@@ -63,8 +63,12 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { output } = await run(req.body.prompt);
-  const results = { query: req.body.prompt, output: JSON.parse(output) };
+  const { output, intermediateSteps } = await run(req.body.prompt);
+  const results = {
+    query: req.body.prompt,
+    output: JSON.parse(output),
+    intermediateSteps: intermediateSteps.map(({ observation }: { observation: string }) => JSON.parse(observation)),
+  };
 
   console.log(JSON.stringify(results, null, 4));
 
