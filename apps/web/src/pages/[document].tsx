@@ -1,27 +1,23 @@
 import { JSONContent } from "@tiptap/react";
 import { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { useAccount, useMutation, useQueryClient } from "wagmi";
 import { PageEditor, SavePageData } from "../components/PageEditor";
 import { Viewer } from "../components/Viewer";
-import {
-  getPageQuery,
-  getPagesQuery,
-  Page,
-  updatePage,
-} from "../composedb/page";
+import { Page, getPageQuery, updatePage } from "../composedb/page";
 import { trackEvent } from "../lib/analytics";
 import { composeClient } from "../lib/compose";
+import { getBaseUrl } from "../utils/base-url";
+import { formatMetaTags } from "../utils/metatags";
 import {
+  DeserializedPage,
   decryptPage,
   deserializePage,
   encryptPage,
   serializePage,
 } from "../utils/page-helper";
-import { useRouter } from "next/router";
-import { getBaseUrl } from "../utils/base-url";
-import { formatMetaTags } from "../utils/metatags";
 type Props = {
   page: Page;
 };
@@ -55,9 +51,7 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
   const { asPath } = useRouter();
   const origin = getBaseUrl();
 
-  const [page, setPage] = useState<ReturnType<typeof deserializePage> | null>(
-    null
-  );
+  const [page, setPage] = useState<DeserializedPage | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
   const { address } = useAccount();

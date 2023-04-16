@@ -1,7 +1,7 @@
-import { deserializePage } from "./page-helper";
+import { DeserializedPage } from "./page-helper";
 
 type Page = {
-  page: ReturnType<typeof deserializePage>;
+  page: DeserializedPage;
 };
 
 //TODO: add dynamic images
