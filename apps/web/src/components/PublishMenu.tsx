@@ -36,7 +36,7 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ title }) => {
           <span className="font-medium text-gray-400">Publish</span>
         </button>
       </Popover.Trigger>
-      <Popover.Content className="mt-2 w-[254px] rounded-lg bg-gray-100 py-4 px-3">
+      <Popover.Content className="mt-2 w-[254px] rounded-lg bg-gray-100 py-4 px-3" align="end">
         <h3 className="text-sm font-semibold text-gray-400">Publications</h3>
 
         <div className="mt-4 flex w-full flex-col gap-4">
