@@ -8,6 +8,15 @@ import { NftFloorPriceTool } from "../../lib/langchain/tools/NftTool";
 import { CHAIN_CONTEXT } from "../../lib/langchain/utils";
 import { NftCollectionSearchTool } from "../../lib/langchain/tools/NftCollectionSearchTool";
 
+interface IntermediateStep {
+  action: {
+    tool: string;
+    toolInput: string;
+    log: string;
+  };
+  observation: string;
+}
+
 const callbackManager = CallbackManager.fromHandlers({
   async handleLLMNewToken(token: string) {
     console.log("token", { token });
@@ -65,16 +74,23 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { output, intermediateSteps } = await run(req.body.prompt);
-  const results = {
+  const {
+    output,
+    intermediateSteps,
+  } = await run(req.body.prompt);
+
+  return res.json({
     query: req.body.prompt,
-    output: JSON.parse(output),
+    output: output ?? null,
     intermediateSteps: intermediateSteps.map(
-      ({ observation }: { observation: string }) => JSON.parse(observation)
+      (step: IntermediateStep) => ({
+        action: {
+          tool: step.action.tool,
+          toolInput: JSON.parse(step.action.toolInput),
+          log: step.action.log,
+        },
+        observation: step.observation,
+      })
     ),
-  };
-
-  console.log(JSON.stringify(results, null, 4));
-
-  return res.json(results);
+  });
 }
