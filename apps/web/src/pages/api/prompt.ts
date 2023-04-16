@@ -6,6 +6,7 @@ import { BalanceTool } from "../../lib/langchain/tools/BalanceTool";
 import { NetWorthTool } from "../../lib/langchain/tools/NetWorthTool";
 import { NftFloorPriceTool } from "../../lib/langchain/tools/NftTool";
 import { CHAIN_CONTEXT } from "../../lib/langchain/utils";
+import { NftCollectionSearchTool } from "../../lib/langchain/tools/NftCollectionSearchTool";
 
 const callbackManager = CallbackManager.fromHandlers({
   async handleLLMNewToken(token: string) {
@@ -36,6 +37,7 @@ export const run = async (input: string) => {
     new BalanceTool(),
     new NetWorthTool(),
     new NftFloorPriceTool(),
+    new NftCollectionSearchTool(),
   ];
 
   const executor = AgentExecutor.fromAgentAndTools({
@@ -67,7 +69,9 @@ export default async function handler(
   const results = {
     query: req.body.prompt,
     output: JSON.parse(output),
-    intermediateSteps: intermediateSteps.map(({ observation }: { observation: string }) => JSON.parse(observation)),
+    intermediateSteps: intermediateSteps.map(
+      ({ observation }: { observation: string }) => JSON.parse(observation)
+    ),
   };
 
   console.log(JSON.stringify(results, null, 4));
