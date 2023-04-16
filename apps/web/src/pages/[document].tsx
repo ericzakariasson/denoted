@@ -38,9 +38,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const pageQuery = await getPageQuery(pageId);
   const page = pageQuery.data?.node;
 
-  const pageQueryIds = await getPagesQuery();
-  const pageIds = pageQueryIds.data?.pageIndex.edges.map(({ node }) => node.id);
-
   if (!page) {
     return {
       notFound: true,
@@ -50,7 +47,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   return {
     props: {
       page,
-      pageIds,
     },
   };
 };
@@ -177,7 +173,7 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
 
         <meta property="og:title" content={metaTags.title} />
         <meta property="og:description" content={metaTags.description} />
-        <meta property="og:type" content="website" />
+        <meta property="og:type" content="article" />
         <meta property="og:url" content={origin + asPath} />
         <meta property="og:image" content={metaTags.image} />
 

@@ -17,9 +17,9 @@ const AuthDialog = dynamic(
   { ssr: false }
 );
 
-const ShareDialog = dynamic(
+const PublishMenu = dynamic(
   async () =>
-    import("../components/ShareDialog").then((module) => module.ShareDialog),
+    import("./PublishMenu").then((module) => module.PublishMenu),
   { ssr: false }
 );
 
@@ -92,7 +92,7 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
           onChange={(event) => setTitle(event.target.value)}
           required
         />
-        {page && <ShareDialog title={page.title} />}
+        {page && <PublishMenu title={page.title} />}
       </div>
       <div>
         <Editor

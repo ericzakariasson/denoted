@@ -1,4 +1,3 @@
-// ShareDialog.tsx
 import React, { useState, useEffect, useMemo } from "react";
 import * as Popover from "@radix-ui/react-popover";
 import { getPageQuery } from "../composedb/page";
@@ -10,25 +9,21 @@ import { ShareToLens, Theme, Size } from "@lens-protocol/widgets-react";
 import { useRouter } from "next/router";
 import { getBaseUrl } from "../utils/base-url";
 
-export type ShareDialogProps = {
+export type PublishmenuProps = {
   title: string;
 };
 
-export const ShareDialog: React.FC<ShareDialogProps> = ({ title }) => {
-  const [uniqueURL, setUniqueURL] = useState("");
+export const PublishMenu: React.FC<PublishmenuProps> = ({ title }) => {
+  const { asPath } = useRouter();
+
   const [isCopied, setIsCopied] = useState(false);
   //TODO: add logic for isPublished on IPFS
   const [isPublished, setIsPublished] = useState(false);
-  const { asPath } = useRouter();
+  const uniqueURL = getBaseUrl() + asPath
   const copyToClipboard = () => {
     navigator.clipboard.writeText(uniqueURL);
     setIsCopied(true);
   };
-  useEffect(() => {
-    setUniqueURL(getBaseUrl + asPath);
-  }, [title, uniqueURL, asPath]);
-
-
 
   return (
     <Popover.Root>
