@@ -1,29 +1,62 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { ShareToLens, Size, Theme } from "@lens-protocol/widgets-react";
 import * as Popover from "@radix-ui/react-popover";
-import { getPageQuery } from "../composedb/page";
-import { FiShare } from "react-icons/fi";
-import { BiLink } from "react-icons/bi";
-import { AiOutlineCheck } from "react-icons/ai";
-import { TwitterIcon, TwitterShareButton } from "react-share";
-import { ShareToLens, Theme, Size } from "@lens-protocol/widgets-react";
 import { useRouter } from "next/router";
+import React, { useState } from "react";
+import { AiOutlineCheck } from "react-icons/ai";
+import { BiLink } from "react-icons/bi";
+import { FiShare } from "react-icons/fi";
+import { TwitterIcon, TwitterShareButton } from "react-share";
 import { getBaseUrl } from "../utils/base-url";
+import { useMutation, useQuery } from "react-query";
+import { DeserializedPage } from "../utils/page-helper";
 
 export type PublishmenuProps = {
-  title: string;
+  page: DeserializedPage;
 };
 
-export const PublishMenu: React.FC<PublishmenuProps> = ({ title }) => {
+export const PublishMenu: React.FC<PublishmenuProps> = ({ page }) => {
   const { asPath } = useRouter();
 
   const [isCopied, setIsCopied] = useState(false);
-  //TODO: add logic for isPublished on IPFS
-  const [isPublished, setIsPublished] = useState(false);
-  const uniqueURL = getBaseUrl() + asPath
+  const uniqueURL = getBaseUrl() + asPath;
   const copyToClipboard = () => {
     navigator.clipboard.writeText(uniqueURL);
     setIsCopied(true);
   };
+
+  const publishMutation = useMutation(
+    async () => {
+      const response = await fetch("/api/publish", {
+        method: "POST",
+        body: JSON.stringify({ page }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`${response.status} ${response.statusText}`);
+      }
+
+      const json = await response.json();
+
+      return json;
+    },
+    {
+      onSuccess: () => {
+        publicationsQuery.refetch();
+      },
+    }
+  );
+
+  const publicationsQuery = useQuery(["PUBLICATIONS", page.id], async () => {
+    const response = await fetch(`/api/publications?pageId=${page.id}`);
+
+    if (!response.ok) {
+      throw new Error(`${response.status} ${response.statusText}`);
+    }
+
+    const json: [] = await response.json();
+
+    return json;
+  });
 
   return (
     <Popover.Root>
@@ -36,15 +69,21 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ title }) => {
           <span className="font-medium text-gray-400">Publish</span>
         </button>
       </Popover.Trigger>
-      <Popover.Content className="mt-2 w-[254px] rounded-lg bg-gray-100 py-4 px-3" align="end">
+      <Popover.Content
+        className="mt-2 w-[254px] rounded-lg bg-gray-100 py-4 px-3"
+        align="end"
+      >
         <h3 className="text-sm font-semibold text-gray-400">Publications</h3>
 
         <div className="mt-4 flex w-full flex-col gap-4">
-          {isPublished ? (
-            <>
-              <button className="rounded-lg bg-gradient-radial from-[#4B5563] to-[#1F2937] py-2 px-3 text-left text-white">
-                Publish New Version
-              </button>
+          <button
+            onClick={() => publishMutation.mutate()}
+            className="rounded-lg bg-gradient-radial from-[#4B5563] to-[#1F2937] py-2 px-3 text-left text-white"
+          >
+            Publish to IPFS
+          </button>
+          {publicationsQuery.data?.map((publication) => {
+            return (
               <div className="flex w-full flex-col gap-4 rounded-lg border-2 border-gray-200 p-3 font-semibold">
                 <h3 className="text-sm text-gray-500">VERSION 1</h3>
                 <button
@@ -53,7 +92,7 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ title }) => {
                   }`}
                   onClick={copyToClipboard}
                 >
-                  <span className="text-black font-medium">
+                  <span className="font-medium text-black">
                     {isCopied ? "Copied!" : "Copy Link"}
                   </span>
                   {isCopied ? (
@@ -64,32 +103,24 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ title }) => {
                 </button>
                 <TwitterShareButton
                   url={uniqueURL}
-                  title={title}
+                  title={page.title}
                   hashtags={["denoted,denotedxyz"]}
                 >
                   <div className="flex items-center rounded-lg bg-[#1DA1F2] py-2 px-3 text-white">
                     <TwitterIcon size={24} round />
-                    <span className="font-helvetica ml-2 font-semibold">
-                      Share to Twitter
-                    </span>
+                    <span className="ml-2 font-semibold">Share to Twitter</span>
                   </div>
                 </TwitterShareButton>
                 <ShareToLens
                   title={"Share to Lens"}
-                  content={title}
+                  content={page.title}
                   theme={Theme.mint}
                   size={Size.medium}
                   url={uniqueURL}
                 />
               </div>
-            </>
-          ) : (
-            <>
-              <button className="rounded-lg bg-gradient-radial from-[#4B5563] to-[#1F2937] py-2 px-3 text-left text-white">
-                Publish to IPFS
-              </button>
-            </>
-          )}
+            );
+          })}
         </div>
       </Popover.Content>
     </Popover.Root>
