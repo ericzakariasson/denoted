@@ -1,7 +1,6 @@
 import { GetServerSideProps, NextPage } from "next";
 import { Card } from "../components/Card";
 import { getPagesQuery, Page } from "../composedb/page";
-import { composeClient } from "../lib/compose";
 import { cn } from "../utils/classnames";
 import Link from "next/link";
 import { trackEvent } from "../lib/analytics";
