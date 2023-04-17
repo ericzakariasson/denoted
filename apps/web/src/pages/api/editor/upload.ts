@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { IncomingForm } from "formidable";
+import { IncomingForm, File } from "formidable";
 import { PassThrough } from "stream";
 import PinataSDK, { PinataPinResponse } from "@pinata/sdk";
 import * as Sentry from '@sentry/nextjs';
@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         multiples: true,
         keepExtensions: true,
         allowEmptyFiles: false,
-        fileWriteStreamHandler: ({ newFilename, originalFilename }) => {
+        fileWriteStreamHandler: ({ newFilename, originalFilename }: File) => {
             const pass = new PassThrough();
 
             const Filename = originalFilename ?? newFilename;
