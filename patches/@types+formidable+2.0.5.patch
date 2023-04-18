@@ -1,0 +1,13 @@
+diff --git a/node_modules/@types/formidable/index.d.ts b/node_modules/@types/formidable/index.d.ts
+index 5f35462..f78cc46 100755
+--- a/node_modules/@types/formidable/index.d.ts
++++ b/node_modules/@types/formidable/index.d.ts
+@@ -173,7 +173,7 @@ declare namespace formidable {
+          *
+          * @default null
+          */
+-        fileWriteStreamHandler?: (() => Writable) | undefined;
++        fileWriteStreamHandler?: ((file: File) => Writable) | undefined;
+ 
+         /**
+          * when you call the .parse method, the files argument (of the callback) will contain arrays of
