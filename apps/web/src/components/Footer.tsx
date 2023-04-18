@@ -23,7 +23,7 @@ export function Footer({ className }: FooterProps) {
             }}
           />
         </a>
-        <a href="hey@denoted.xyz" target="_blank" rel="noreferrer">
+        <a href="mailto:hey@denoted.xyz" target="_blank" rel="noreferrer">
           <EmailIcon
             size={48}
             iconFillColor="#4B5563"
