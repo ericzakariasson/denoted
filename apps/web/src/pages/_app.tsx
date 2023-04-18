@@ -12,6 +12,7 @@ import { Sidebar } from "../components/Sidebar";
 import { Web3Provider } from "../components/Web3Provider";
 import { cn } from "../utils/classnames";
 import { Header } from "../components/Header";
+import { Footer } from "../components/Footer";
 
 const queryClient = new QueryClient({});
 
@@ -29,6 +30,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                 <Component {...pageProps} />
               </main>
             </div>
+            <Footer className="absolute bottom-0 w-fit mb-3 ml-3" />
           </div>
           <Analytics />
           <VercelAnalytics />
