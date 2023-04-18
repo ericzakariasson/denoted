@@ -1,5 +1,5 @@
 import { cn } from "../utils/classnames";
-import { TwitterIcon, LinkedinIcon, EmailIcon } from "react-share";
+import { TwitterIcon, EmailIcon } from "react-share";
 
 type FooterProps = {
   className?: string;
@@ -8,30 +8,32 @@ type FooterProps = {
 export function Footer({ className }: FooterProps) {
   return (
     <footer className={cn(className)}>
-      <div className="mb-5 flex flex-row justify-center items-center gap-5">
+      <div className="flex-grow border-t border-gray-200"></div>
+      <div className="gap 1 my-1 flex -translate-x-2 flex-row">
         <a
           href="https://twitter.com/denotedxyz"
           target="_blank"
           rel="noreferrer"
         >
-          <TwitterIcon size={40} round />
+          <TwitterIcon
+            size={48}
+            iconFillColor="#4B5563"
+            bgStyle={{
+              fill: "transparent",
+            }}
+          />
         </a>
-        <a
-          href="https://example.com"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <LinkedinIcon size={40} round />
-        </a>
-        <a
-          href="https://example.com"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <EmailIcon size={40} round />
+        <a href="hey@denoted.xyz" target="_blank" rel="noreferrer">
+          <EmailIcon
+            size={48}
+            iconFillColor="#4B5563"
+            bgStyle={{
+              fill: "transparent",
+            }}
+          />
         </a>
       </div>
-      <p className="text-sm text-gray-500">
+      <p className="text-[10px] text-gray-500">
         Copyright © 2023 denoted. All rights reserved.
       </p>
     </footer>

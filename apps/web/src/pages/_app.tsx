@@ -29,8 +29,8 @@ function MyApp({ Component, pageProps }: AppProps) {
               <main className="m-auto max-w-3xl px-4 py-8">
                 <Component {...pageProps} />
               </main>
-              <Footer className="absolute bottom-0 right-[calc(50%_-_16rem)] mb-3"/>
             </div>
+            <Footer className="absolute bottom-0 w-fit mb-3 ml-3" />
           </div>
           <Analytics />
           <VercelAnalytics />
