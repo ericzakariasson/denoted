@@ -2,17 +2,11 @@ import { JSONContent } from "@tiptap/react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { useQueryClient, useMutation } from "react-query";
 import { useAccount } from "wagmi";
-import { createPage, Page } from "../composedb/page";
 import { useCeramic } from "../hooks/useCeramic";
 import { useLit } from "../hooks/useLit";
-import { trackEvent } from "../lib/analytics";
-import { composeClient } from "../lib/compose";
 import { cn } from "../utils/classnames";
 import {
-  serializePage,
-  encryptPage,
   deserializePage,
 } from "../utils/page-helper";
 import { Editor } from "./Editor";
@@ -20,6 +14,12 @@ import { Editor } from "./Editor";
 const AuthDialog = dynamic(
   async () =>
     import("../components/AuthDialog").then((module) => module.AuthDialog),
+  { ssr: false }
+);
+
+const PublishMenu = dynamic(
+  async () =>
+    import("./PublishMenu").then((module) => module.PublishMenu),
   { ssr: false }
 );
 
@@ -81,11 +81,10 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
 
   const isEnabled =
     isAuthenticated && title.length > 0 && (json?.content ?? []).length > 0;
-
   return (
     <div>
       <AuthDialog open={!isAuthenticated} />
-      <div className="mb-4">
+      <div className="flex flex-row justify-between mb-4">
         <input
           placeholder="Untitled"
           className="mb-4 w-full text-5xl font-bold placeholder:text-gray-200 focus:outline-none"
@@ -93,6 +92,9 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
           onChange={(event) => setTitle(event.target.value)}
           required
         />
+        {page && <PublishMenu title={page.title} />}
+      </div>
+      <div>
         <Editor
           initialContent={
             page
