@@ -32,12 +32,12 @@ export default async function handler(
 
     if (insert.error) {
       console.error(insert.error);
-      return res.status(500);
+      return res.status(500).json({ success: false });
     }
 
     return res.status(200).json(insert.data);
   } catch (error) {
     console.error(error);
-    return res.status(500);
+    return res.status(500).json({ success: false });
   }
 }
