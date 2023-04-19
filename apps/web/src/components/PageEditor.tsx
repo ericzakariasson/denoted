@@ -14,11 +14,6 @@ const AuthDialog = dynamic(
   { ssr: false }
 );
 
-const PublishMenu = dynamic(
-  async () => import("./PublishMenu").then((module) => module.PublishMenu),
-  { ssr: false }
-);
-
 export type SavePageData = {
   page: {
     title: string;
@@ -88,7 +83,6 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
           onChange={(event) => setTitle(event.target.value)}
           required
         />
-        {page && <PublishMenu page={page} />}
       </div>
       <div>
         <Editor
@@ -103,15 +97,17 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
           onUpdate={(json) => setJson(json)}
         />
       </div>
-      <button
-        className={cn(
-          "rounded-xl from-gray-700 to-gray-900 px-6 py-3 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-gray-300"
-        )}
-        onClick={() => handleSave()}
-        disabled={!isEnabled}
-      >
-        {isSaving ? "Saving..." : "Save page"}
-      </button>
+      <div className="fixed bottom-0 p-4">
+        <button
+          className={cn(
+            "rounded-xl from-gray-700 to-gray-900 px-6 py-3 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-gray-300"
+          )}
+          onClick={() => handleSave()}
+          disabled={!isEnabled}
+        >
+          {isSaving ? "Saving..." : "Save page"}
+        </button>
+      </div>
     </div>
   );
 }

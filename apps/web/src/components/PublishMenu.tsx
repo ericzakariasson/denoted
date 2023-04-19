@@ -9,6 +9,7 @@ import { TwitterIcon, TwitterShareButton } from "react-share";
 import { getBaseUrl } from "../utils/base-url";
 import { useMutation, useQuery } from "react-query";
 import { DeserializedPage } from "../utils/page-helper";
+import { Database } from "../lib/supabase/supabase.types";
 
 export type PublishmenuProps = {
   page: DeserializedPage;
@@ -19,14 +20,14 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ page }) => {
 
   const [isCopied, setIsCopied] = useState(false);
   const uniqueURL = getBaseUrl() + asPath;
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(uniqueURL);
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
     setIsCopied(true);
   };
 
   const publishMutation = useMutation(
     async () => {
-      const response = await fetch("/api/publish", {
+      const response = await fetch("/api/page/publish", {
         method: "POST",
         body: JSON.stringify({ page }),
       });
@@ -47,13 +48,14 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ page }) => {
   );
 
   const publicationsQuery = useQuery(["PUBLICATIONS", page.id], async () => {
-    const response = await fetch(`/api/publications?pageId=${page.id}`);
+    const response = await fetch(`/api/page/publications?pageId=${page.id}`);
 
     if (!response.ok) {
       throw new Error(`${response.status} ${response.statusText}`);
     }
 
-    const json: [] = await response.json();
+    const json: Database["public"]["Tables"]["page_publication"]["Row"][] =
+      await response.json();
 
     return json;
   });
@@ -85,12 +87,14 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ page }) => {
           {publicationsQuery.data?.map((publication) => {
             return (
               <div className="flex w-full flex-col gap-4 rounded-lg border-2 border-gray-200 p-3 font-semibold">
-                <h3 className="text-sm text-gray-500">VERSION 1</h3>
+                <h3 className="text-sm text-gray-500">Latest publication</h3>
                 <button
                   className={`flex items-center rounded-lg bg-gray-200 py-2 px-3 ${
                     isCopied ? "justify-center" : "justify-between"
                   }`}
-                  onClick={copyToClipboard}
+                  onClick={() =>
+                    copyToClipboard(`${getBaseUrl()}/p/${publication.id}`)
+                  }
                 >
                   <span className="font-medium text-black">
                     {isCopied ? "Copied!" : "Copy Link"}

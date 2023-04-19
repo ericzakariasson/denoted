@@ -1,7 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { supabase } from "../../../lib/supabase";
+import { supabase } from "../../../lib/supabase/supabase";
 
-export async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { pageId } = req.query;
 
   const select = await supabase
@@ -14,5 +17,5 @@ export async function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(500);
   }
 
-  return res.status(404);
+  return res.status(200).json(select.data);
 }
