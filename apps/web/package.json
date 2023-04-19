@@ -14,7 +14,7 @@
     "@didtools/pkh-ethereum": "^0.1.0",
     "@lens-protocol/client": "^0.1.0",
     "@lens-protocol/widgets-react": "^0.0.10",
-    "@lit-protocol/lit-node-client": "^2.1.107",
+    "@lit-protocol/lit-node-client": "^2.1.123",
     "@pinata/sdk": "^2.1.0",
     "@radix-ui/react-dialog": "^1.0.3",
     "@radix-ui/react-dropdown-menu": "^2.0.4",
@@ -68,7 +68,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
-    "@lit-protocol/types": "^2.1.104",
+    "@lit-protocol/types": "^2.1.123",
     "@types/formidable": "^2.0.5",
     "@types/lodash.get": "^4.4.7",
     "@types/mixpanel-browser": "^2.38.1",
