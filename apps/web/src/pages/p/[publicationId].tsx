@@ -55,7 +55,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 };
 
 const DocumentPage: NextPage<Props> = ({ page, url }) => {
-  const metaTags = formatMetaTags({ page });
+  const metaTags = formatMetaTags(page);
 
   const json: JSONContent = {
     type: "doc",
