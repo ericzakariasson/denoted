@@ -1,6 +1,5 @@
 import { Content, JSONContent } from "@tiptap/core";
 import Highlight from "@tiptap/extension-highlight";
-import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import TextAlign from "@tiptap/extension-text-align";
 import Typography from "@tiptap/extension-typography";
@@ -24,6 +23,7 @@ import {
   Strikethrough,
 } from "lucide-react";
 import { TrailingNode } from "../lib/tiptap/extensions/trailing-node";
+import { IpfsImage } from '../lib/tiptap/image';
 
 type BubbleMenuButtonProps = {
   onClick: () => void;
@@ -64,7 +64,7 @@ export const extensions = [
   }),
   Highlight,
   Typography,
-  Image,
+  IpfsImage.extension,
   TextAlign,
   ...commandExtensions,
   TrailingNode,
@@ -118,16 +118,18 @@ export const Editor = ({
           const insertImageToEditor = (
             view: EditorView,
             event: DragEvent,
-            src: string
+            cid: string
           ) => {
             const { schema } = view.state;
             const coordinates = view.posAtCoords({
               left: event.clientX,
               top: event.clientY,
             });
-            const node = schema.nodes.image.create({ src });
+            const node = schema.nodes['ipfs-image'].create({ cid });
+            console.log(node.toJSON());
             const transaction = view.state.tr.insert(coordinates!.pos, node);
-            return view.dispatch(transaction);
+            view.dispatch(transaction);
+            return node;
           };
 
           try {
@@ -150,11 +152,7 @@ export const Editor = ({
               }
 
               uploadImage(file).then((response) => {
-                const img = new global.Image();
-                img.src = response;
-                img.onload = () => {
-                  return insertImageToEditor(view, event, response);
-                };
+                return insertImageToEditor(view, event, response);
               });
             };
           } catch (error) {
@@ -237,5 +235,23 @@ export const Editor = ({
 };
 
 async function uploadImage(file: File): Promise<string> {
-  return URL.createObjectURL(file);
+  const formData = new FormData();
+  formData.append('image', file);
+
+  const res = await fetch('/api/editor/upload', {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to upload image to IPFS');
+  }
+
+  const { uploads } = await res.json();
+
+  const cid = uploads[0].IpfsHash;
+
+  console.log(cid);
+
+  return cid;
 }
