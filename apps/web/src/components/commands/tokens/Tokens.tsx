@@ -45,7 +45,7 @@ const TokenPriceWidget = ({
       tokenList: json.tokens,
     });
 
-    if(!tokenData) return null;
+    if (!tokenData) return null;
 
     return {
       tokenSymbol: tokenData?.symbol,
@@ -55,17 +55,20 @@ const TokenPriceWidget = ({
     };
   });
 
-  if (!query.data) return <DataPill query={query}>{"No token data returned"}</DataPill>;
+  if (!query.data)
+    return <DataPill query={query}>{"No token data returned"}</DataPill>;
   return (
-    <DataPill query={query} className="flex flex-row">
-      <Image
-        src={query.data.tokenImage}
-        alt={query.data.tokenName}
-        width={30}
-        height={0}
-        style={{ margin: 0, marginRight: 8 }}
-      />
-      {query.data?.tokenPrice} {query.data?.tokenSymbol}
+    <DataPill query={query}>
+      <div className="inline-flex items-baseline gap-1">
+        <Image
+          src={query.data.tokenImage}
+          alt={query.data.tokenName}
+          width={16}
+          height={16}
+          className="m-0 translate-y-0.5"
+        />
+        ${query.data?.tokenPrice}
+      </div>
     </DataPill>
   );
 };
