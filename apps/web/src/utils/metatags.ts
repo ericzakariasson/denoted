@@ -1,24 +1,23 @@
-import { deserializePage } from "./page-helper";
+import { DeserializedPage } from "./page-helper";
 
 type Page = {
-  page: ReturnType<typeof deserializePage>;
+  page: DeserializedPage;
 };
 
 //TODO: add dynamic images
 
-export const formatMetaTags = ({ page }: Page) => {
+export const formatMetaTags = (page: DeserializedPage) => {
   const defaultMetaTags = {
     description:
-      "setup your web3 profile and connect with others by turning your social tokens into social signals.",
-    image: "https://images.unsplash.com/photo-156",
+      "The universal way to enhance your digital artefacts with on-chain data ✨",
+    image: "/social-preview.png",
   };
 
-  const prefixedTitle = page.title ? `denoted/${page.title}` : "denoted";
+  const prefixedTitle = page.title ? `${page.title} – denoted` : "denoted";
 
   return {
-    id: page.id ?? "",
     title: prefixedTitle,
     description: page.data[0].text ?? defaultMetaTags.description,
-    image: "https://images.unsplash.com/photo-156",
+    image: defaultMetaTags.image,
   };
 };

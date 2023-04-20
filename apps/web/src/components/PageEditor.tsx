@@ -1,25 +1,16 @@
 import { JSONContent } from "@tiptap/react";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { useCeramic } from "../hooks/useCeramic";
 import { useLit } from "../hooks/useLit";
 import { cn } from "../utils/classnames";
-import {
-  deserializePage,
-} from "../utils/page-helper";
+import { deserializePage } from "../utils/page-helper";
 import { Editor } from "./Editor";
 
 const AuthDialog = dynamic(
   async () =>
     import("../components/AuthDialog").then((module) => module.AuthDialog),
-  { ssr: false }
-);
-
-const PublishMenu = dynamic(
-  async () =>
-    import("./PublishMenu").then((module) => module.PublishMenu),
   { ssr: false }
 );
 
@@ -84,7 +75,7 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
   return (
     <div>
       <AuthDialog open={!isAuthenticated} />
-      <div className="flex flex-row justify-between mb-4">
+      <div className="mb-4 flex flex-row justify-between">
         <input
           placeholder="Untitled"
           className="mb-4 w-full text-5xl font-bold placeholder:text-gray-200 focus:outline-none"
@@ -92,7 +83,6 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
           onChange={(event) => setTitle(event.target.value)}
           required
         />
-        {page && <PublishMenu title={page.title} />}
       </div>
       <div>
         <Editor
@@ -107,15 +97,17 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
           onUpdate={(json) => setJson(json)}
         />
       </div>
-      <button
-        className={cn(
-          "rounded-xl from-gray-700 to-gray-900 px-6 py-3 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-gray-300"
-        )}
-        onClick={() => handleSave()}
-        disabled={!isEnabled}
-      >
-        {isSaving ? "Saving..." : "Save page"}
-      </button>
+      <div className="fixed bottom-0 p-4">
+        <button
+          className={cn(
+            "rounded-xl from-gray-700 to-gray-900 px-6 py-3 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-gray-300"
+          )}
+          onClick={() => handleSave()}
+          disabled={!isEnabled}
+        >
+          {isSaving ? "Saving..." : "Save page"}
+        </button>
+      </div>
     </div>
   );
 }

@@ -84,6 +84,8 @@ export function deserializePage(page: Page) {
   };
 }
 
+export type DeserializedPage = ReturnType<typeof deserializePage>;
+
 export async function encryptPageNode(
   pageNode: PageNode,
   key: CryptoKey
