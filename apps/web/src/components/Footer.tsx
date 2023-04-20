@@ -1,5 +1,8 @@
+import { umask } from "process";
 import { cn } from "../utils/classnames";
 import { TwitterIcon, EmailIcon } from "react-share";
+import { Mail, Twitter } from "lucide-react";
+import Link from "next/link";
 
 type FooterProps = {
   className?: string;
@@ -7,34 +10,22 @@ type FooterProps = {
 
 export function Footer({ className }: FooterProps) {
   return (
-    <footer className={cn(className)}>
-      <div className="flex-grow border-t border-gray-200"></div>
-      <div className="gap 1 my-1 flex -translate-x-2 flex-row">
-        <a
+    <footer className={cn("flex flex-col gap-2", className)}>
+      <div className="flex gap-4 text-gray-500">
+        <Link
           href="https://twitter.com/denotedxyz"
           target="_blank"
           rel="noreferrer"
         >
-          <TwitterIcon
-            size={48}
-            iconFillColor="#4B5563"
-            bgStyle={{
-              fill: "transparent",
-            }}
-          />
-        </a>
-        <a href="mailto:hey@denoted.xyz" target="_blank" rel="noreferrer">
-          <EmailIcon
-            size={48}
-            iconFillColor="#4B5563"
-            bgStyle={{
-              fill: "transparent",
-            }}
-          />
-        </a>
+          <Twitter strokeWidth={1.5} />
+        </Link>
+        <Link href="mailto:hey@denoted.xyz" target="_blank" rel="noreferrer">
+          <Mail strokeWidth={1.5} />
+        </Link>
       </div>
-      <p className="text-[10px] text-gray-500">
-        Copyright © 2023 denoted. All rights reserved.
+      <p className="flex flex-col gap-1 text-[10px] text-gray-500">
+        Copyright © 2023 denoted.
+        <span>All rights reserved.</span>
       </p>
     </footer>
   );

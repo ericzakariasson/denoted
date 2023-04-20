@@ -9,6 +9,7 @@ import { composeClient } from "../lib/compose";
 import { cn } from "../utils/classnames";
 import { DecryptedText } from "./DecryptedText";
 import { Logo } from "./Logo";
+import { Footer } from "./Footer";
 
 type SidebarProps = {
   className?: string;
@@ -138,6 +139,7 @@ export function Sidebar({ className }: SidebarProps) {
           )}
         </ul>
       </nav>
+      <Footer className="mt-auto" />
     </aside>
   );
 }

@@ -30,7 +30,6 @@ function MyApp({ Component, pageProps }: AppProps) {
                 <Component {...pageProps} />
               </main>
             </div>
-            <Footer className="absolute bottom-0 w-fit mb-3 ml-3" />
           </div>
           <Analytics />
           <VercelAnalytics />
