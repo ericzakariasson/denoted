@@ -15,7 +15,7 @@ import {
   encryptPage,
   serializePage,
 } from "../utils/page-helper";
-
+import { Edit } from "lucide-react";
 const PublishMenu = dynamic(
   async () =>
     import("../components/PublishMenu").then((module) => module.PublishMenu),
@@ -161,9 +161,10 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
       {isOwner && (
         <div className="fixed bottom-0 flex items-end gap-4 p-4">
           <button
-            className="mt-4 flex justify-between rounded-xl border border-gray-700 px-4 py-3 leading-tight text-gray-700 shadow-sm"
+            className="flex items-center justify-between gap-2 rounded-xl bg-gray-100 px-4 py-2"
             onClick={() => setIsEditing(true)}
           >
+            <Edit size={20} strokeWidth={1.5} />
             Edit page
           </button>
           <PublishMenu page={page} />
