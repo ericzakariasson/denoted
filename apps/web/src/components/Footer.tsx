@@ -11,16 +11,16 @@ type FooterProps = {
 export function Footer({ className }: FooterProps) {
   return (
     <footer className={cn("flex flex-col gap-2", className)}>
-      <div className="flex gap-4 text-slate-500">
+      <div className="flex gap-3 text-slate-500">
         <Link
           href="https://twitter.com/denotedxyz"
           target="_blank"
           rel="noreferrer"
         >
-          <Twitter strokeWidth={1.5} />
+          <Twitter className="h-4 w-4" />
         </Link>
         <Link href="mailto:hey@denoted.xyz" target="_blank" rel="noreferrer">
-          <Mail strokeWidth={1.5} />
+          <Mail className="h-4 w-4" />
         </Link>
       </div>
       <p className="flex flex-col gap-1 text-[10px] text-slate-500">

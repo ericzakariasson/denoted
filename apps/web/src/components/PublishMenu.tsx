@@ -1,10 +1,5 @@
 import LensIcon from "@lens-protocol/widgets-react/dist/LensIcon";
-import * as Popover from "@radix-ui/react-popover";
-import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { AiOutlineCheck } from "react-icons/ai";
-import { BiLink } from "react-icons/bi";
-import { FiShare } from "react-icons/fi";
 import { TwitterShareButton } from "react-share";
 import { getBaseUrl } from "../utils/base-url";
 import { useMutation, useQuery } from "react-query";
@@ -12,7 +7,20 @@ import { DeserializedPage } from "../utils/page-helper";
 import { Database } from "../lib/supabase/supabase.types";
 import { Share, Link as LinkIcon, TwitterIcon } from "lucide-react";
 import Link from "next/link";
-import { Theme } from "@lens-protocol/widgets-react";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Button, buttonVariants } from "./ui/button";
+import { cn } from "../lib/utils";
+
+const generateTweetLink = (title: string, url: string) => {
+  const base = "https://twitter.com/intent/tweet";
+  const text = [`check out ${title} on denoted`, url].join("\n\n");
+
+  const params = new URLSearchParams({
+    text,
+  });
+
+  return `${base}?${params.toString()}`;
+};
 
 export type PublishmenuProps = {
   page: DeserializedPage;
@@ -61,66 +69,65 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ page }) => {
   });
 
   return (
-    <Popover.Root>
-      <Popover.Trigger asChild>
-        <button className="flex items-center gap-2 rounded-xl bg-slate-100 p-2 px-4">
-          <Share size={20} strokeWidth={1.5} />
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button>
+          <Share className="mr-2 h-4 w-4" />
           <span>Publish</span>
-        </button>
-      </Popover.Trigger>
-      <Popover.Content
-        className="w-[254px] rounded-xl bg-slate-100 p-4"
-        align="end"
-      >
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent>
         <p className="mb-2 text-sm text-slate-500">Publications</p>
         <div className="flex w-full flex-col gap-4">
-          <button
-            onClick={() => publishMutation.mutate()}
-            className="rounded-xl bg-gradient-radial from-[#4B5563] to-[#1F2937] py-2 px-4 text-left text-white"
-          >
+          <Button onClick={() => publishMutation.mutate()}>
             Publish to IPFS
-          </button>
+          </Button>
           {publicationsQuery.data?.map((publication) => {
             const url = `${getBaseUrl()}/p/${publication.id}`;
 
             return (
               <div className="flex w-full flex-col gap-3">
                 <h3 className="text-sm text-slate-500">Latest publication</h3>
-                <button
-                  className={`flex items-center rounded-xl bg-slate-200 py-2 px-4 ${
-                    isCopied ? "justify-center" : "justify-between"
-                  }`}
+                <Button
+                  variant={"outline"}
                   onClick={() => copyToClipboard(url)}
                 >
+                  {isCopied ? null : <LinkIcon className="mr-2 h-4 w-4" />}
                   <span>{isCopied ? "Copied!" : "Copy Link"}</span>
-                  {isCopied ? (
-                    <AiOutlineCheck size={24} className="text-black" />
-                  ) : (
-                    <LinkIcon size={20} />
-                  )}
-                </button>
-                <TwitterShareButton url={url} title={page.title} className="">
-                  <div className="flex items-center justify-between rounded-xl bg-[#1DA1F2] py-2 px-4 text-white">
-                    <span>Share to Twitter</span>
-                    <TwitterIcon size={20} />
-                  </div>
-                </TwitterShareButton>
+                </Button>
                 <Link
-                  className="flex items-center justify-between rounded-xl bg-[#ABFE2C] py-2 px-4 text-[#00501E] [&>svg>path]:fill-[#00501E]"
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "border-[#1DA1F2]"
+                  )}
+                  href={generateTweetLink(page.title, url)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <TwitterIcon className="mr-2 h-4 w-4" />
+                  Share to Twitter
+                </Link>
+                <Link
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "border-[#ABFE2C]"
+                  )}
                   href={`https://lenster.xyz/?text=${encodeURIComponent(
                     page.title
                   )}&url=${url}`}
                   target="_blank"
                   rel="noreferrer"
                 >
+                  <span className="mr-2 block">
+                    <LensIcon />
+                  </span>
                   Share to Lens
-                  <LensIcon />
                 </Link>
               </div>
             );
           })}
         </div>
-      </Popover.Content>
-    </Popover.Root>
+      </PopoverContent>
+    </Popover>
   );
 };

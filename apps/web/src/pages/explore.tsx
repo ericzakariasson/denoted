@@ -4,6 +4,7 @@ import { getPagesQuery, Page } from "../composedb/page";
 import { cn } from "../utils/classnames";
 import Link from "next/link";
 import { trackEvent } from "../lib/analytics";
+import { buttonVariants } from "../components/ui/button";
 
 type Props = {
   pages: Page[];
@@ -35,14 +36,12 @@ const Page: NextPage<Props> = ({ pages }) => {
         </div>
         <Link
           href="/create"
-          className={cn(
-            "rounded-xl bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] from-slate-700 to-slate-900 px-6 py-3 leading-tight text-white shadow-md"
-          )}
+          className={cn(buttonVariants())}
           onClick={() =>
             trackEvent("Create Page Link Clicked", { from: "/explore" })
           }
         >
-          Create page {"->"}
+          Create page
         </Link>
       </div>
     );

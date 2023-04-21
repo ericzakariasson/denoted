@@ -16,6 +16,7 @@ import {
   serializePage,
 } from "../utils/page-helper";
 import { Edit } from "lucide-react";
+import { Button } from "../components/ui/button";
 const PublishMenu = dynamic(
   async () =>
     import("../components/PublishMenu").then((module) => module.PublishMenu),
@@ -160,13 +161,10 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
       <Viewer key={page.id} json={json} />
       {isOwner && (
         <div className="fixed bottom-0 flex items-end gap-4 p-4">
-          <button
-            className="flex items-center justify-between gap-2 rounded-xl bg-slate-100 px-4 py-2"
-            onClick={() => setIsEditing(true)}
-          >
-            <Edit size={20} strokeWidth={1.5} />
+          <Button variant={"outline"} onClick={() => setIsEditing(true)}>
+            <Edit className="mr-2 h-4 w-4" />
             Edit page
-          </button>
+          </Button>
           <PublishMenu page={page} />
         </div>
       )}
