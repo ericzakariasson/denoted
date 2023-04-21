@@ -1,6 +1,5 @@
 import LensIcon from "@lens-protocol/widgets-react/dist/LensIcon";
 import React, { useState } from "react";
-import { TwitterShareButton } from "react-share";
 import { getBaseUrl } from "../utils/base-url";
 import { useMutation, useQuery } from "react-query";
 import { DeserializedPage } from "../utils/page-helper";
@@ -86,7 +85,7 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ page }) => {
             const url = `${getBaseUrl()}/p/${publication.id}`;
 
             return (
-              <div className="flex w-full flex-col gap-3">
+              <div className="flex w-full flex-col gap-3" key={publication.id}>
                 <h3 className="text-sm text-slate-500">Latest publication</h3>
                 <Button
                   variant={"outline"}
