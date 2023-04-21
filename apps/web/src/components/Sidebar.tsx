@@ -12,6 +12,7 @@ import { Logo } from "./Logo";
 import { Footer } from "./Footer";
 import { Compass, PenBox } from "lucide-react";
 import { buttonVariants } from "./ui/button";
+import { useRouter } from "next/router";
 
 type SidebarProps = {
   className?: string;
@@ -20,6 +21,7 @@ type SidebarProps = {
 export function Sidebar({ className }: SidebarProps) {
   const [isCeramicSessionValid, setIsCeramicSessionValid] = useState(false);
 
+  const router = useRouter();
   const ceramic = useCeramic();
   const lit = useLit();
   const account = useAccount();
@@ -85,11 +87,16 @@ export function Sidebar({ className }: SidebarProps) {
               <span className="mb-4 block text-sm text-slate-400">Pages</span>
               <ul className="flex flex-col gap-3">
                 {myPagesQuery.data?.map((page) => {
+                  const url = `/${page.id}`;
+
                   return (
                     <li key={page.id}>
                       <Link
-                        href={`/${page.id}`}
-                        className="block rounded-lg border border-slate-300 bg-slate-200 p-2 px-3"
+                        href={url}
+                        className={cn(
+                          "block rounded-md border py-2 px-3",
+                          url === router.asPath && "border-slate-600"
+                        )}
                       >
                         {page.key ? (
                           <DecryptedText
