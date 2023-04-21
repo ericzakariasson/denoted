@@ -18,7 +18,7 @@ export const Card = ({ page }: CardProps) => {
 
   return (
     <Link href={`/${page.id}`}>
-      <div className="flex flex-col justify-between gap-4 rounded-xl border bg-gray-50 px-5 py-4">
+      <div className="flex flex-col justify-between gap-4 rounded-xl border bg-slate-50 px-5 py-4">
         <div className="flex flex-col items-start">
           <p className="mb-1 text-lg font-medium">
             {page.key ? (
@@ -27,7 +27,7 @@ export const Card = ({ page }: CardProps) => {
               page.title
             )}
           </p>
-          <p className="text-gray-400">
+          <p className="text-slate-400">
             <TimeAgo date={new Date(page.createdAt)} />
           </p>
         </div>

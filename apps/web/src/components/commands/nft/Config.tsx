@@ -30,7 +30,8 @@ export const NftConfig = (props: CommandExtensionProps<NftWidgetProps>) => {
   const { property, address, chain, tokenId } = props.node.attrs;
 
   const isConfigured =
-    property !== undefined && address !== undefined && chain !== undefined || tokenId !== undefined
+    (property !== undefined && address !== undefined && chain !== undefined) ||
+    tokenId !== undefined;
 
   useEffect(() => {
     if (!isConfigured) {
@@ -51,9 +52,14 @@ export const NftConfig = (props: CommandExtensionProps<NftWidgetProps>) => {
         >
           <Popover.Trigger>
             {isConfigured ? (
-              <NftWidget property={property} address={address} chain={chain} tokenId={tokenId} />
+              <NftWidget
+                property={property}
+                address={address}
+                chain={chain}
+                tokenId={tokenId}
+              />
             ) : (
-              <span className="rounded-full border border-gray-300 py-0 px-1 leading-normal text-gray-500">
+              <span className="rounded-full border border-slate-300 py-0 px-1 leading-normal text-slate-500">
                 setup
               </span>
             )}
@@ -62,7 +68,7 @@ export const NftConfig = (props: CommandExtensionProps<NftWidgetProps>) => {
             <Popover.Content
               sideOffset={5}
               align="start"
-              className="s z-50 w-64 overflow-hidden rounded-2xl bg-gray-100 p-4 outline-none"
+              className="s z-50 w-64 overflow-hidden rounded-2xl bg-slate-100 p-4 outline-none"
             >
               <form
                 onSubmit={handleSubmit}
@@ -74,24 +80,26 @@ export const NftConfig = (props: CommandExtensionProps<NftWidgetProps>) => {
                     name="address"
                     placeholder="0x"
                     defaultValue={address ?? ""}
-                    className="rounded-lg bg-gray-200 px-3 py-2"
+                    className="rounded-lg bg-slate-200 px-3 py-2"
                     required
                   />
                 </Label>
-                {property === "image"  && <Label label="Token Id">
-                  <input
-                    name="tokenId"
-                    placeholder="1337"
-                    defaultValue={tokenId ?? ""}
-                    className="rounded-lg bg-gray-200 px-3 py-2"
-                    required
-                  />
-                </Label>}
+                {property === "image" && (
+                  <Label label="Token Id">
+                    <input
+                      name="tokenId"
+                      placeholder="1337"
+                      defaultValue={tokenId ?? ""}
+                      className="rounded-lg bg-slate-200 px-3 py-2"
+                      required
+                    />
+                  </Label>
+                )}
                 <Label label="Chain">
                   <select
                     name="chain"
                     defaultValue={chain ?? ""}
-                    className="rounded-lg border-none bg-gray-200"
+                    className="rounded-lg border-none bg-slate-200"
                   >
                     {[chains.mainnet, chains.polygon].map((chain) => (
                       <option key={chain.id} value={chain.id}>

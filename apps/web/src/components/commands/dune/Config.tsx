@@ -61,14 +61,14 @@ export const DuneConfig = (props: CommandExtensionProps<DuneProps>) => {
             onOpenChange={setOpen}
             open={isOpen}
           >
-            <Popover.Trigger className="rounded-full border border-gray-300 py-0 px-1 leading-normal text-gray-500">
+            <Popover.Trigger className="rounded-full border border-slate-300 py-0 px-1 leading-normal text-slate-500">
               {isConfigured ? "update" : "setup"}
             </Popover.Trigger>
             <Popover.Portal>
               <Popover.Content
                 sideOffset={5}
                 align="start"
-                className="s z-50 w-64 overflow-hidden rounded-2xl bg-gray-100 p-4 outline-none"
+                className="s z-50 w-64 overflow-hidden rounded-2xl bg-slate-100 p-4 outline-none"
               >
                 <form
                   onSubmit={handleSubmit}
@@ -82,7 +82,7 @@ export const DuneConfig = (props: CommandExtensionProps<DuneProps>) => {
                       defaultValue={src ?? ""}
                       required
                       placeholder="https://"
-                      className="rounded-lg border-none bg-gray-200 px-3 py-2"
+                      className="rounded-lg border-none bg-slate-200 px-3 py-2"
                     />
                   </Label>
                   <button
@@ -100,7 +100,7 @@ export const DuneConfig = (props: CommandExtensionProps<DuneProps>) => {
           <Link
             href={formatHref(src)}
             target="_blank"
-            className="rounded-full border border-gray-300 py-0 px-1 font-normal leading-normal text-gray-500 no-underline"
+            className="rounded-full border border-slate-300 py-0 px-1 font-normal leading-normal text-slate-500 no-underline"
           >
             open
           </Link>

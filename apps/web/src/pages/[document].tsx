@@ -130,7 +130,7 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
   if (!page) {
     return (
       <div>
-        <h1 className="text-3xl font-bold text-gray-500">Page not found</h1>
+        <h1 className="text-3xl font-bold text-slate-500">Page not found</h1>
       </div>
     );
   }
@@ -161,7 +161,7 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
       {isOwner && (
         <div className="fixed bottom-0 flex items-end gap-4 p-4">
           <button
-            className="flex items-center justify-between gap-2 rounded-xl bg-gray-100 px-4 py-2"
+            className="flex items-center justify-between gap-2 rounded-xl bg-slate-100 px-4 py-2"
             onClick={() => setIsEditing(true)}
           >
             <Edit size={20} strokeWidth={1.5} />

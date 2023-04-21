@@ -17,8 +17,7 @@ export const TokenPriceConfig = (
     const formData = new FormData(event.currentTarget);
     props.updateAttributes({
       chainName: formData.get("chainName")?.toString() ?? undefined,
-      token: formData.get("token")?.toString() ?? undefined
-
+      token: formData.get("token")?.toString() ?? undefined,
     });
 
     setOpen(false);
@@ -28,9 +27,7 @@ export const TokenPriceConfig = (
 
   const { property, chainName, token } = props.node.attrs;
   const isConfigured =
-    property !== undefined &&
-    chainName !== undefined &&
-    token !== undefined
+    property !== undefined && chainName !== undefined && token !== undefined;
 
   useEffect(() => {
     if (!isConfigured) {
@@ -41,11 +38,7 @@ export const TokenPriceConfig = (
   return (
     <NodeViewWrapper as="span">
       {isConfigured && !props.editor.isEditable && (
-        <TokenWidget
-          property={property}
-          chainName={chainName}
-          token={token}
-        />
+        <TokenWidget property={property} chainName={chainName} token={token} />
       )}
       {props.editor.isEditable && (
         <Popover.Root
@@ -61,7 +54,7 @@ export const TokenPriceConfig = (
                 token={token}
               />
             ) : (
-              <span className="rounded-full border border-gray-300 py-0 px-1 leading-normal text-gray-500">
+              <span className="rounded-full border border-slate-300 py-0 px-1 leading-normal text-slate-500">
                 setup
               </span>
             )}
@@ -70,7 +63,7 @@ export const TokenPriceConfig = (
             <Popover.Content
               sideOffset={5}
               align="start"
-              className="s z-50 w-64 overflow-hidden rounded-2xl bg-gray-100 p-4 outline-none"
+              className="s z-50 w-64 overflow-hidden rounded-2xl bg-slate-100 p-4 outline-none"
             >
               <form
                 onSubmit={handleSubmit}
@@ -81,7 +74,7 @@ export const TokenPriceConfig = (
                   <input
                     name="token"
                     placeholder="E.g. ETH, USDC, USDT, etc."
-                    className="rounded-lg bg-gray-200 px-3 py-2"
+                    className="rounded-lg bg-slate-200 px-3 py-2"
                     defaultValue={token}
                     required
                   />
@@ -90,7 +83,7 @@ export const TokenPriceConfig = (
                   <select
                     name="chainName"
                     defaultValue={chainName}
-                    className="rounded-lg border-none bg-gray-200"
+                    className="rounded-lg border-none bg-slate-200"
                   >
                     {Object.values(supportedChains).map((name) => (
                       <option key={name} value={name}>

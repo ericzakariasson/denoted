@@ -7,6 +7,8 @@ import { useLit } from "../hooks/useLit";
 import { cn } from "../utils/classnames";
 import { deserializePage } from "../utils/page-helper";
 import { Editor } from "./Editor";
+import { Button } from "./ui/button";
+import { Save, Loader2 } from "lucide-react";
 
 const AuthDialog = dynamic(
   async () =>
@@ -78,7 +80,7 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
       <div className="mb-4 flex flex-row justify-between">
         <input
           placeholder="Untitled"
-          className="mb-4 w-full text-5xl font-bold placeholder:text-gray-200 focus:outline-none"
+          className="mb-4 w-full text-5xl font-bold placeholder:text-slate-200 focus:outline-none"
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           required
@@ -97,16 +99,15 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
           onUpdate={(json) => setJson(json)}
         />
       </div>
-      <div className="fixed bottom-0 p-4">
-        <button
-          className={cn(
-            "rounded-xl from-gray-700 to-gray-900 px-6 py-3 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-gray-300"
+      <div className="fixed bottom-0 py-4">
+        <Button onClick={() => handleSave()} disabled={!isEnabled || isSaving}>
+          {isSaving ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Save className="mr-2 h-4 w-4" />
           )}
-          onClick={() => handleSave()}
-          disabled={!isEnabled}
-        >
           {isSaving ? "Saving..." : "Save page"}
-        </button>
+        </Button>
       </div>
     </div>
   );

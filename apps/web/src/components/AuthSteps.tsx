@@ -18,7 +18,7 @@ function AuthStep({ title, description, completed, children }: AuthStepProps) {
     <li className="flex gap-4">
       <span
         className={cn(
-          " flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg  bg-gray-100 text-center font-medium text-gray-500",
+          " flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg  bg-slate-100 text-center font-medium text-slate-500",
           completed && "bg-green-400 text-white"
         )}
       >
@@ -54,8 +54,8 @@ function AuthStep({ title, description, completed, children }: AuthStepProps) {
       </span>
       <div className="flex flex-col items-start gap-4">
         <div className="gap-2">
-          <h2 className="text-lg font-medium text-gray-800">{title}</h2>
-          <p className="text-gray-500">{description}</p>
+          <h2 className="text-lg font-medium text-slate-800">{title}</h2>
+          <p className="text-slate-500">{description}</p>
         </div>
         {children}
       </div>
@@ -69,7 +69,8 @@ const fromAuthSteps = {
 
 export function AuthSteps() {
   const { isConnected } = useAccount();
-  const [isCeramicSessionValid, setIsCeramicSessionValid] = useState<boolean>(false);
+  const [isCeramicSessionValid, setIsCeramicSessionValid] =
+    useState<boolean>(false);
 
   // store the connected state in a ref to prevent it from being removed when connecting from the modal
   const connectedRef = useRef(isConnected);
@@ -82,7 +83,8 @@ export function AuthSteps() {
   const lit = useLit();
 
   useEffect(() => {
-    const run = async () => setIsCeramicSessionValid(await ceramic.hasSession());
+    const run = async () =>
+      setIsCeramicSessionValid(await ceramic.hasSession());
     run();
   }, [ceramic]);
 
@@ -108,7 +110,8 @@ export function AuthSteps() {
     }
   );
 
-  const isCeramicConnected = ceramic.isComposeResourcesSigned && isCeramicSessionValid;
+  const isCeramicConnected =
+    ceramic.isComposeResourcesSigned && isCeramicSessionValid;
 
   return (
     <div className="mb-2 rounded-3xl">
@@ -121,7 +124,7 @@ export function AuthSteps() {
           >
             <button
               className={cn(
-                "rounded-xl from-gray-700 to-gray-900 px-6 py-3 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-gray-300"
+                "rounded-xl from-slate-700 to-slate-900 px-6 py-3 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-slate-300"
               )}
               disabled={isConnected}
               onClick={() => connect({ connector: connectors[0] })}
@@ -137,9 +140,12 @@ export function AuthSteps() {
         >
           <button
             className={cn(
-              "rounded-xl from-gray-700 to-gray-900 px-6 py-3 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-gray-300"
+              "rounded-xl from-slate-700 to-slate-900 px-6 py-3 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-slate-300"
             )}
-            disabled={(ceramic.isComposeResourcesSigned && isCeramicConnected) || !isConnected}
+            disabled={
+              (ceramic.isComposeResourcesSigned && isCeramicConnected) ||
+              !isConnected
+            }
             onClick={() => authenticateCeramicMutation.mutate()}
           >
             {authenticateCeramicMutation.isLoading
@@ -154,7 +160,7 @@ export function AuthSteps() {
         >
           <button
             className={cn(
-              "rounded-xl from-gray-700 to-gray-900 px-6 py-3 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-gray-300"
+              "rounded-xl from-slate-700 to-slate-900 px-6 py-3 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-slate-300"
             )}
             disabled={lit.isLitAuthenticated || !isConnected}
             onClick={() => authenticateLitMutation.mutate()}

@@ -11,7 +11,7 @@ type FooterProps = {
 export function Footer({ className }: FooterProps) {
   return (
     <footer className={cn("flex flex-col gap-2", className)}>
-      <div className="flex gap-4 text-gray-500">
+      <div className="flex gap-4 text-slate-500">
         <Link
           href="https://twitter.com/denotedxyz"
           target="_blank"
@@ -23,7 +23,7 @@ export function Footer({ className }: FooterProps) {
           <Mail strokeWidth={1.5} />
         </Link>
       </div>
-      <p className="flex flex-col gap-1 text-[10px] text-gray-500">
+      <p className="flex flex-col gap-1 text-[10px] text-slate-500">
         Copyright © 2023 denoted.
         <span>All rights reserved.</span>
       </p>

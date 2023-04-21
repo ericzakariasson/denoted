@@ -11,6 +11,7 @@ import { DecryptedText } from "./DecryptedText";
 import { Logo } from "./Logo";
 import { Footer } from "./Footer";
 import { Compass, PenBox } from "lucide-react";
+import { buttonVariants } from "./ui/button";
 
 type SidebarProps = {
   className?: string;
@@ -53,7 +54,7 @@ export function Sidebar({ className }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "flex h-full flex-col items-start gap-6 bg-gray-100 p-4",
+        "flex h-full flex-col items-start gap-6 bg-slate-50 p-4",
         className
       )}
     >
@@ -67,35 +68,28 @@ export function Sidebar({ className }: SidebarProps) {
       <nav className="w-full">
         <ul className="flex flex-col gap-6">
           <li className="flex flex-col gap-3">
-            <Link
-              href="/create"
-              className={
-                "shadow-m flex w-full justify-between rounded-xl bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] from-gray-700 to-gray-900 px-4 py-3 leading-tight text-white"
-              }
-            >
-              <span>Create page</span>
-              <PenBox size={20} strokeWidth={1.5} />
+            <Link href="/create" className={buttonVariants()}>
+              <PenBox className="mr-2 h-4 w-4" />
+              Create page
             </Link>
             <Link
               href="/explore"
-              className={
-                "flex w-full justify-between rounded-xl border border-gray-700 px-4 py-3 leading-tight text-gray-700 shadow-sm"
-              }
+              className={buttonVariants({ variant: "secondary" })}
             >
-              <span>Explore</span>
-              <Compass size={20} strokeWidth={1.5} />
+              <Compass className="mr-2 h-4 w-4" />
+              Explore
             </Link>
           </li>
           {isAuthenticated && (
             <li>
-              <span className="mb-4 block text-sm text-gray-400">Pages</span>
+              <span className="mb-4 block text-sm text-slate-400">Pages</span>
               <ul className="flex flex-col gap-3">
                 {myPagesQuery.data?.map((page) => {
                   return (
                     <li key={page.id}>
                       <Link
                         href={`/${page.id}`}
-                        className="block rounded-lg border border-gray-300 bg-gray-200 p-2 px-3"
+                        className="block rounded-lg border border-slate-300 bg-slate-200 p-2 px-3"
                       >
                         {page.key ? (
                           <DecryptedText

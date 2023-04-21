@@ -63,16 +63,16 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ page }) => {
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
-        <button className="flex items-center gap-2 rounded-xl bg-gray-100 p-2 px-4">
+        <button className="flex items-center gap-2 rounded-xl bg-slate-100 p-2 px-4">
           <Share size={20} strokeWidth={1.5} />
           <span>Publish</span>
         </button>
       </Popover.Trigger>
       <Popover.Content
-        className="w-[254px] rounded-xl bg-gray-100 p-4"
+        className="w-[254px] rounded-xl bg-slate-100 p-4"
         align="end"
       >
-        <p className="mb-2 text-sm text-gray-500">Publications</p>
+        <p className="mb-2 text-sm text-slate-500">Publications</p>
         <div className="flex w-full flex-col gap-4">
           <button
             onClick={() => publishMutation.mutate()}
@@ -85,9 +85,9 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ page }) => {
 
             return (
               <div className="flex w-full flex-col gap-3">
-                <h3 className="text-sm text-gray-500">Latest publication</h3>
+                <h3 className="text-sm text-slate-500">Latest publication</h3>
                 <button
-                  className={`flex items-center rounded-xl bg-gray-200 py-2 px-4 ${
+                  className={`flex items-center rounded-xl bg-slate-200 py-2 px-4 ${
                     isCopied ? "justify-center" : "justify-between"
                   }`}
                   onClick={() => copyToClipboard(url)}
