@@ -7,8 +7,14 @@ import { trackEvent } from "../lib/analytics";
 import { composeClient } from "../lib/compose";
 
 export const LOCAL_STORAGE_KEYS = {
-  DID: "denoted.ceramic.did",
-  SIGNED_RESOURCES: "denoted.ceramic.signed-resources",
+  DID:
+    process.env.NODE_ENV === "production"
+      ? "denoted.ceramic.did"
+      : "denoted.DEV.ceramic.did",
+  SIGNED_RESOURCES:
+    process.env.NODE_ENV === "production"
+      ? "denoted.ceramic.signed-resources"
+      : "denoted.DEV.ceramic.signed-resources",
 };
 
 export function useCeramic() {

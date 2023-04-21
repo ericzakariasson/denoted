@@ -1,13 +1,14 @@
 "use client";
 
 import { AuthSteps } from "./AuthSteps";
+
 import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "./ui/alert-dialog";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 
 type AuthDialogProps = {
   open: boolean;
@@ -15,17 +16,17 @@ type AuthDialogProps = {
 
 export function AuthDialog({ open }: AuthDialogProps) {
   return (
-    <AlertDialog open={open}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Setup account</AlertDialogTitle>
-          <AlertDialogDescription>
+    <Dialog open={open} modal={false}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Setup account</DialogTitle>
+          <DialogDescription>
             This action cannot be undone. This will permanently delete your
             account and remove your data from our servers.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
+          </DialogDescription>
+        </DialogHeader>
         <AuthSteps />
-      </AlertDialogContent>
-    </AlertDialog>
+      </DialogContent>
+    </Dialog>
   );
 }
