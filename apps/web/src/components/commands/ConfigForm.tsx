@@ -42,15 +42,16 @@ export function ConfigForm({ fields, onSubmit }: ConfigFormProps) {
         event.preventDefault();
         onSubmit(Object.fromEntries(new FormData(event.currentTarget)));
       }}
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-5"
     >
       {fields.map((field) => {
         switch (field.type) {
           case "address": {
             return (
               <div className="grid gap-2">
-                <Label>Address</Label>
+                <Label htmlFor={field.name}>Address</Label>
                 <Input
+                  id={field.name}
                   name={field.name}
                   placeholder="erci.eth or 0x123abc..."
                   defaultValue={field.defaultValue ?? ""}
@@ -62,12 +63,12 @@ export function ConfigForm({ fields, onSubmit }: ConfigFormProps) {
           case "select": {
             return (
               <div className="grid gap-2">
-                <Label>{field.label}</Label>
+                <Label htmlFor={field.name}>{field.label}</Label>
                 <Select
                   name={field.name}
                   defaultValue={field.defaultValue ?? ""}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id={field.name}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="w-full">
@@ -84,9 +85,9 @@ export function ConfigForm({ fields, onSubmit }: ConfigFormProps) {
           case "chain": {
             return (
               <div className="grid gap-2">
-                <Label>Chain</Label>
+                <Label htmlFor={field.name}>Chain</Label>
                 <Select name={field.name} defaultValue={field.defaultValue}>
-                  <SelectTrigger>
+                  <SelectTrigger id={field.name}>
                     <SelectValue placeholder="Chain" />
                   </SelectTrigger>
                   <SelectContent className="w-full">
