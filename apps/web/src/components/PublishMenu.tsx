@@ -9,6 +9,7 @@ import Link from "next/link";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button, buttonVariants } from "./ui/button";
 import { cn } from "../lib/utils";
+import { useToast } from "./ui/use-toast";
 
 const generateTweetLink = (title: string, url: string) => {
   const base = "https://twitter.com/intent/tweet";
@@ -32,6 +33,8 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ page }) => {
     setIsCopied(true);
   };
 
+  const { toast } = useToast();
+
   const publishMutation = useMutation(
     async () => {
       const response = await fetch("/api/page/publish", {
@@ -48,7 +51,13 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ page }) => {
       return json;
     },
     {
-      onSuccess: () => {
+      onSuccess: (data) => {
+        toast({
+          title: "Published page 🚀",
+          description: `Your page has been published to IPFS. See it at ${getBaseUrl()}/p/${
+            data.id
+          }`,
+        });
         publicationsQuery.refetch();
       },
     }
@@ -81,7 +90,7 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ page }) => {
           <Button onClick={() => publishMutation.mutate()}>
             Publish to IPFS
           </Button>
-          {publicationsQuery.data?.map((publication) => {
+          {publicationsQuery.data?.slice(0, 1).map((publication) => {
             const url = `${getBaseUrl()}/p/${publication.id}`;
 
             return (
