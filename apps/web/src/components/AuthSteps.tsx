@@ -6,6 +6,8 @@ import { useCustomConnect } from "../hooks/useCustomConnect";
 import { useLit } from "../hooks/useLit";
 import { trackEvent } from "../lib/analytics";
 import { cn } from "../utils/classnames";
+import { Button } from "./ui/button";
+import { Loader2, Wallet, Circle, CheckCircle2 } from "lucide-react";
 
 type AuthStepProps = PropsWithChildren<{
   title: string;
@@ -15,47 +17,23 @@ type AuthStepProps = PropsWithChildren<{
 
 function AuthStep({ title, description, completed, children }: AuthStepProps) {
   return (
-    <li className="flex gap-4">
+    <li className="flex items-start gap-4">
       <span
         className={cn(
-          " flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg  bg-slate-100 text-center font-medium text-slate-500",
-          completed && "bg-green-400 text-white"
+          "flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md  bg-slate-100 text-slate-500",
+          completed && "bg-green-500 text-white"
         )}
       >
         {completed ? (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
+          <CheckCircle2 className="h-4 w-4" />
         ) : (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="12" cy="12" r="10"></circle>
-          </svg>
+          <Circle className="h-4 w-4" />
         )}
       </span>
       <div className="flex flex-col items-start gap-4">
         <div className="gap-2">
-          <h2 className="text-lg font-medium text-slate-800">{title}</h2>
-          <p className="text-slate-500">{description}</p>
+          <h2 className="font-medium text-slate-800">{title}</h2>
+          <p className="text-sm text-slate-500">{description}</p>
         </div>
         {children}
       </div>
@@ -122,15 +100,12 @@ export function AuthSteps() {
             description="You need to connect your wallet in order to continue!"
             completed={isConnected}
           >
-            <button
-              className={cn(
-                "rounded-xl from-slate-700 to-slate-900 px-6 py-3 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-slate-300"
-              )}
+            <Button
               disabled={isConnected}
               onClick={() => connect({ connector: connectors[0] })}
             >
               {isLoading ? "Connecting..." : "Connect"}
-            </button>
+            </Button>
           </AuthStep>
         )}
         <AuthStep
@@ -138,35 +113,39 @@ export function AuthSteps() {
           description="This ensures the integrity and immutability of your data by proving that you are the owner and authorizing any changes."
           completed={isConnected && isCeramicConnected}
         >
-          <button
-            className={cn(
-              "rounded-xl from-slate-700 to-slate-900 px-6 py-3 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-slate-300"
-            )}
+          <Button
             disabled={
               (ceramic.isComposeResourcesSigned && isCeramicConnected) ||
               !isConnected
             }
             onClick={() => authenticateCeramicMutation.mutate()}
           >
+            {authenticateCeramicMutation.isLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Wallet className="mr-2 h-4 w-4" />
+            )}
             {authenticateCeramicMutation.isLoading
               ? "Waiting..."
               : "Sign message"}
-          </button>
+          </Button>
         </AuthStep>
         <AuthStep
           title="Enable private pages"
           description="This ensures that even though your data is stored on the blockchain, it remains private and secure, with only authorized users having access to it."
           completed={isConnected && lit.isLitAuthenticated}
         >
-          <button
-            className={cn(
-              "rounded-xl from-slate-700 to-slate-900 px-6 py-3 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-slate-300"
-            )}
+          <Button
             disabled={lit.isLitAuthenticated || !isConnected}
             onClick={() => authenticateLitMutation.mutate()}
           >
+            {authenticateLitMutation.isLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Wallet className="mr-2 h-4 w-4" />
+            )}
             {authenticateLitMutation.isLoading ? "Waiting..." : "Sign message"}
-          </button>
+          </Button>
         </AuthStep>
       </ul>
     </div>

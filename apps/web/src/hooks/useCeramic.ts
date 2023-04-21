@@ -1,7 +1,6 @@
 import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
 import { InjectedConnector } from "@wagmi/core";
 import { DIDSession } from "did-session";
-import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useAccount } from "wagmi";
 import { trackEvent } from "../lib/analytics";
@@ -24,6 +23,10 @@ export function useCeramic() {
   async function hasSession() {
     const session = await getSession();
     return isSessionValid(session);
+  }
+
+  function isAllResourcesSigned() {
+    return getIsResourcesSigned(composeClient.resources);
   }
 
   async function getSession() {
@@ -113,6 +116,7 @@ export function useCeramic() {
   return {
     authenticate,
     hasSession,
+    isAllResourcesSigned,
     isInitialized: Boolean(composeClient.id),
     isComposeResourcesSigned: isComposeResourcesSignedQuery.data ?? false,
   };

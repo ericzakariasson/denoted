@@ -12,6 +12,7 @@ import { Sidebar } from "../components/Sidebar";
 import { Web3Provider } from "../components/Web3Provider";
 import { cn } from "../utils/classnames";
 import { Header } from "../components/Header";
+import { Toaster } from "../components/Toaster";
 
 const queryClient = new QueryClient({});
 
@@ -27,6 +28,7 @@ function MyApp({ Component, pageProps }: AppProps) {
               <Header className="px-4" />
               <main className="m-auto max-w-3xl px-4 py-8">
                 <Component {...pageProps} />
+                <Toaster />
               </main>
             </div>
           </div>

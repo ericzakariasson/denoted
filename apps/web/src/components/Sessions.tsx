@@ -6,7 +6,11 @@ export function InitializeCeramic() {
 
   useEffect(() => {
     async function run() {
-      if (!ceramic.isInitialized && (await ceramic.hasSession())) {
+      if (
+        !ceramic.isInitialized &&
+        ceramic.isAllResourcesSigned() &&
+        (await ceramic.hasSession())
+      ) {
         await ceramic.authenticate();
       }
     }
