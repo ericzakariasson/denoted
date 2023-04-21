@@ -155,12 +155,8 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
 
   return (
     <div>
-      <div className="flex items-start justify-between">
-        <h1 className="mb-8 text-5xl font-bold">{page.title}</h1>
-      </div>
-      <Viewer key={page.id} json={json} />
       {isOwner && (
-        <div className="fixed bottom-0 flex items-end gap-4 p-4">
+        <div className="mb-10 flex items-end gap-4">
           <Button variant={"outline"} onClick={() => setIsEditing(true)}>
             <Edit className="mr-2 h-4 w-4" />
             Edit page
@@ -168,6 +164,10 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
           <PublishMenu page={page} />
         </div>
       )}
+      <div className="flex items-start justify-between">
+        <h1 className="mb-8 text-5xl font-bold">{page.title}</h1>
+      </div>
+      <Viewer key={page.id} json={json} />
     </div>
   );
 };

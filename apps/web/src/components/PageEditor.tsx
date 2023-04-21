@@ -76,6 +76,16 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
     isAuthenticated && title.length > 0 && (json?.content ?? []).length > 0;
   return (
     <div>
+      <div className="mb-10">
+        <Button onClick={() => handleSave()} disabled={!isEnabled || isSaving}>
+          {isSaving ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Save className="mr-2 h-4 w-4" />
+          )}
+          {isSaving ? "Saving..." : "Save page"}
+        </Button>
+      </div>
       <AuthDialog open={!isAuthenticated} />
       <div className="mb-4 flex flex-row justify-between">
         <input
@@ -98,16 +108,6 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
           }
           onUpdate={(json) => setJson(json)}
         />
-      </div>
-      <div className="fixed bottom-0 py-4">
-        <Button onClick={() => handleSave()} disabled={!isEnabled || isSaving}>
-          {isSaving ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Save className="mr-2 h-4 w-4" />
-          )}
-          {isSaving ? "Saving..." : "Save page"}
-        </Button>
       </div>
     </div>
   );

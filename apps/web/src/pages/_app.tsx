@@ -25,8 +25,8 @@ function MyApp({ Component, pageProps }: AppProps) {
           <div className={cn("min-h-screen", inter.className)}>
             <Sidebar className="fixed w-64" />
             <div className="py-4 pl-64">
-              <Header className="px-4" />
-              <main className="m-auto max-w-3xl px-4 py-8">
+              <Header className="absolute top-0 right-0 p-4" />
+              <main className="m-auto max-w-3xl px-4">
                 <Component {...pageProps} />
                 <Toaster />
               </main>
