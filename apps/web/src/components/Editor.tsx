@@ -12,6 +12,9 @@ import { Command } from "../lib/tiptap/command/command-extension";
 import { commandSuggestions } from "../lib/tiptap/command/command-suggestions";
 import { getCommandExtensions } from "../lib/tiptap/tiptap";
 import { EditorView } from "@tiptap/pm/view";
+import { Toggle } from "./ui/toggle";
+
+import { Bold, Italic, Strikethrough } from "lucide-react";
 
 type BubbleMenuButtonProps = {
   onClick: () => void;
@@ -24,15 +27,14 @@ const BubbleMenuButton = ({
   children,
 }: PropsWithChildren<BubbleMenuButtonProps>) => {
   return (
-    <button
-      onClick={onClick}
-      className={
-        "border border-r-0 border-black px-2 first:rounded-tl-full first:rounded-bl-full last:rounded-tr-full last:rounded-br-full last:border-r " +
-        (isActive ? "bg-black text-white" : "bg-white")
-      }
+    <Toggle
+      pressed={isActive}
+      variant={"outline"}
+      onPressedChange={onClick}
+      className="h-8 p-2"
     >
       {children}
-    </button>
+    </Toggle>
   );
 };
 
@@ -147,25 +149,25 @@ export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
         <BubbleMenu
           editor={editor}
           tippyOptions={{ duration: 100 }}
-          className="flex"
+          className="flex gap-2"
         >
           <BubbleMenuButton
             onClick={() => editor.chain().focus().toggleBold().run()}
             isActive={editor.isActive("bold")}
           >
-            bold
+            <Bold className="h-4 w-4" />
           </BubbleMenuButton>
           <BubbleMenuButton
             onClick={() => editor.chain().focus().toggleItalic().run()}
             isActive={editor.isActive("italic")}
           >
-            italic
+            <Italic className="h-4 w-4" />
           </BubbleMenuButton>
           <BubbleMenuButton
             onClick={() => editor.chain().focus().toggleStrike().run()}
             isActive={editor.isActive("strike")}
           >
-            strike
+            <Strikethrough className="h-4 w-4" />
           </BubbleMenuButton>
         </BubbleMenu>
       )}
