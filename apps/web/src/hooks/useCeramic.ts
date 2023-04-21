@@ -31,10 +31,6 @@ export function useCeramic() {
     return isSessionValid(session);
   }
 
-  function isAllResourcesSigned() {
-    return getIsResourcesSigned(composeClient.resources);
-  }
-
   async function getSession() {
     if (!address) {
       return null;
@@ -122,7 +118,6 @@ export function useCeramic() {
   return {
     authenticate,
     hasSession,
-    isAllResourcesSigned,
     isInitialized: Boolean(composeClient.id),
     isComposeResourcesSigned: isComposeResourcesSignedQuery.data ?? false,
   };
