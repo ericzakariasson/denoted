@@ -434,7 +434,7 @@
     typedjson "^1.8.0"
     uint8arrays "^4.0.3"
 
-"@ceramicnetwork/common@^2.20.0", "@ceramicnetwork/common@^2.23.0", "@ceramicnetwork/common@^2.24.0":
+"@ceramicnetwork/common@^2.20.0", "@ceramicnetwork/common@^2.24.0":
   version "2.24.0"
   resolved "https://registry.yarnpkg.com/@ceramicnetwork/common/-/common-2.24.0.tgz#98ed0f7607e3904cfc4299c88f56e272eff5df99"
   integrity sha512-Q3GBlJd5XrSDCP/6KJy2sz+5MfAVhMrEDoW9SIaxG19xPC+QGeMRouNbZf+qfe3tGQintaRn3FhoqSAtjFxE1g==
@@ -503,20 +503,6 @@
     rxjs "^7.5.2"
     sqlite3 "^5.0.8"
     uint8arrays "^4.0.3"
-
-"@ceramicnetwork/http-client@2.20.0":
-  version "2.20.0"
-  resolved "https://registry.yarnpkg.com/@ceramicnetwork/http-client/-/http-client-2.20.0.tgz#b2e62b81c8c46480783213cf372fbfdc94e138fa"
-  integrity sha512-nwxxcm1Wt2A+QRByxC0PFGCGNfkzWMobduxeaixgkGhJN5SX7Edu7hi4EmhV0PZmXJRitCaNJDXZiRRZ903D1Q==
-  dependencies:
-    "@ceramicnetwork/common" "^2.23.0"
-    "@ceramicnetwork/stream-caip10-link" "^2.18.0"
-    "@ceramicnetwork/stream-model" "^1.5.0"
-    "@ceramicnetwork/stream-model-instance" "^1.5.0"
-    "@ceramicnetwork/stream-tile" "^2.19.0"
-    "@ceramicnetwork/streamid" "^2.14.0"
-    query-string "^7.1.0"
-    rxjs "^7.5.2"
 
 "@ceramicnetwork/http-client@2.21.0", "@ceramicnetwork/http-client@^2.17.0", "@ceramicnetwork/http-client@^2.21.0":
   version "2.21.0"
@@ -604,7 +590,7 @@
     "@ceramicnetwork/stream-caip10-link" "^2.19.0"
     "@ceramicnetwork/stream-handler-common" "^1.14.0"
 
-"@ceramicnetwork/stream-caip10-link@^2.15.0", "@ceramicnetwork/stream-caip10-link@^2.18.0", "@ceramicnetwork/stream-caip10-link@^2.19.0":
+"@ceramicnetwork/stream-caip10-link@^2.15.0", "@ceramicnetwork/stream-caip10-link@^2.19.0":
   version "2.19.0"
   resolved "https://registry.yarnpkg.com/@ceramicnetwork/stream-caip10-link/-/stream-caip10-link-2.19.0.tgz#7ad366b4a78186bface5c60ce9241eb2f3be297c"
   integrity sha512-h9kXbAsngj7e3amHE2vIPAyCKa537rLdc41xfYX1NSI8vDN7WwWht5xzT3DkRO91AmqGKPvCh801IcjqVHRC/w==
@@ -655,7 +641,7 @@
     lru_map "^0.4.1"
     uint8arrays "^4.0.3"
 
-"@ceramicnetwork/stream-model-instance@1.6.0", "@ceramicnetwork/stream-model-instance@^1.5.0", "@ceramicnetwork/stream-model-instance@^1.6.0":
+"@ceramicnetwork/stream-model-instance@1.6.0", "@ceramicnetwork/stream-model-instance@^1.6.0":
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/@ceramicnetwork/stream-model-instance/-/stream-model-instance-1.6.0.tgz#1f9546b827e23f2008f7968ffb9a2b7c31bdad24"
   integrity sha512-qa7EUFV+/eZTiCyT0AvpNyvFMNbzH4sbXAJUsSKJ2YxXy3fo3X5QEVx51pKnVnc6JomNBz6S/pQj0kOR8o+hqA==
@@ -668,7 +654,7 @@
     object-sizeof "^2.6.1"
     uint8arrays "^4.0.3"
 
-"@ceramicnetwork/stream-model@1.6.0", "@ceramicnetwork/stream-model@^1.5.0", "@ceramicnetwork/stream-model@^1.6.0":
+"@ceramicnetwork/stream-model@1.6.0", "@ceramicnetwork/stream-model@^1.6.0":
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/@ceramicnetwork/stream-model/-/stream-model-1.6.0.tgz#f89cd9b89d6720a7cf6908f7e34d9580bd3e278c"
   integrity sha512-rdX2bZmYLbpjQexLWBOGe37jg+5FV+1/GlwAleZjgBS6zc0mzWpwn901FmuXB+P6Lan2fQ1py5EOICoVYklqnA==
@@ -699,7 +685,7 @@
     lru_map "^0.4.1"
     uint8arrays "^4.0.3"
 
-"@ceramicnetwork/stream-tile@^2.16.0", "@ceramicnetwork/stream-tile@^2.19.0", "@ceramicnetwork/stream-tile@^2.20.0":
+"@ceramicnetwork/stream-tile@^2.16.0", "@ceramicnetwork/stream-tile@^2.20.0":
   version "2.20.0"
   resolved "https://registry.yarnpkg.com/@ceramicnetwork/stream-tile/-/stream-tile-2.20.0.tgz#fa8874af24f75cbdec609f64fad8d9d2719ec3f4"
   integrity sha512-aBHegw35+p+QZbZGKKuaCy3bNrpztNTDlNaedReNlUVvVTSl2VecTBCY7CpbqVjIj6+wE3yBrpUfTOBlTbjyuw==
