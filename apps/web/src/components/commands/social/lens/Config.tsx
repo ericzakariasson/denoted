@@ -20,8 +20,7 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
   }
 
   const { property, publicationId, handle } = props.node.attrs;
-  const isConfigured =
-    publicationId !== undefined || handle !== undefined;
+  const isConfigured = publicationId !== undefined || handle !== undefined;
 
   const [isOpen, setOpen] = useState(false);
 
@@ -34,7 +33,7 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
       default:
         return "";
     }
-  }, [property])
+  }, [property]);
 
   useEffect(() => {
     if (!isConfigured) {
@@ -65,7 +64,7 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
                 handle={handle}
               />
             ) : (
-              <span className="rounded-full border border-gray-300 py-0 px-1 leading-normal text-gray-500">
+              <span className="rounded-full border border-slate-300 py-0 px-1 leading-normal text-slate-500">
                 setup
               </span>
             )}
@@ -74,7 +73,7 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
             <Popover.Content
               sideOffset={5}
               align="start"
-              className="s z-50 w-64 overflow-hidden rounded-2xl bg-gray-100 p-4 outline-none"
+              className="s z-50 w-64 overflow-hidden rounded-2xl bg-slate-100 p-4 outline-none"
             >
               <form
                 onSubmit={handleSubmit}
@@ -85,7 +84,7 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
                   <input
                     name={property}
                     placeholder={placeHolder}
-                    className="rounded-lg bg-gray-200 px-3 py-2"
+                    className="rounded-lg bg-slate-200 px-3 py-2"
                     required
                   />
                 </Label>

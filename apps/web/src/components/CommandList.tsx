@@ -10,6 +10,7 @@ import React, {
 } from "react";
 import { cn } from "../utils/classnames";
 import { CommandConfiguration } from "./commands/types";
+import { Card, CardContent } from "./ui/card";
 
 export type CommandContext = {
   editor: Editor;
@@ -85,40 +86,40 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(
 
     if (props.items.length === 0) {
       return (
-        <div className="w-64 overflow-hidden rounded-2xl bg-gray-100">
+        <div className="w-64 overflow-hidden rounded-2xl bg-slate-100">
           <p className="w-full px-3 py-2 text-left">no result</p>
         </div>
       );
     }
 
     return (
-      <div className="w-64 overflow-hidden rounded-2xl bg-gray-100">
-        {props.items.map((item) => {
-          return (
-            <div key={item.name}>
-              <p className="border-b px-3 py-2 text-xs font-medium text-gray-500">
-                {item.name}
-              </p>
-              <div>
-                {item.items.map((item) => {
-                  const index = allCommands
-                    .map((c) => c.command)
-                    .indexOf(item.command);
-                  return (
-                    <CommandItemButton
-                      key={item.command}
-                      item={item}
-                      index={index}
-                      selectedIndex={selectedIndex}
-                      onSelect={selectItem}
-                    />
-                  );
-                })}
+      <Card className="w-64">
+        <CardContent className="p-0">
+          {props.items.map((item) => {
+            return (
+              <div key={item.name} className="border-t first:border-none">
+                <p className="px-3 py-2 text-xs text-slate-500">{item.name}</p>
+                <div>
+                  {item.items.map((item) => {
+                    const index = allCommands
+                      .map((c) => c.command)
+                      .indexOf(item.command);
+                    return (
+                      <CommandItemButton
+                        key={item.command}
+                        item={item}
+                        index={index}
+                        selectedIndex={selectedIndex}
+                        onSelect={selectItem}
+                      />
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </CardContent>
+      </Card>
     );
   }
 );
@@ -137,8 +138,8 @@ const CommandItemButton = <T extends Record<string, string>>({
   return (
     <button
       className={cn(
-        "flex w-full items-center gap-3 border-b px-3 py-2 text-left last:border-b-0",
-        index === selectedIndex && "bg-gray-200"
+        "flex w-full items-center gap-3 border-t border-slate-50 px-3 py-2 text-left",
+        index === selectedIndex && "bg-slate-100"
       )}
       onClick={() => onSelect(index)}
     >
@@ -150,7 +151,7 @@ const CommandItemButton = <T extends Record<string, string>>({
       <div className="flex flex-col">
         <p>{item.title}</p>
         {item.description && (
-          <p className="text-xs text-gray-500">{item.description}</p>
+          <p className="text-xs text-slate-500">{item.description}</p>
         )}
       </div>
     </button>

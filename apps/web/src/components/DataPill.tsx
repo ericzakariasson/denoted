@@ -69,5 +69,7 @@ export const DataPill = ({
     );
   }
 
-  return <span className={cn(base, "bg-gray-200", className)}>{children}</span>;
+  return (
+    <span className={cn(base, "bg-slate-200", className)}>{children}</span>
+  );
 };

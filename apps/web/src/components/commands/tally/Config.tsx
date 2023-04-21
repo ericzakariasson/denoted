@@ -43,7 +43,7 @@ export const TallyConfig = (props: CommandExtensionProps<TallyWidgetProps>) => {
             {isConfigured ? (
               <TallyWidget query={query} path={path} />
             ) : (
-              <span className="rounded-full border border-gray-300 py-0 px-1 leading-normal text-gray-500">
+              <span className="rounded-full border border-slate-300 py-0 px-1 leading-normal text-slate-500">
                 setup
               </span>
             )}
@@ -52,7 +52,7 @@ export const TallyConfig = (props: CommandExtensionProps<TallyWidgetProps>) => {
             <Popover.Content
               sideOffset={5}
               align="start"
-              className="s z-50 w-64 overflow-hidden rounded-2xl bg-gray-100 p-4 outline-none"
+              className="s z-50 w-64 overflow-hidden rounded-2xl bg-slate-100 p-4 outline-none"
             >
               <form
                 onSubmit={handleSubmit}
@@ -68,7 +68,7 @@ export const TallyConfig = (props: CommandExtensionProps<TallyWidgetProps>) => {
     bar
   }
 }`}
-                    className="rounded-lg border-none bg-gray-200 px-3 py-2 font-mono"
+                    className="rounded-lg border-none bg-slate-200 px-3 py-2 font-mono"
                     rows={5}
                     required
                   ></textarea>
@@ -79,7 +79,7 @@ export const TallyConfig = (props: CommandExtensionProps<TallyWidgetProps>) => {
                     defaultValue={path}
                     placeholder="foo.bar"
                     required
-                    className="rounded-lg border-none bg-gray-200 px-3 py-2"
+                    className="rounded-lg border-none bg-slate-200 px-3 py-2"
                   />
                 </Label>
                 <button

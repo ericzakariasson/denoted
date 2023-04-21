@@ -15,7 +15,8 @@ import {
   encryptPage,
   serializePage,
 } from "../utils/page-helper";
-
+import { Edit } from "lucide-react";
+import { Button } from "../components/ui/button";
 const PublishMenu = dynamic(
   async () =>
     import("../components/PublishMenu").then((module) => module.PublishMenu),
@@ -130,7 +131,7 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
   if (!page) {
     return (
       <div>
-        <h1 className="text-3xl font-bold text-gray-500">Page not found</h1>
+        <h1 className="text-3xl font-bold text-slate-500">Page not found</h1>
       </div>
     );
   }
@@ -154,21 +155,19 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
 
   return (
     <div>
+      {isOwner && (
+        <div className="mb-10 flex items-end gap-4">
+          <Button variant={"outline"} onClick={() => setIsEditing(true)}>
+            <Edit className="mr-2 h-4 w-4" />
+            Edit page
+          </Button>
+          <PublishMenu page={page} />
+        </div>
+      )}
       <div className="flex items-start justify-between">
         <h1 className="mb-8 text-5xl font-bold">{page.title}</h1>
       </div>
       <Viewer key={page.id} json={json} />
-      {isOwner && (
-        <div className="fixed bottom-0 flex items-end gap-4 p-4">
-          <button
-            className="mt-4 flex justify-between rounded-xl border border-gray-700 px-4 py-3 leading-tight text-gray-700 shadow-sm"
-            onClick={() => setIsEditing(true)}
-          >
-            Edit page
-          </button>
-          <PublishMenu page={page} />
-        </div>
-      )}
     </div>
   );
 };

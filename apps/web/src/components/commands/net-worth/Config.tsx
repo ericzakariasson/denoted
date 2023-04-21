@@ -52,7 +52,7 @@ export const NetWorthConfig = (
             {isConfigured ? (
               <NetWorthWidget address={address} chain={Number(chain)} />
             ) : (
-              <span className="rounded-full border border-gray-300 py-0 px-1 leading-normal text-gray-500">
+              <span className="rounded-full border border-slate-300 py-0 px-1 leading-normal text-slate-500">
                 setup
               </span>
             )}
@@ -61,7 +61,7 @@ export const NetWorthConfig = (
             <Popover.Content
               sideOffset={5}
               align="start"
-              className="s z-50 w-64 overflow-hidden rounded-2xl bg-gray-100 p-4 outline-none"
+              className="s z-50 w-64 overflow-hidden rounded-2xl bg-slate-100 p-4 outline-none"
             >
               <form
                 onSubmit={handleSubmit}
@@ -73,7 +73,7 @@ export const NetWorthConfig = (
                     name="address"
                     placeholder="erci.eth or 0x"
                     defaultValue={address ?? ""}
-                    className="rounded-lg bg-gray-200 px-3 py-2"
+                    className="rounded-lg bg-slate-200 px-3 py-2"
                     required
                   />
                 </Label>
@@ -81,7 +81,7 @@ export const NetWorthConfig = (
                   <select
                     name="chain"
                     defaultValue={chain ?? ""}
-                    className="rounded-lg border-none bg-gray-200"
+                    className="rounded-lg border-none bg-slate-200"
                   >
                     {Object.values(chains)
                       .filter(

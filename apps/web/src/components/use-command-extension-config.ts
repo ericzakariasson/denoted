@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
-import { CommandExtensionProps } from "./types";
+import { CommandExtensionProps } from "../lib/tiptap/types";
 
 export function useCommandExtensionConfig<
   Props extends Record<string, string | number | null>
 >(props: CommandExtensionProps<Props>) {
   const isConfigured = Object.values(props.node.attrs).every(
-    (value) => value !== null
+    (value) =>
+      typeof value !== "undefined" && value !== null && value !== undefined
   );
 
-  const [isOpen, setOpen] = useState(!isConfigured);
+  const [isOpen, setOpen] = useState(() => !isConfigured);
 
   useEffect(() => {
     if (!isConfigured) {
@@ -16,13 +17,10 @@ export function useCommandExtensionConfig<
     }
   }, [isConfigured]);
 
-  function onSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-
+  function onSubmit(values: Record<string, FormDataEntryValue>) {
     const updatedProps = Object.keys(props.node.attrs).reduce<Props>(
       (data, key) => {
-        data[key as keyof Props] = (formData.get(key)?.toString() ??
+        data[key as keyof Props] = (values[key]?.toString() ??
           null) as Props[keyof Props];
         return data;
       },

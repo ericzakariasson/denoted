@@ -1,25 +1,32 @@
-import { ShareToLens, Size, Theme } from "@lens-protocol/widgets-react";
-import * as Popover from "@radix-ui/react-popover";
-import { useRouter } from "next/router";
+import LensIcon from "@lens-protocol/widgets-react/dist/LensIcon";
 import React, { useState } from "react";
-import { AiOutlineCheck } from "react-icons/ai";
-import { BiLink } from "react-icons/bi";
-import { FiShare } from "react-icons/fi";
-import { TwitterIcon, TwitterShareButton } from "react-share";
 import { getBaseUrl } from "../utils/base-url";
 import { useMutation, useQuery } from "react-query";
 import { DeserializedPage } from "../utils/page-helper";
 import { Database } from "../lib/supabase/supabase.types";
+import { Share, Link as LinkIcon, TwitterIcon } from "lucide-react";
+import Link from "next/link";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Button, buttonVariants } from "./ui/button";
+import { cn } from "../lib/utils";
+
+const generateTweetLink = (title: string, url: string) => {
+  const base = "https://twitter.com/intent/tweet";
+  const text = [`check out ${title} on denoted`, url].join("\n\n");
+
+  const params = new URLSearchParams({
+    text,
+  });
+
+  return `${base}?${params.toString()}`;
+};
 
 export type PublishmenuProps = {
   page: DeserializedPage;
 };
 
 export const PublishMenu: React.FC<PublishmenuProps> = ({ page }) => {
-  const { asPath } = useRouter();
-
   const [isCopied, setIsCopied] = useState(false);
-  const uniqueURL = getBaseUrl() + asPath;
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     setIsCopied(true);
@@ -61,72 +68,65 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ page }) => {
   });
 
   return (
-    <Popover.Root>
-      <Popover.Trigger
-        asChild
-        className="flex h-fit items-center gap-2 rounded-lg bg-gray-100 p-2"
-      >
-        <button>
-          <FiShare size={20} className="text-gray-400" />
-          <span className="font-medium text-gray-400">Publish</span>
-        </button>
-      </Popover.Trigger>
-      <Popover.Content
-        className="mt-2 w-[254px] rounded-lg bg-gray-100 py-4 px-3"
-        align="end"
-      >
-        <h3 className="text-sm font-semibold text-gray-400">Publications</h3>
-
-        <div className="mt-4 flex w-full flex-col gap-4">
-          <button
-            onClick={() => publishMutation.mutate()}
-            className="rounded-lg bg-gradient-radial from-[#4B5563] to-[#1F2937] py-2 px-3 text-left text-white"
-          >
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button>
+          <Share className="mr-2 h-4 w-4" />
+          <span>Publish</span>
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent>
+        <p className="mb-2 text-sm text-slate-500">Publications</p>
+        <div className="flex w-full flex-col gap-4">
+          <Button onClick={() => publishMutation.mutate()}>
             Publish to IPFS
-          </button>
+          </Button>
           {publicationsQuery.data?.map((publication) => {
+            const url = `${getBaseUrl()}/p/${publication.id}`;
+
             return (
-              <div className="flex w-full flex-col gap-4 rounded-lg border-2 border-gray-200 p-3 font-semibold">
-                <h3 className="text-sm text-gray-500">Latest publication</h3>
-                <button
-                  className={`flex items-center rounded-lg bg-gray-200 py-2 px-3 ${
-                    isCopied ? "justify-center" : "justify-between"
-                  }`}
-                  onClick={() =>
-                    copyToClipboard(`${getBaseUrl()}/p/${publication.id}`)
-                  }
+              <div className="flex w-full flex-col gap-3" key={publication.id}>
+                <h3 className="text-sm text-slate-500">Latest publication</h3>
+                <Button
+                  variant={"outline"}
+                  onClick={() => copyToClipboard(url)}
                 >
-                  <span className="font-medium text-black">
-                    {isCopied ? "Copied!" : "Copy Link"}
-                  </span>
-                  {isCopied ? (
-                    <AiOutlineCheck size={24} className="text-black" />
-                  ) : (
-                    <BiLink size={24} className="text-black" />
+                  {isCopied ? null : <LinkIcon className="mr-2 h-4 w-4" />}
+                  <span>{isCopied ? "Copied!" : "Copy Link"}</span>
+                </Button>
+                <Link
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "border-[#1DA1F2]"
                   )}
-                </button>
-                <TwitterShareButton
-                  url={uniqueURL}
-                  title={page.title}
-                  hashtags={["denoted,denotedxyz"]}
+                  href={generateTweetLink(page.title, url)}
+                  target="_blank"
+                  rel="noreferrer"
                 >
-                  <div className="flex items-center rounded-lg bg-[#1DA1F2] py-2 px-3 text-white">
-                    <TwitterIcon size={24} round />
-                    <span className="ml-2 font-semibold">Share to Twitter</span>
-                  </div>
-                </TwitterShareButton>
-                <ShareToLens
-                  title={"Share to Lens"}
-                  content={page.title}
-                  theme={Theme.mint}
-                  size={Size.medium}
-                  url={uniqueURL}
-                />
+                  <TwitterIcon className="mr-2 h-4 w-4" />
+                  Share to Twitter
+                </Link>
+                <Link
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "border-[#ABFE2C]"
+                  )}
+                  href={`https://lenster.xyz/?text=${encodeURIComponent(
+                    page.title
+                  )}&url=${url}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span className="mr-2 block">
+                    <LensIcon />
+                  </span>
+                  Share to Lens
+                </Link>
               </div>
             );
           })}
         </div>
-      </Popover.Content>
-    </Popover.Root>
+      </PopoverContent>
+    </Popover>
   );
 };

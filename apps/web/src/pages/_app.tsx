@@ -12,7 +12,7 @@ import { Sidebar } from "../components/Sidebar";
 import { Web3Provider } from "../components/Web3Provider";
 import { cn } from "../utils/classnames";
 import { Header } from "../components/Header";
-import { Footer } from "../components/Footer";
+import { Toaster } from "../components/Toaster";
 
 const queryClient = new QueryClient({});
 
@@ -25,12 +25,12 @@ function MyApp({ Component, pageProps }: AppProps) {
           <div className={cn("min-h-screen", inter.className)}>
             <Sidebar className="fixed w-64" />
             <div className="py-4 pl-64">
-              <Header className="px-4" />
-              <main className="m-auto max-w-3xl px-4 py-8">
+              <Header className="absolute top-0 right-0 p-4" />
+              <main className="m-auto max-w-3xl px-4">
                 <Component {...pageProps} />
+                <Toaster />
               </main>
             </div>
-            <Footer className="absolute bottom-0 w-fit mb-3 ml-3" />
           </div>
           <Analytics />
           <VercelAnalytics />

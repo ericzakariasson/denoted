@@ -76,10 +76,10 @@ const Page: NextPage<Props> = ({}) => {
           {/* </AnimatePresence> */}
         </span>
       </Link>
-      <p className="max-w-xs text-center text-gray-500">
+      <p className="max-w-xs text-center text-slate-500">
         a knowledge management editor that visualizes on-chain data
       </p>
-      <div className="flex w-full max-w-2xl flex-col items-center gap-4 rounded-[3rem] bg-gray-100 py-16 px-20">
+      <div className="flex w-full max-w-2xl flex-col items-center gap-4 rounded-[3rem] bg-slate-100 py-16 px-20">
         <p className="text-xl font-medium">
           be the first to know when we launch
         </p>
@@ -92,7 +92,7 @@ const Page: NextPage<Props> = ({}) => {
           }}
         >
           <Form.Field name="email" className="flex w-full flex-col">
-            <Form.Message match="typeMismatch" className="mb-2 text-gray-500">
+            <Form.Message match="typeMismatch" className="mb-2 text-slate-500">
               please provide a valid email
             </Form.Message>
             <Form.Control asChild>
