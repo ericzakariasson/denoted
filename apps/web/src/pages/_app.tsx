@@ -12,7 +12,6 @@ import { Sidebar } from "../components/Sidebar";
 import { Web3Provider } from "../components/Web3Provider";
 import { cn } from "../utils/classnames";
 import { Header } from "../components/Header";
-import { Footer } from "../components/Footer";
 
 const queryClient = new QueryClient({});
 
