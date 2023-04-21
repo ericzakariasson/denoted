@@ -1,6 +1,6 @@
 import { JSONContent } from "@tiptap/react";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAccount } from "wagmi";
 import { useCeramic } from "../hooks/useCeramic";
 import { useLit } from "../hooks/useLit";
@@ -43,7 +43,8 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
 
   const [isCeramicSessionValid, setIsCeramicSessionValid] =
     useState<boolean>(false);
-    const [focusEditor, setFocusEditor] = useState(false);
+  const [focusEditor, setFocusEditor] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const ceramic = useCeramic();
   const lit = useLit();
@@ -54,6 +55,10 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
       setIsCeramicSessionValid(await ceramic.hasSession());
     run();
   }, [ceramic]);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   function handleSave() {
     onSave({
@@ -75,13 +80,13 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
   const isEnabled =
     isAuthenticated && title.length > 0 && (json?.content ?? []).length > 0;
 
-    const onEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const onEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       event.preventDefault();
       setFocusEditor(true);
     }
-  }
-      
+  };
+
   return (
     <div>
       <div className="mb-10">
@@ -97,12 +102,13 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
       <AuthDialog open={!isAuthenticated} />
       <div className="mb-4 flex flex-row justify-between">
         <input
+          ref={inputRef}
           placeholder="Untitled"
           className="mb-4 w-full text-5xl font-bold placeholder:text-slate-200 focus:outline-none"
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           onClick={() => setFocusEditor(false)}
-          onKeyUp={(event) => {onEnter(event)}}
+          onKeyUp={onEnter}
           required
         />
       </div>
