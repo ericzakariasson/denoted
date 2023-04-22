@@ -2,21 +2,85 @@ import { nodeInputRule, Node } from "@tiptap/core";
 import { mergeAttributes, NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
 import { CommandExtensionProps } from "./types";
 import { CommandConfiguration } from "../../components/commands/types";
-
-export const inputRegex = /(?:^|\s)(!\[(.+|:?)]\((\S+)(?:(?:\s+)["'](\S+)["'])?\))$/;
+import { useEffect, useState, useRef } from "react";
 
 export type IpfsImageProps = {
-  src: string;
   cid: string;
+  file: File;
 };
+
+async function uploadImage(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append('image', file);
+
+  const res = await fetch('/api/editor/upload', {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to upload image to IPFS');
+  }
+
+  const { uploads } = await res.json();
+
+  const cid = uploads[0].IpfsHash;
+
+  return cid;
+}
 
 export const IpfsImage = (
   props: CommandExtensionProps<IpfsImageProps>
 ) => {
-  console.log(props.node.attrs);
+  const [objectURL, setObjectURL] = useState<string | null>(null);
+  const { cid, file } = props.node.attrs;
+  
+  console.log('rerender', { props, objectURL });
+  // TODO: Loading state
+  // TODO: Prevent rerendering on editor focus
+
+  useEffect(() => {
+    const fetchAndSetObjectUrl = async () => {
+      console.log("fetch image from ipfs", cid);
+  
+      // https://gateway.pinata.cloud/ipfs/
+      const res = await fetch(`https://ipfs.io/ipfs/${cid}`);
+      const imageBlob = await res.blob();
+      setObjectURL(URL.createObjectURL(imageBlob));
+    };
+
+    const uploadAndSetCid = async () => {
+      console.log("upload image to ipfs", file);
+  
+      props.updateAttributes({ cid: await uploadImage(file) });
+    };
+
+    if (file.name && cid === null) {
+      const localObjectURL = URL.createObjectURL(file);
+      console.log('set local init image', localObjectURL);
+      setObjectURL(localObjectURL);
+      uploadAndSetCid();
+    } else if (cid !== null) {
+      fetchAndSetObjectUrl();
+    } else {
+      console.log('no file or cid', file, cid);
+    }
+  }, [cid, file, props]);
+
+  useEffect(() => {
+    return () => {
+      console.log('URL.revokeObjectURL', objectURL);
+      URL.revokeObjectURL(objectURL ?? '');
+    };
+  }, [objectURL]);
+
   return (
     <NodeViewWrapper as="span">
-      {props.node.attrs.cid}
+      {objectURL !== null && (
+      <picture>
+        <img src={objectURL} alt={cid ?? ''} /> 
+      </picture>
+      )}
     </NodeViewWrapper>
   );
 };
@@ -28,8 +92,8 @@ export const command: CommandConfiguration<IpfsImageProps> = {
   // editor
   blockType: "inline",
   defaultValues: {
-    src: undefined,
     cid: undefined,
+    file: undefined,
   },
   // component
   ConfigComponent: IpfsImage,
@@ -61,44 +125,31 @@ export const extension = Node.create({
         cid: {
           default: null,
         },
-        src: {
-          default: null,
-        },
         alt: {
           default: null,
         },
         title: {
           default: null,
         },
+        file: {
+          default: null,
+        }
       };
     },
 
     parseHTML() {
       return [
         {
-          tag: 'image',
+          tag: 'ipfs-image',
         },
       ];
     },
   
     renderHTML({ HTMLAttributes }) {
-      return ['image', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)];
+      return ['ipfs-image', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)];
     },
   
     addNodeView() {
       return ReactNodeViewRenderer(IpfsImage);
-    },
-  
-    addInputRules() {
-      return [
-        nodeInputRule({
-          find: inputRegex,
-          type: this.type,
-          getAttributes: match => {
-            const [,, alt, src, title] = match;
-            return { src, alt, title };
-          },
-        }),
-      ]
     },
   });
