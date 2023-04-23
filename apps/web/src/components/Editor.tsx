@@ -6,8 +6,8 @@ import { BubbleMenu, EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { PropsWithChildren } from "react";
 import Image from "@tiptap/extension-image";
-
 import { useAccount } from "wagmi";
+import { useEffect } from "react";
 import { Command } from "../lib/tiptap/command/command-extension";
 import { commandSuggestions } from "../lib/tiptap/command/command-suggestions";
 import { getCommandExtensions } from "../lib/tiptap/tiptap";
@@ -41,6 +41,7 @@ const BubbleMenuButton = ({
 type EditorProps = {
   initialContent?: Content;
   onUpdate?: (json: JSONContent) => void;
+  focusedEditorState: [boolean, (state: boolean) => void];
 };
 
 const commandExtensions = getCommandExtensions();
@@ -52,8 +53,10 @@ export const extensions = [
   ...commandExtensions,
 ];
 
-export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
+export const Editor = ({ initialContent, onUpdate, focusedEditorState }: EditorProps) => {
   const { address } = useAccount();
+  const [focusEditor, setFocusEditor] = focusedEditorState;
+
   const editor = useEditor({
     extensions: [
       ...extensions,
@@ -138,6 +141,13 @@ export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
     },
     onUpdate: (data) => onUpdate?.(data.editor.getJSON()),
   });
+
+  useEffect(() => {
+    if (focusEditor) {
+      editor?.chain().focus();
+      setFocusEditor(false);
+    }
+  }, [focusEditor, editor, setFocusEditor])
 
   if (editor) {
     editor.storage.connectedAddress = address;
