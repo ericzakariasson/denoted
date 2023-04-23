@@ -94,7 +94,8 @@ export function Sidebar({ className }: SidebarProps) {
                       <Link
                         href={url}
                         className={cn(
-                          "block rounded-md border py-2 px-3",
+                          buttonVariants({ variant: "outline" }),
+                          "w-full justify-start",
                           url === router.asPath && "border-slate-600"
                         )}
                       >
