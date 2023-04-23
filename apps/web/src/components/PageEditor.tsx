@@ -1,6 +1,6 @@
 import { JSONContent } from "@tiptap/react";
 import dynamic from "next/dynamic";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAccount } from "wagmi";
 import { useCeramic } from "../hooks/useCeramic";
 import { useLit } from "../hooks/useLit";
@@ -44,7 +44,6 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
   const [isCeramicSessionValid, setIsCeramicSessionValid] =
     useState<boolean>(false);
   const [focusEditor, setFocusEditor] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const ceramic = useCeramic();
   const lit = useLit();
@@ -55,10 +54,6 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
       setIsCeramicSessionValid(await ceramic.hasSession());
     run();
   }, [ceramic]);
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
 
   function handleSave() {
     onSave({
@@ -87,6 +82,27 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
     }
   };
 
+  const AutofocusTitle = () => {
+    const callbackRef = useCallback((inputElement: HTMLInputElement) => {
+      if (inputElement) {
+        inputElement.focus();
+      }
+    }, []);
+  
+    return (
+      <input
+      ref={callbackRef}
+      autoFocus
+      placeholder="Untitled"
+      className="mb-4 w-full text-5xl font-bold placeholder:text-slate-200 focus:outline-none"
+      value={title}
+      onChange={(event) => setTitle(event.target.value)}
+      onClick={() => setFocusEditor(false)}
+      onKeyUp={onEnter}
+      required
+    />    );
+  };
+
   return (
     <div>
       <div className="mb-10">
@@ -101,16 +117,7 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
       </div>
       <AuthDialog open={!isAuthenticated} />
       <div className="mb-4 flex flex-row justify-between">
-        <input
-          ref={inputRef}
-          placeholder="Untitled"
-          className="mb-4 w-full text-5xl font-bold placeholder:text-slate-200 focus:outline-none"
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          onClick={() => setFocusEditor(false)}
-          onKeyUp={onEnter}
-          required
-        />
+        <AutofocusTitle />
       </div>
       <div>
         <Editor
