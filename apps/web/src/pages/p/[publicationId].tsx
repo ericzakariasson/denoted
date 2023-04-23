@@ -5,6 +5,14 @@ import { DeserializedPage } from "../../utils/page-helper";
 import Head from "next/head";
 import { JSONContent } from "@tiptap/react";
 import { Viewer } from "../../components/Viewer";
+import { cn } from "../../lib/utils";
+import Link from "next/link";
+import { Logo } from "../../components/Logo";
+import { buttonVariants } from "../../components/ui/button";
+import { Avatar } from "connectkit";
+import { Address, useEnsName } from "wagmi";
+import TimeAgo from "react-timeago";
+import { ExternalLink } from "lucide-react";
 
 type Props = {
   page: DeserializedPage;
@@ -57,13 +65,19 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 const DocumentPage: NextPage<Props> = ({ page, url }) => {
   const metaTags = formatMetaTags(page);
 
+  const createdByAddress = page.createdBy.id.split(":")[4] as Address;
+
+  const ens = useEnsName({
+    address: createdByAddress,
+  });
+
   const json: JSONContent = {
     type: "doc",
     content: page?.data ?? [],
   };
 
   return (
-    <div>
+    <div className={cn("m-auto max-w-2xl p-4")}>
       <Head>
         <meta
           name="keywords"
@@ -88,9 +102,28 @@ const DocumentPage: NextPage<Props> = ({ page, url }) => {
         <meta name="twitter:url" content={url} />
         <meta name="twitter:image" content={metaTags.image} />
       </Head>
-      <div className="flex items-start justify-between">
-        <h1 className="mb-8 text-5xl font-bold">{page.title}</h1>
+      <header className="mb-16 flex items-center justify-between">
+        <Link href="/">
+          <Logo />
+        </Link>
+        <Link
+          href={"/create"}
+          className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+        >
+          Create page
+          <ExternalLink className="ml-2 h-4 w-4" />
+        </Link>
+      </header>
+      <div className="mb-6 flex gap-4">
+        <div className="flex items-center gap-2">
+          <Avatar address={createdByAddress} size={24} />
+          <p className="text-slate-600">
+            {ens.isSuccess ? ens.data : createdByAddress}
+          </p>
+        </div>
+        <TimeAgo className="text-slate-400" date={page.createdAt} />
       </div>
+      <h1 className="mb-8 text-5xl font-bold">{page.title}</h1>
       <Viewer key={page.id} json={json} />
     </div>
   );

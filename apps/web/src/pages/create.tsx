@@ -7,6 +7,9 @@ import { createPage } from "../composedb/page";
 import { trackEvent } from "../lib/analytics";
 import { composeClient } from "../lib/compose";
 import { encryptPage, serializePage } from "../utils/page-helper";
+import { Layout } from "../components/Layout";
+import { Button } from "../components/ui/button";
+import { Loader2, Save } from "lucide-react";
 
 const CreatePage: NextPage = () => {
   const queryClient = useQueryClient();
@@ -46,10 +49,25 @@ const CreatePage: NextPage = () => {
     }
   );
   return (
-    <PageEditor
-      onSave={createPageMutation.mutate}
-      isSaving={createPageMutation.isLoading}
-    />
+    <Layout>
+      <PageEditor
+        renderSubmit={({ isDisabled, data }) => (
+          <div className="mb-10 flex gap-4">
+            <Button
+              onClick={() => createPageMutation.mutate(data)}
+              disabled={isDisabled || createPageMutation.isLoading}
+            >
+              {createPageMutation.isLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="mr-2 h-4 w-4" />
+              )}
+              {createPageMutation.isLoading ? "Saving..." : "Save page"}
+            </Button>
+          </div>
+        )}
+      />
+    </Layout>
   );
 };
 

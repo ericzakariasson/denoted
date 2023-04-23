@@ -15,8 +15,10 @@ import {
   encryptPage,
   serializePage,
 } from "../utils/page-helper";
-import { Edit } from "lucide-react";
+import { Edit, Loader2, Save } from "lucide-react";
 import { Button } from "../components/ui/button";
+import { Layout } from "../components/Layout";
+import { Skeleton } from "../components/ui/skeleton";
 const PublishMenu = dynamic(
   async () =>
     import("../components/PublishMenu").then((module) => module.PublishMenu),
@@ -55,22 +57,26 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
   const [page, setPage] = useState<DeserializedPage | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { address } = useAccount();
 
   const handlePageLoad = useCallback(async () => {
+    setIsLoading(true);
     if (!initialPage.key) {
       const deserializedPage = deserializePage(initialPage);
       setPage(deserializedPage);
     }
 
     if (!address) {
+      setIsLoading(false);
       return;
     }
 
     const decryptedPage = await decryptPage(initialPage, address);
     const deserializedPage = deserializePage(decryptedPage);
     setPage(deserializedPage);
+    setIsLoading(false);
   }, [initialPage, address]);
 
   useEffect(() => {
@@ -128,6 +134,17 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
     }
   );
 
+  if (isLoading) {
+    return (
+      <Layout className="pt-20">
+        <Skeleton className="mb-8 h-[60px] w-full rounded-lg" />
+        <Skeleton className="mb-2 h-[20px] w-full rounded-lg" />
+        <Skeleton className="mb-2 h-[20px] w-full rounded-lg" />
+        <Skeleton className="mb-2 h-[20px] w-full rounded-lg" />
+      </Layout>
+    );
+  }
+
   if (!page) {
     return (
       <div>
@@ -138,13 +155,29 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
 
   if (isEditing) {
     return (
-      <div>
+      <Layout>
         <PageEditor
           page={page}
-          onSave={updatePageMutation.mutate}
-          isSaving={updatePageMutation.isLoading}
+          renderSubmit={({ isDisabled, data }) => (
+            <div className="mb-10 flex gap-4">
+              <Button
+                onClick={() => updatePageMutation.mutate(data)}
+                disabled={isDisabled || updatePageMutation.isLoading}
+              >
+                {updatePageMutation.isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="mr-2 h-4 w-4" />
+                )}
+                {updatePageMutation.isLoading ? "Saving..." : "Save page"}
+              </Button>
+              <Button variant={"ghost"} onClick={() => setIsEditing(false)}>
+                Cancel
+              </Button>
+            </div>
+          )}
         />
-      </div>
+      </Layout>
     );
   }
 
@@ -154,7 +187,7 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
   };
 
   return (
-    <div>
+    <Layout>
       {isOwner && (
         <div className="mb-10 flex items-end gap-4">
           <Button variant={"outline"} onClick={() => setIsEditing(true)}>
@@ -164,11 +197,9 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
           <PublishMenu page={page} />
         </div>
       )}
-      <div className="flex items-start justify-between">
-        <h1 className="mb-8 text-5xl font-bold">{page.title}</h1>
-      </div>
-      <Viewer key={page.id} json={json} />
-    </div>
+      <h1 className="mb-8 text-5xl font-bold leading-tight">{page.title}</h1>
+      <Viewer json={json} />
+    </Layout>
   );
 };
 
