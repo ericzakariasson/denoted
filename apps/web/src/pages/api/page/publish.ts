@@ -26,6 +26,8 @@ export default async function handler(
       .insert({
         page_id: page.id,
         ipfs_cid: result.IpfsHash,
+        page_title: page.title,
+        publisher_address: page.createdBy.id.split(":")[4],
       })
       .select()
       .single();
