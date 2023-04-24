@@ -5,6 +5,7 @@ import { cn } from "../utils/classnames";
 import Link from "next/link";
 import { trackEvent } from "../lib/analytics";
 import { buttonVariants } from "../components/ui/button";
+import { Layout } from "../components/Layout";
 
 type Props = {
   pages: Page[];
@@ -25,9 +26,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
 const Page: NextPage<Props> = ({ pages }) => {
   if (pages.length === 0) {
     return (
-      <div className="flex flex-col items-start gap-4">
+      <Layout className="flex flex-col items-start gap-4 pt-3.5">
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold text-slate-800">
+          <h1 className="text-2xl font-bold text-slate-800">
             No public pages found
           </h1>
           <p className="text-slate-500">
@@ -43,12 +44,12 @@ const Page: NextPage<Props> = ({ pages }) => {
         >
           Create page
         </Link>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <Layout className="flex flex-col gap-8 pt-3.5">
       {pages.length > 0 && (
         <div>
           <h1 className="mb-4 text-3xl font-bold text-slate-800">
@@ -61,7 +62,7 @@ const Page: NextPage<Props> = ({ pages }) => {
           </div>
         </div>
       )}
-    </div>
+    </Layout>
   );
 };
 
