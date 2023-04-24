@@ -214,7 +214,7 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
         </div>
       )}
       <h1 className="mb-8 text-5xl font-bold leading-tight">{page.title}</h1>
-      <Viewer json={json} />
+      <Viewer key={page.id} json={json} />
     </Layout>
   );
 };
