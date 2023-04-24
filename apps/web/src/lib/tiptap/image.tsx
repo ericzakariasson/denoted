@@ -1,21 +1,24 @@
-import { nodeInputRule, Node } from "@tiptap/core";
+import { Node } from "@tiptap/core";
 import { mergeAttributes, NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
 import { CommandExtensionProps } from "./types";
 import { CommandConfiguration } from "../../components/commands/types";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 
 export type IpfsImageProps = {
   cid: string;
   file: File;
 };
 
-async function uploadImage(file: File): Promise<string> {
+async function uploadImageToIpfs(file: File): Promise<string> {
   const formData = new FormData();
   formData.append('image', file);
 
   const res = await fetch('/api/editor/upload', {
     method: 'POST',
     body: formData,
+    headers: {
+      "Accept": "application/json",
+    },
   });
 
   if (!res.ok) {
@@ -36,34 +39,25 @@ export const IpfsImage = (
   const { cid, file } = props.node.attrs;
   
   console.log('rerender', { props, objectURL });
-  // TODO: Loading state
-  // TODO: Prevent rerendering on editor focus
+  // TODO: Loading state, react-query?
 
   useEffect(() => {
     const fetchAndSetObjectUrl = async () => {
-      console.log("fetch image from ipfs", cid);
-  
-      // https://gateway.pinata.cloud/ipfs/
-      const res = await fetch(`https://ipfs.io/ipfs/${cid}`);
+      const res = await fetch(`https://gateway.pinata.cloud/ipfs/${cid}`);
       const imageBlob = await res.blob();
       setObjectURL(URL.createObjectURL(imageBlob));
     };
 
     const uploadAndSetCid = async () => {
-      console.log("upload image to ipfs", file);
-  
-      props.updateAttributes({ cid: await uploadImage(file) });
+      const cid = await uploadImageToIpfs(file);
+      props.updateAttributes({ cid });
     };
 
     if (file.name && cid === null) {
-      const localObjectURL = URL.createObjectURL(file);
-      console.log('set local init image', localObjectURL);
-      setObjectURL(localObjectURL);
+      setObjectURL(URL.createObjectURL(file));
       uploadAndSetCid();
     } else if (cid !== null) {
       fetchAndSetObjectUrl();
-    } else {
-      console.log('no file or cid', file, cid);
     }
   }, [cid, file, props]);
 

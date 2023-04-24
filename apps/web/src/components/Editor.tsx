@@ -64,7 +64,6 @@ export const extensions = [
   }),
   Highlight,
   Typography,
-  // Image,
   IpfsImage.extension,
   TextAlign,
   ...commandExtensions,
@@ -121,16 +120,13 @@ export const Editor = ({
             event: DragEvent,
             file: File,
           ) => {
-            const { schema } = view.state;
             const coordinates = view.posAtCoords({
               left: event.clientX,
               top: event.clientY,
             });
-            const node = schema.nodes['ipfs-image'].create({ file });
-            console.log("node", node.toJSON());
+            const node = view.state.schema.nodes['ipfs-image'].create({ file });
             const transaction = view.state.tr.insert(coordinates!.pos, node);
             view.dispatch(transaction);
-            return { node, pos: coordinates!.pos };
           };
 
           try {
@@ -143,28 +139,7 @@ export const Editor = ({
               );
             }
  
-            const { pos, node } = insertImageToEditor(view, event, file);
-
-            // const img = new global.Image();
-            // img.src = URL.createObjectURL(file);
-            // img.onload = async () => {
-            //   if (img.width > 2000 || img.height > 2000) {
-            //     throw new Error(
-            //       "Images need to be less than 2000px in width or height."
-            //     );
-            //   }
-
-              
-              // node.replace(0, 1, )
-              // const transaction = view.state.tr
-              //   // .setNodeAttribute(pos + 1, "src", cid)
-              //   // .setNodeMarkup(pos + 1, node.type, { cid })
-              //   .replaceWith(pos + 1, pos + 2, view.state.schema.nodes['ipfs-image'].create({ cid }));
-
-              // view.dispatch(transaction);
-
-              // console.log("state", view.props.state.doc.content.., view.state.toJSON())
-            // };
+            insertImageToEditor(view, event, file);
           } catch (error) {
             return false;
           }
