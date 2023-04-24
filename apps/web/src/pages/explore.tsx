@@ -1,30 +1,42 @@
 import { GetServerSideProps, NextPage } from "next";
-import { Card } from "../components/Card";
-import { getPagesQuery, Page } from "../composedb/page";
-import { cn } from "../utils/classnames";
 import Link from "next/link";
-import { trackEvent } from "../lib/analytics";
+import { PageCard } from "../components/PageCard";
 import { buttonVariants } from "../components/ui/button";
+import { trackEvent } from "../lib/analytics";
+import { supabase } from "../lib/supabase/supabase";
+import { Database } from "../lib/supabase/supabase.types";
+import { cn } from "../utils/classnames";
 import { Layout } from "../components/Layout";
 
 type Props = {
-  pages: Page[];
+  pagePublications: Database["public"]["Tables"]["page_publication"]["Row"][];
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async () => {
-  const query = await getPagesQuery();
-  const pages = query.data?.pageIndex?.edges.map((edge) => edge.node) ?? [];
-  const publicPages = pages.filter((page) => !page.key);
+  const { data, error } = await supabase.from("page_publication").select("*");
+
+  if (error) {
+    console.error(error);
+    return {
+      notFound: true,
+    };
+  }
+
+  if (!data) {
+    return {
+      notFound: true,
+    };
+  }
 
   return {
     props: {
-      pages: publicPages,
+      pagePublications: data,
     },
   };
 };
 
-const Page: NextPage<Props> = ({ pages }) => {
-  if (pages.length === 0) {
+const Page: NextPage<Props> = ({ pagePublications }) => {
+  if (pagePublications.length === 0) {
     return (
       <Layout className="flex flex-col items-start gap-4 pt-3.5">
         <div className="flex flex-col gap-2">
@@ -50,14 +62,14 @@ const Page: NextPage<Props> = ({ pages }) => {
 
   return (
     <Layout className="flex flex-col gap-8 pt-3.5">
-      {pages.length > 0 && (
+      {pagePublications.length > 0 && (
         <div>
           <h1 className="mb-4 text-3xl font-bold text-slate-800">
             Public pages
-          </h1>{" "}
-          <div className="grid gap-4 md:grid-cols-3">
-            {pages.map((page) => (
-              <Card key={page.id} page={page} />
+          </h1>
+          <div className="grid grid-cols-2 gap-4">
+            {pagePublications.map((publication) => (
+              <PageCard key={publication.id} publication={publication} />
             ))}
           </div>
         </div>

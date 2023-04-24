@@ -15,18 +15,24 @@ export interface Database {
           id: string;
           ipfs_cid: string;
           page_id: string;
+          page_title: string;
+          publisher_address: string;
         };
         Insert: {
           created_at?: string;
           id?: string;
           ipfs_cid: string;
           page_id: string;
+          page_title: string;
+          publisher_address: string;
         };
         Update: {
           created_at?: string;
           id?: string;
           ipfs_cid?: string;
           page_id?: string;
+          page_title?: string;
+          publisher_address?: string;
         };
       };
     };
