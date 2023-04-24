@@ -1,6 +1,4 @@
-import { umask } from "process";
 import { cn } from "../utils/classnames";
-import { TwitterIcon, EmailIcon } from "react-share";
 import { Mail, Twitter } from "lucide-react";
 import Link from "next/link";
 

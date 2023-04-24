@@ -4,16 +4,31 @@ import { motion } from "framer-motion";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { COMMANDS } from "../components/commands";
 import Link from "next/link";
-
+import Image from "next/image";
 import * as Form from "@radix-ui/react-form";
 import { useMutation } from "react-query";
 import Head from "next/head";
 import { trackEvent } from "../lib/analytics";
+import { Logo } from "../components/Logo";
+import { Button, buttonVariants } from "../components/ui/button";
+import { cn } from "../utils/classnames";
+import { Loader2, Construction } from "lucide-react";
+import { Input } from "../components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
 
 type Props = {};
 
 const Page: NextPage<Props> = ({}) => {
-  const commands = COMMANDS.flatMap((c) => c.items.map((item) => item.command));
+  const commands = COMMANDS.flatMap((c) => c.items.map((item) => item));
 
   const [index, setIndex] = useState(0);
 
@@ -48,75 +63,107 @@ const Page: NextPage<Props> = ({}) => {
   });
 
   return (
-    <div className="flex flex-col items-center gap-8 pt-32">
+    <>
       <Head>
         <title>denoted</title>
       </Head>
-      <h1 className="text-2xl">start creating with</h1>
-      <Link
-        href="/create"
-        className="flex rounded-[64rem] border-4 border-black px-12 py-6"
-      >
-        <span className="text-6xl">
-          /{/* <AnimatePresence mode="popLayout"> */}
-          <motion.span
-            key={command}
-            animate={{
-              y: "-1.5",
-              transition: { type: "spring", stiffness: 400, damping: 35 },
-            }}
-            exit={{
-              y: "1.5em",
-              transition: { type: "spring", stiffness: 400, damping: 35 },
-            }}
-            initial={{ y: "1.5em" }}
+      <div className="m-auto flex max-w-2xl flex-col items-start gap-16 p-4">
+        <header className="flex w-full items-center justify-between">
+          <Link href="/">
+            <Logo />
+          </Link>
+          <Link
+            href={"/create"}
+            className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
           >
-            {command}
-          </motion.span>
-          {/* </AnimatePresence> */}
-        </span>
-      </Link>
-      <p className="max-w-xs text-center text-slate-500">
-        a knowledge management editor that visualizes on-chain data
-      </p>
-      <div className="flex w-full max-w-2xl flex-col items-center gap-4 rounded-[3rem] bg-slate-100 py-16 px-20">
-        <p className="text-xl font-medium">
-          be the first to know when we launch
-        </p>
-        <Form.Root
-          className="flex w-full items-end"
-          onSubmit={(event) => {
-            event.preventDefault();
-            const data = Object.fromEntries(new FormData(event.currentTarget));
-            emailSignup.mutate(data.email.toString());
-          }}
-        >
-          <Form.Field name="email" className="flex w-full flex-col">
-            <Form.Message match="typeMismatch" className="mb-2 text-slate-500">
-              please provide a valid email
-            </Form.Message>
-            <Form.Control asChild>
-              <input
-                className="h-[42px] rounded-l-3xl"
-                type="email"
-                required
-                placeholder="denoted@example.com"
-                disabled={emailSignup.isLoading}
-              />
-            </Form.Control>
-          </Form.Field>
-          <Form.Submit asChild>
-            <button
-              className="h-[42px] w-[96px] rounded-r-full bg-black px-4 py-1 text-lg text-white"
-              disabled={emailSignup.isLoading}
-            >
-              {emailSignup.isLoading ? "..." : "/signup"}
-            </button>
-          </Form.Submit>
-        </Form.Root>
-        {emailSignup.isSuccess && <p>you are signed up!</p>}
+            Open App
+            {" ->"}
+          </Link>
+        </header>
+        <Alert>
+          <Construction className="h-4 w-4" />
+          <AlertTitle>Build in progress!</AlertTitle>
+          <AlertDescription>
+            {`denoted is in early stages and a lot of development is going on.
+            We're currently finalizing the prototype and will be launching soon.
+            If you'd like to be notified when we launch, sign up below!`}
+          </AlertDescription>
+        </Alert>
+        <div className="flex w-full max-w-sm flex-col">
+          <p className="mb-3">Get notified when we launch</p>
+          <Form.Root
+            className="flex w-full items-end gap-2"
+            onSubmit={(event) => {
+              event.preventDefault();
+              const data = Object.fromEntries(
+                new FormData(event.currentTarget)
+              );
+              emailSignup.mutate(data.email.toString());
+            }}
+          >
+            <Form.Field name="email" className="flex flex-1 flex-col">
+              <Form.Message
+                match="typeMismatch"
+                className="mb-2 text-slate-500"
+              >
+                please provide a valid email
+              </Form.Message>
+              <Form.Control asChild>
+                <Input
+                  type="email"
+                  required
+                  placeholder="denoted@example.com"
+                  disabled={emailSignup.isLoading}
+                />
+              </Form.Control>
+            </Form.Field>
+            <Form.Submit asChild>
+              <Button disabled={emailSignup.isLoading}>
+                {emailSignup.isLoading && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Sign up
+              </Button>
+            </Form.Submit>
+          </Form.Root>
+          {emailSignup.isSuccess && <p>you are signed up!</p>}
+        </div>
+        <div>
+          <h2 className="mb-3">Editor plugins</h2>
+          <div className="grid grid-cols-2 gap-4">
+            {commands.map((command, i) => {
+              return (
+                <Card key={command.command}>
+                  <CardHeader>
+                    <div className="flex items-center gap-2">
+                      <CardTitle>{command.title}</CardTitle>{" "}
+                      {command.icon && (
+                        <Image
+                          {...command.icon}
+                          width={16}
+                          height={16}
+                          alt={"Icon for command"}
+                          className="inline"
+                        />
+                      )}
+                    </div>
+                    <CardDescription>{command.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex gap-2">
+                      <Badge variant={"outline"} className="font-mono">
+                        /{command.command}
+                      </Badge>
+                      <Badge variant={"outline"}>{command.blockType}</Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

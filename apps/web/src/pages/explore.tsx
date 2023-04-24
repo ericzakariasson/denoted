@@ -6,6 +6,7 @@ import { trackEvent } from "../lib/analytics";
 import { supabase } from "../lib/supabase/supabase";
 import { Database } from "../lib/supabase/supabase.types";
 import { cn } from "../utils/classnames";
+import { Layout } from "../components/Layout";
 
 type Props = {
   pagePublications: Database["public"]["Tables"]["page_publication"]["Row"][];
@@ -37,9 +38,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
 const Page: NextPage<Props> = ({ pagePublications }) => {
   if (pagePublications.length === 0) {
     return (
-      <div className="flex flex-col items-start gap-4">
+      <Layout className="flex flex-col items-start gap-4 pt-3.5">
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold text-slate-800">
+          <h1 className="text-2xl font-bold text-slate-800">
             No public pages found
           </h1>
           <p className="text-slate-500">
@@ -55,12 +56,12 @@ const Page: NextPage<Props> = ({ pagePublications }) => {
         >
           Create page
         </Link>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <Layout className="flex flex-col gap-8 pt-3.5">
       {pagePublications.length > 0 && (
         <div>
           <h1 className="mb-4 text-3xl font-bold text-slate-800">
@@ -73,7 +74,7 @@ const Page: NextPage<Props> = ({ pagePublications }) => {
           </div>
         </div>
       )}
-    </div>
+    </Layout>
   );
 };
 

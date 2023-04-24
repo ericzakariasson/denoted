@@ -6,6 +6,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
+    "dev": "npx @ceramicnetwork/cli daemon",
     "generate-graphql-schema": "composedb graphql:schema ./generated/runtime-composite.json --output=./generated/schema.graphql",
     "start-graphql-playground": "source .env && composedb graphql:server --graphiql --port=5001 ./generated/runtime-composite.json --did-private-key=$DID_PRIVATE_KEY -c $CERAMIC_API_URL",
     "generate-definitions": "source .env && composedb composite:compile ./generated/denoted-composite.json ../web/src/composedb/definition.ts -c $CERAMIC_API_URL",

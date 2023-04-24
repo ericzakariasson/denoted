@@ -1,14 +1,11 @@
 import { JSONContent } from "@tiptap/react";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAccount } from "wagmi";
 import { useCeramic } from "../hooks/useCeramic";
 import { useLit } from "../hooks/useLit";
-import { cn } from "../utils/classnames";
 import { deserializePage } from "../utils/page-helper";
 import { Editor } from "./Editor";
-import { Button } from "./ui/button";
-import { Save, Loader2 } from "lucide-react";
 
 const AuthDialog = dynamic(
   async () =>
@@ -27,11 +24,13 @@ export type SavePageData = {
 
 type PageEditorProps = {
   page?: ReturnType<typeof deserializePage>;
-  onSave: (data: SavePageData) => void;
-  isSaving: boolean;
+  renderSubmit: (props: {
+    isDisabled: boolean;
+    data: SavePageData;
+  }) => React.ReactNode;
 };
 
-export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
+export function PageEditor({ page, renderSubmit }: PageEditorProps) {
   const [title, setTitle] = useState(page?.title ?? "");
   const [json, setJson] = useState<JSONContent>(
     page
@@ -44,6 +43,7 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
 
   const [isCeramicSessionValid, setIsCeramicSessionValid] =
     useState<boolean>(false);
+  const [focusEditor, setFocusEditor] = useState(false);
 
   const ceramic = useCeramic();
   const lit = useLit();
@@ -55,17 +55,6 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
     run();
   }, [ceramic]);
 
-  function handleSave() {
-    onSave({
-      page: {
-        title,
-        content: json?.content ?? [],
-      },
-      address: account.address as string,
-      isPublic: false,
-    });
-  }
-
   const isAuthenticated =
     account.isConnected &&
     ceramic.isComposeResourcesSigned &&
@@ -74,28 +63,38 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
 
   const isEnabled =
     isAuthenticated && title.length > 0 && (json?.content ?? []).length > 0;
+
+  const onEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      setFocusEditor(true);
+    }
+  };
+
   return (
     <div>
-      <div className="mb-10">
-        <Button onClick={() => handleSave()} disabled={!isEnabled || isSaving}>
-          {isSaving ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Save className="mr-2 h-4 w-4" />
-          )}
-          {isSaving ? "Saving..." : "Save page"}
-        </Button>
-      </div>
+      {renderSubmit({
+        isDisabled: !isEnabled,
+        data: {
+          page: {
+            title,
+            content: json?.content ?? [],
+          },
+          address: account.address as string,
+          isPublic: false,
+        },
+      })}
       <AuthDialog open={!isAuthenticated} />
-      <div className="mb-4 flex flex-row justify-between">
-        <input
-          placeholder="Untitled"
-          className="mb-4 w-full text-5xl font-bold placeholder:text-slate-200 focus:outline-none"
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          required
-        />
-      </div>
+      <input
+        autoFocus
+        placeholder="Untitled"
+        className="mb-8 w-full text-5xl font-bold leading-tight placeholder:text-slate-200 focus:outline-none"
+        value={title}
+        onChange={(event) => setTitle(event.target.value)}
+        onClick={() => setFocusEditor(false)}
+        onKeyUp={onEnter}
+        required
+      />
       <div>
         <Editor
           initialContent={
@@ -107,6 +106,7 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
               : []
           }
           onUpdate={(json) => setJson(json)}
+          focusedEditorState={[focusEditor, setFocusEditor]}
         />
       </div>
     </div>
