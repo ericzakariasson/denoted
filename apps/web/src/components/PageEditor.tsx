@@ -71,28 +71,6 @@ export function PageEditor({ page, renderSubmit }: PageEditorProps) {
     }
   };
 
-  const AutofocusTitle = () => {
-    const callbackRef = useCallback((inputElement: HTMLInputElement) => {
-      if (inputElement) {
-        inputElement.focus();
-      }
-    }, []);
-
-    return (
-      <input
-        ref={callbackRef}
-        autoFocus
-        placeholder="Untitled"
-        className="mb-4 w-full text-5xl font-bold leading-tight placeholder:text-slate-200 focus:outline-none"
-        value={title}
-        onChange={(event) => setTitle(event.target.value)}
-        onClick={() => setFocusEditor(false)}
-        onKeyUp={onEnter}
-        required
-      />
-    );
-  };
-
   return (
     <div>
       {renderSubmit({
@@ -107,9 +85,16 @@ export function PageEditor({ page, renderSubmit }: PageEditorProps) {
         },
       })}
       <AuthDialog open={!isAuthenticated} />
-      <div className="mb-4 flex flex-row justify-between">
-        <AutofocusTitle />
-      </div>
+      <input
+        autoFocus
+        placeholder="Untitled"
+        className="mb-8 w-full text-5xl font-bold leading-tight placeholder:text-slate-200 focus:outline-none"
+        value={title}
+        onChange={(event) => setTitle(event.target.value)}
+        onClick={() => setFocusEditor(false)}
+        onKeyUp={onEnter}
+        required
+      />
       <div>
         <Editor
           initialContent={
