@@ -21,15 +21,12 @@ export function useCommandExtensionConfig<
   }, [isConfigured]);
 
   function onSubmit(values: Record<string, FormDataEntryValue>) {
-    const updatedProps = Object.keys(props.node.attrs).reduce<Props>(
-      (data, key) => {
-        const k = key as keyof Props;
-        const value = (values[key]?.toString() ?? null) as Props[keyof Props];
-        data[k] = transform ? transform(k, value) : value;
-        return data;
-      },
-      {} as Props
-    );
+    const updatedProps = Object.keys(values).reduce<Props>((data, key) => {
+      const k = key as keyof Props;
+      const value = (values[key]?.toString() ?? null) as Props[keyof Props];
+      data[k] = transform ? transform(k, value) : value;
+      return data;
+    }, {} as Props);
 
     props.updateAttributes(updatedProps);
 

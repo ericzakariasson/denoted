@@ -11,6 +11,7 @@ import {
 
 import * as chains from "wagmi/chains";
 import { Textarea } from "../ui/textarea";
+import { SUPPORTED_CHAINS } from "../../supported-chains";
 
 export type FormField =
   | {
@@ -110,18 +111,11 @@ export function ConfigForm({ fields, onSubmit }: ConfigFormProps) {
                     <SelectValue placeholder="Chain" />
                   </SelectTrigger>
                   <SelectContent className="w-full">
-                    {Object.values(chains)
-                      .filter((chain) => {
-                        return "testnet" in chain ? false : true;
-                      })
-                      .map((chain) => (
-                        <SelectItem
-                          key={chain.name}
-                          value={chain.id.toString()}
-                        >
-                          {chain.name}
-                        </SelectItem>
-                      ))}
+                    {SUPPORTED_CHAINS.map((chain) => (
+                      <SelectItem key={chain.name} value={chain.id.toString()}>
+                        {chain.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

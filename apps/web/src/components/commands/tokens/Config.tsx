@@ -12,12 +12,12 @@ export const TokenPriceConfig = (
   const { isConfigured, isOpen, onSubmit, setOpen } =
     useCommandExtensionConfig(props);
 
-  const { property, chainName, token } = props.node.attrs;
+  const { property, chainId, token } = props.node.attrs;
 
   return (
     <NodeViewWrapper as="span">
       {isConfigured && !props.editor.isEditable && (
-        <TokenWidget property={property} chainName={chainName} token={token} />
+        <TokenWidget property={property} chainId={chainId} token={token} />
       )}
       {props.editor.isEditable && (
         <Popover
@@ -29,7 +29,7 @@ export const TokenPriceConfig = (
             {isConfigured ? (
               <TokenWidget
                 property={property}
-                chainName={chainName}
+                chainId={chainId}
                 token={token}
               />
             ) : (
@@ -48,9 +48,9 @@ export const TokenPriceConfig = (
                   defaultValue: token,
                 },
                 {
-                  name: "chainName",
+                  name: "chainId",
                   type: "chain",
-                  defaultValue: chainName,
+                  defaultValue: chainId?.toString(),
                 },
               ]}
               onSubmit={onSubmit}
