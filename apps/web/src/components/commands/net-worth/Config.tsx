@@ -1,15 +1,11 @@
 import { NodeViewWrapper } from "@tiptap/react";
 
-import * as chains from "wagmi/chains";
-
-import { useEffect, useState } from "react";
 import { CommandExtensionProps } from "../../../lib/tiptap/types";
-import { NetWorthWidget, NetWorthWidgetProps } from "./NetWorth";
-import { Label } from "../../Label";
-import { useCommandExtensionConfig } from "../../use-command-extension-config";
-import { ConfigForm } from "../ConfigForm";
 import { Badge } from "../../ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
+import { useCommandExtensionConfig } from "../../use-command-extension-config";
+import { ConfigForm } from "../ConfigForm";
+import { NetWorthWidget, NetWorthWidgetProps } from "./NetWorth";
 
 export const NetWorthConfig = (
   props: CommandExtensionProps<NetWorthWidgetProps>
