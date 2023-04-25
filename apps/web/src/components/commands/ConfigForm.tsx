@@ -10,6 +10,7 @@ import {
 } from "../ui/select";
 
 import * as chains from "wagmi/chains";
+import { Textarea } from "../ui/textarea";
 
 type Field =
   | {
@@ -27,6 +28,18 @@ type Field =
   | {
       name: string;
       type: "chain";
+      defaultValue: string;
+    }
+  | {
+      name: string;
+      type: "text";
+      placeholder: string;
+      defaultValue: string;
+    }
+  | {
+      name: string;
+      type: "textarea";
+      placeholder: string;
       defaultValue: string;
     };
 
@@ -67,6 +80,7 @@ export function ConfigForm({ fields, onSubmit }: ConfigFormProps) {
                 <Select
                   name={field.name}
                   defaultValue={field.defaultValue ?? ""}
+                  required
                 >
                   <SelectTrigger id={field.name}>
                     <SelectValue />
@@ -86,7 +100,11 @@ export function ConfigForm({ fields, onSubmit }: ConfigFormProps) {
             return (
               <div className="grid gap-2">
                 <Label htmlFor={field.name}>Chain</Label>
-                <Select name={field.name} defaultValue={field.defaultValue}>
+                <Select
+                  name={field.name}
+                  defaultValue={field.defaultValue}
+                  required
+                >
                   <SelectTrigger id={field.name}>
                     <SelectValue placeholder="Chain" />
                   </SelectTrigger>
@@ -103,6 +121,38 @@ export function ConfigForm({ fields, onSubmit }: ConfigFormProps) {
                       ))}
                   </SelectContent>
                 </Select>
+              </div>
+            );
+          }
+          case "text": {
+            return (
+              <div className="grid gap-2">
+                <Label htmlFor={field.name} className="capitalize">
+                  {field.name}
+                </Label>
+                <Input
+                  id={field.name}
+                  name={field.name}
+                  placeholder={field.placeholder}
+                  defaultValue={field.defaultValue ?? ""}
+                  required
+                />
+              </div>
+            );
+          }
+          case "textarea": {
+            return (
+              <div className="grid gap-2">
+                <Label htmlFor={field.name} className="capitalize">
+                  {field.name}
+                </Label>
+                <Textarea
+                  id={field.name}
+                  name={field.name}
+                  placeholder={field.placeholder}
+                  defaultValue={field.defaultValue ?? ""}
+                  required
+                />
               </div>
             );
           }
