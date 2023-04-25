@@ -33,6 +33,7 @@ type Field =
   | {
       name: string;
       type: "text";
+      label?: string;
       placeholder: string;
       defaultValue: string;
     }
@@ -110,7 +111,9 @@ export function ConfigForm({ fields, onSubmit }: ConfigFormProps) {
                   </SelectTrigger>
                   <SelectContent className="w-full">
                     {Object.values(chains)
-                      .filter((chain) => ("testnet" in chain ? false : true))
+                      .filter((chain) => {
+                        return "testnet" in chain ? false : true;
+                      })
                       .map((chain) => (
                         <SelectItem
                           key={chain.name}
@@ -128,7 +131,7 @@ export function ConfigForm({ fields, onSubmit }: ConfigFormProps) {
             return (
               <div className="grid gap-2">
                 <Label htmlFor={field.name} className="capitalize">
-                  {field.name}
+                  {field.label ?? field.name}
                 </Label>
                 <Input
                   id={field.name}
