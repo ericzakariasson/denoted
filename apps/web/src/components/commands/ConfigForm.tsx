@@ -12,7 +12,7 @@ import {
 import * as chains from "wagmi/chains";
 import { Textarea } from "../ui/textarea";
 
-type Field =
+export type FormField =
   | {
       name: string;
       type: "address";
@@ -45,7 +45,7 @@ type Field =
     };
 
 type ConfigFormProps = {
-  fields: Field[];
+  fields: FormField[];
   onSubmit: (values: Record<string, FormDataEntryValue>) => void;
 };
 
