@@ -42,6 +42,7 @@ type EditorProps = {
   initialContent?: Content;
   onUpdate?: (json: JSONContent) => void;
   focusedEditorState: [boolean, (state: boolean) => void];
+  className?: string;
 };
 
 const commandExtensions = getCommandExtensions();
@@ -53,7 +54,12 @@ export const extensions = [
   ...commandExtensions,
 ];
 
-export const Editor = ({ initialContent, onUpdate, focusedEditorState }: EditorProps) => {
+export const Editor = ({
+  initialContent,
+  onUpdate,
+  focusedEditorState,
+  className,
+}: EditorProps) => {
   const { address } = useAccount();
   const [focusEditor, setFocusEditor] = focusedEditorState;
 
@@ -73,7 +79,7 @@ export const Editor = ({ initialContent, onUpdate, focusedEditorState }: EditorP
     content: initialContent,
     editorProps: {
       attributes: {
-        class: "prose dark:prose-invert focus:outline-none max-w-none",
+        class: "h-full prose dark:prose-invert focus:outline-none max-w-none",
       },
       handleDrop(view, event, slice, moved) {
         if (
@@ -147,7 +153,7 @@ export const Editor = ({ initialContent, onUpdate, focusedEditorState }: EditorP
       editor?.chain().focus();
       setFocusEditor(false);
     }
-  }, [focusEditor, editor, setFocusEditor])
+  }, [focusEditor, editor, setFocusEditor]);
 
   if (editor) {
     editor.storage.connectedAddress = address;
@@ -181,7 +187,7 @@ export const Editor = ({ initialContent, onUpdate, focusedEditorState }: EditorP
           </BubbleMenuButton>
         </BubbleMenu>
       )}
-      <EditorContent editor={editor} />
+      <EditorContent className={className} editor={editor} />
     </>
   );
 };

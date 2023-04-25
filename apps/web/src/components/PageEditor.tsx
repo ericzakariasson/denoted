@@ -72,7 +72,7 @@ export function PageEditor({ page, renderSubmit }: PageEditorProps) {
   };
 
   return (
-    <div>
+    <div className="flex h-full flex-col">
       {renderSubmit({
         isDisabled: !isEnabled,
         data: {
@@ -95,20 +95,19 @@ export function PageEditor({ page, renderSubmit }: PageEditorProps) {
         onKeyUp={onEnter}
         required
       />
-      <div>
-        <Editor
-          initialContent={
-            page
-              ? {
-                  type: "doc",
-                  content: page.data ?? [],
-                }
-              : []
-          }
-          onUpdate={(json) => setJson(json)}
-          focusedEditorState={[focusEditor, setFocusEditor]}
-        />
-      </div>
+      <Editor
+        className="flex-grow"
+        initialContent={
+          page
+            ? {
+                type: "doc",
+                content: page.data ?? [],
+              }
+            : []
+        }
+        onUpdate={(json) => setJson(json)}
+        focusedEditorState={[focusEditor, setFocusEditor]}
+      />
     </div>
   );
 }
