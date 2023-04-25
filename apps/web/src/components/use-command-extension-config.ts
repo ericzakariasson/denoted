@@ -3,7 +3,10 @@ import { CommandExtensionProps } from "../lib/tiptap/types";
 
 export function useCommandExtensionConfig<
   Props extends Record<string, string | number | null>
->(props: CommandExtensionProps<Props>) {
+>(
+  props: CommandExtensionProps<Props>,
+  transform?: <T extends keyof Props>(key: T, value: Props[T]) => Props[T]
+) {
   const isConfigured = Object.values(props.node.attrs).every(
     (value) =>
       typeof value !== "undefined" && value !== null && value !== undefined
@@ -20,8 +23,9 @@ export function useCommandExtensionConfig<
   function onSubmit(values: Record<string, FormDataEntryValue>) {
     const updatedProps = Object.keys(props.node.attrs).reduce<Props>(
       (data, key) => {
-        data[key as keyof Props] = (values[key]?.toString() ??
-          null) as Props[keyof Props];
+        const k = key as keyof Props;
+        const value = (values[key]?.toString() ?? null) as Props[keyof Props];
+        data[k] = transform ? transform(k, value) : value;
         return data;
       },
       {} as Props
