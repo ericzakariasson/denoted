@@ -54,17 +54,17 @@ export function PageEditor({ page, renderSubmit, autofocusProp }: PageEditorProp
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const { query } = router;
-  const autofocusTitle = query.autofocus === "true";
+  const autofocusQuery = query.autofocus === "true";
 
-  const autofocus = autofocusTitle || autofocusProp;
+  const autofocusTitle = autofocusQuery || autofocusProp;
 
   useEffect(() => {
-    if (autofocus && inputRef.current) {
+    if (autofocusTitle && inputRef.current) {
       setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
     }
-  }, [autofocus])
+  }, [autofocusTitle])
 
   useEffect(() => {
     const run = async () =>
