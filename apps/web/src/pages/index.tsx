@@ -73,7 +73,10 @@ const Page: NextPage<Props> = ({}) => {
             <Logo />
           </Link>
           <Link
-            href={"/create"}
+            href={{
+              pathname: "/create",
+              query: { autofocus: true}
+            }}
             className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
           >
             Open App

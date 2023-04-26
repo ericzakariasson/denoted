@@ -89,8 +89,6 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
 
   const isOwner = page?.createdBy.id === composeClient.id;
 
-  console.log(page);
-
   const updatePageMutation = useMutation(
     async ({ page: updatedPage, address, isPublic }: SavePageData) => {
       const pageInput = serializePage(
