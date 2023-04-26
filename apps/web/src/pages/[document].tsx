@@ -58,7 +58,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 
 const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
   const [isEditing, setIsEditing] = useState(false);
-
+  const [autofocusTitle, setAutofocusTitle] = useState(false);
   const { address } = useAccount();
 
   const PAGE_QUERY_KEY = [
@@ -173,6 +173,7 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
     return (
       <Layout>
         <PageEditor
+          autofocusProp={autofocusTitle}
           page={page}
           renderSubmit={({ isDisabled, data }) => (
             <div className="mb-10 flex gap-4">
@@ -206,7 +207,13 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
     <Layout>
       {isOwner && (
         <div className="mb-10 flex items-end gap-4">
-          <Button variant={"outline"} onClick={() => setIsEditing(true)}>
+          <Button
+            variant={"outline"}
+            onClick={() => {
+              setIsEditing(true);
+              setAutofocusTitle(true);
+            }}
+          >
             <Edit className="mr-2 h-4 w-4" />
             Edit page
           </Button>

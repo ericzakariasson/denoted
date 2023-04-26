@@ -70,7 +70,10 @@ export function Sidebar({ className }: SidebarProps) {
       <nav className="w-full">
         <ul className="flex flex-col gap-6">
           <li className="flex flex-col gap-3">
-            <Link href="/create" className={buttonVariants()}>
+            <Link href={{
+              pathname: "/create",
+              query: { autofocus: true }
+            }} className={buttonVariants()}>
               <PenBox className="mr-2 h-4 w-4" />
               Create page
             </Link>
@@ -92,7 +95,10 @@ export function Sidebar({ className }: SidebarProps) {
                   return (
                     <li key={page.id}>
                       <Link
-                        href={url}
+                        href={{
+                          pathname: url,
+                          query: { autofocus: true}
+                        }}
                         className={cn(
                           buttonVariants({ variant: "outline" }),
                           "w-full justify-start",

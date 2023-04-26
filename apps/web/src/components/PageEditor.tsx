@@ -1,11 +1,12 @@
 import { JSONContent } from "@tiptap/react";
 import dynamic from "next/dynamic";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAccount } from "wagmi";
 import { useCeramic } from "../hooks/useCeramic";
 import { useLit } from "../hooks/useLit";
 import { deserializePage } from "../utils/page-helper";
 import { Editor } from "./Editor";
+import { useRouter } from "next/router";
 
 const AuthDialog = dynamic(
   async () =>
@@ -23,6 +24,7 @@ export type SavePageData = {
 };
 
 type PageEditorProps = {
+  autofocusProp?: boolean;
   page?: ReturnType<typeof deserializePage>;
   renderSubmit: (props: {
     isDisabled: boolean;
@@ -30,7 +32,7 @@ type PageEditorProps = {
   }) => React.ReactNode;
 };
 
-export function PageEditor({ page, renderSubmit }: PageEditorProps) {
+export function PageEditor({ page, renderSubmit, autofocusProp }: PageEditorProps) {
   const [title, setTitle] = useState(page?.title ?? "");
   const [json, setJson] = useState<JSONContent>(
     page
@@ -48,6 +50,21 @@ export function PageEditor({ page, renderSubmit }: PageEditorProps) {
   const ceramic = useCeramic();
   const lit = useLit();
   const account = useAccount();
+  
+  const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  const { query } = router;
+  const autofocusTitle = query.autofocus === "true";
+
+  const autofocus = autofocusTitle || autofocusProp;
+
+  useEffect(() => {
+    if (autofocus && inputRef.current) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    }
+  }, [autofocus])
 
   useEffect(() => {
     const run = async () =>
@@ -86,7 +103,7 @@ export function PageEditor({ page, renderSubmit }: PageEditorProps) {
       })}
       <AuthDialog open={!isAuthenticated} />
       <input
-        autoFocus
+        ref={inputRef}
         placeholder="Untitled"
         className="mb-8 w-full text-5xl font-bold leading-tight placeholder:text-slate-200 focus:outline-none"
         value={title}
