@@ -1,7 +1,7 @@
 import { PropsWithChildren } from "react";
 import { Badge } from "../ui/badge";
 import { PopoverContent, PopoverTrigger } from "../ui/popover";
-import { FormSubmitHandler } from "../use-command-extension-config";
+import { FormSubmitHandler } from "../use-block-config-props";
 import { ConfigForm, FormField } from "./ConfigForm";
 import { Settings2 } from "lucide-react";
 

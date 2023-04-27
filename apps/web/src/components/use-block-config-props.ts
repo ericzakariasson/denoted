@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { CommandExtensionProps } from "../lib/tiptap/types";
 import { BaseProps } from "./commands/types";
+import { useIsMounted } from "connectkit";
 
 export type FormSubmitHandler = (
   values: Record<string, FormDataEntryValue>
@@ -10,6 +11,8 @@ export function useBlockConfigProps<Props extends BaseProps>(
   props: CommandExtensionProps<Props>,
   propTransform?: <T extends keyof Props>(key: T, value: Props[T]) => Props[T]
 ) {
+  const isMounted = useIsMounted();
+
   const isConfigured = Object.values(props.node.attrs).every(
     (value) =>
       typeof value !== "undefined" && value !== null && value !== undefined
@@ -38,5 +41,14 @@ export function useBlockConfigProps<Props extends BaseProps>(
     props.editor.view.dom.focus();
   }
 
-  return { isConfigured, isOpen, setOpen, onSubmit };
+  return {
+    isConfigured,
+    isOpen,
+    setOpen: (open: boolean) => {
+      if (isMounted) {
+        setOpen(open);
+      }
+    },
+    onSubmit,
+  };
 }

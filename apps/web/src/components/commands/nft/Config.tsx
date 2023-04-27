@@ -2,7 +2,7 @@ import { NodeViewWrapper } from "@tiptap/react";
 
 import { CommandExtensionProps } from "../../../lib/tiptap/types";
 import { Popover } from "../../ui/popover";
-import { useBlockConfigProps } from "../../use-command-extension-config";
+import { useBlockConfigProps } from "../../use-block-config-props";
 import { BlockConfigButton, BlockConfigForm } from "../BlockConfig";
 import { FormField } from "../ConfigForm";
 import { NftWidget, NftWidgetProps } from "./Nft";

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { CommandExtensionProps } from "../../../lib/tiptap/types";
 import { Badge } from "../../ui/badge";
 import { Popover } from "../../ui/popover";
-import { useBlockConfigProps } from "../../use-command-extension-config";
+import { useBlockConfigProps } from "../../use-block-config-props";
 import { BlockConfigButton, BlockConfigForm } from "../BlockConfig";
 import { DuneProps } from "./Dune";
 

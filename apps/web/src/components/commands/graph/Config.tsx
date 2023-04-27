@@ -4,7 +4,7 @@ import { CommandExtensionProps } from "../../../lib/tiptap/types";
 import { Label } from "../../Label";
 import { Badge } from "../../ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
-import { useBlockConfigProps } from "../../use-command-extension-config";
+import { useBlockConfigProps } from "../../use-block-config-props";
 import { GraphWidget, GraphWidgetProps } from "./Graph";
 import { ConfigForm } from "../ConfigForm";
 import { BlockConfigButton, BlockConfigForm } from "../BlockConfig";
