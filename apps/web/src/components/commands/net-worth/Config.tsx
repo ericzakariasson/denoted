@@ -1,17 +1,16 @@
 import { NodeViewWrapper } from "@tiptap/react";
 
 import { CommandExtensionProps } from "../../../lib/tiptap/types";
-import { Badge } from "../../ui/badge";
-import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
-import { useCommandExtensionConfig } from "../../use-command-extension-config";
-import { ConfigForm } from "../ConfigForm";
+import { Popover } from "../../ui/popover";
+import { useBlockConfigProps } from "../../use-command-extension-config";
+import { BlockConfigButton, BlockConfigForm } from "../BlockConfig";
 import { NetWorthWidget, NetWorthWidgetProps } from "./NetWorth";
 
 export const NetWorthConfig = (
   props: CommandExtensionProps<NetWorthWidgetProps>
 ) => {
   const { isConfigured, isOpen, onSubmit, setOpen } =
-    useCommandExtensionConfig(props);
+    useBlockConfigProps(props);
 
   const { address, chain } = props.node.attrs;
 
@@ -26,30 +25,24 @@ export const NetWorthConfig = (
           onOpenChange={setOpen}
           open={isOpen}
         >
-          <PopoverTrigger>
-            {isConfigured ? (
-              <NetWorthWidget address={address} chain={Number(chain)} />
-            ) : (
-              <Badge variant={"outline"}>setup</Badge>
-            )}
-          </PopoverTrigger>
-          <PopoverContent align="start">
-            <ConfigForm
-              fields={[
-                {
-                  name: "address",
-                  type: "address",
-                  defaultValue: address,
-                },
-                {
-                  name: "chain",
-                  type: "chain",
-                  defaultValue: chain.toString(),
-                },
-              ]}
-              onSubmit={onSubmit}
-            />
-          </PopoverContent>
+          <BlockConfigButton isConfigured={isConfigured}>
+            <NetWorthWidget address={address} chain={Number(chain)} />
+          </BlockConfigButton>
+          <BlockConfigForm
+            fields={[
+              {
+                name: "address",
+                type: "address",
+                defaultValue: address,
+              },
+              {
+                name: "chain",
+                type: "chain",
+                defaultValue: chain.toString(),
+              },
+            ]}
+            onSubmit={onSubmit}
+          />
         </Popover>
       )}
     </NodeViewWrapper>

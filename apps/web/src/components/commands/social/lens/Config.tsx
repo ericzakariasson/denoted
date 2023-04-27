@@ -1,10 +1,9 @@
 import { NodeViewWrapper } from "@tiptap/react";
 
 import { CommandExtensionProps } from "../../../../lib/tiptap/types";
-import { Badge } from "../../../ui/badge";
-import { Popover, PopoverContent, PopoverTrigger } from "../../../ui/popover";
-import { useCommandExtensionConfig } from "../../../use-command-extension-config";
-import { ConfigForm } from "../../ConfigForm";
+import { Popover } from "../../../ui/popover";
+import { useBlockConfigProps } from "../../../use-command-extension-config";
+import { BlockConfigButton, BlockConfigForm } from "../../BlockConfig";
 import { LensWidget, LensWidgetProps } from "./Lens";
 
 const PLACEHOLDER = {
@@ -14,7 +13,7 @@ const PLACEHOLDER = {
 
 export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
   const { isConfigured, isOpen, onSubmit, setOpen } =
-    useCommandExtensionConfig(props);
+    useBlockConfigProps(props);
 
   const { property, publicationId, handle } = props.node.attrs;
 
@@ -33,30 +32,24 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
           onOpenChange={setOpen}
           open={isOpen}
         >
-          <PopoverTrigger>
-            {isConfigured ? (
-              <LensWidget
-                property={property}
-                publicationId={publicationId}
-                handle={handle}
-              />
-            ) : (
-              <Badge variant={"outline"}>setup</Badge>
-            )}
-          </PopoverTrigger>
-          <PopoverContent align="start">
-            <ConfigForm
-              fields={[
-                {
-                  name: property,
-                  type: "text",
-                  defaultValue: props.node.attrs[property],
-                  placeholder: PLACEHOLDER[property],
-                },
-              ]}
-              onSubmit={onSubmit}
+          <BlockConfigButton isConfigured={isConfigured}>
+            <LensWidget
+              property={property}
+              publicationId={publicationId}
+              handle={handle}
             />
-          </PopoverContent>
+          </BlockConfigButton>
+          <BlockConfigForm
+            fields={[
+              {
+                name: property,
+                type: "text",
+                defaultValue: props.node.attrs[property],
+                placeholder: PLACEHOLDER[property],
+              },
+            ]}
+            onSubmit={onSubmit}
+          />
         </Popover>
       )}
     </NodeViewWrapper>

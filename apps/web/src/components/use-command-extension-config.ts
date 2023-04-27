@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { CommandExtensionProps } from "../lib/tiptap/types";
+import { BaseProps } from "./commands/types";
 
-export function useCommandExtensionConfig<
-  Props extends Record<string, string | number | null>
->(
+export type FormSubmitHandler = (
+  values: Record<string, FormDataEntryValue>
+) => void;
+
+export function useBlockConfigProps<Props extends BaseProps>(
   props: CommandExtensionProps<Props>,
   propTransform?: <T extends keyof Props>(key: T, value: Props[T]) => Props[T]
 ) {

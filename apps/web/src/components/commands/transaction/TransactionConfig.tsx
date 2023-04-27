@@ -1,17 +1,16 @@
 import { NodeViewWrapper } from "@tiptap/react";
 
 import { CommandExtensionProps } from "../../../lib/tiptap/types";
-import { Badge } from "../../ui/badge";
-import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
-import { useCommandExtensionConfig } from "../../use-command-extension-config";
-import { ConfigForm } from "../ConfigForm";
+import { Popover } from "../../ui/popover";
+import { useBlockConfigProps } from "../../use-command-extension-config";
+import { BlockConfigButton, BlockConfigForm } from "../BlockConfig";
 import { TransactionWidget, TransactionWidgetProps } from "./Transaction";
 
 export const TransactionConfig = (
   props: CommandExtensionProps<TransactionWidgetProps>
 ) => {
   const { isConfigured, isOpen, onSubmit, setOpen } =
-    useCommandExtensionConfig(props);
+    useBlockConfigProps(props);
 
   const { txHash, chain } = props.node.attrs;
 
@@ -26,33 +25,27 @@ export const TransactionConfig = (
           onOpenChange={setOpen}
           open={isOpen}
         >
-          <PopoverTrigger>
-            {isConfigured ? (
-              <TransactionWidget txHash={txHash} chain={Number(chain)} />
-            ) : (
-              <Badge variant={"outline"}>setup</Badge>
-            )}
-          </PopoverTrigger>
+          <BlockConfigButton isConfigured={isConfigured}>
+            <TransactionWidget txHash={txHash} chain={Number(chain)} />
+          </BlockConfigButton>
 
-          <PopoverContent align="start">
-            <ConfigForm
-              fields={[
-                {
-                  name: "txHash",
-                  type: "text",
-                  defaultValue: txHash,
-                  label: "Transaction Hash",
-                  placeholder: "0x123...456",
-                },
-                {
-                  name: "chain",
-                  type: "chain",
-                  defaultValue: chain.toString(),
-                },
-              ]}
-              onSubmit={onSubmit}
-            />
-          </PopoverContent>
+          <BlockConfigForm
+            fields={[
+              {
+                name: "txHash",
+                type: "text",
+                defaultValue: txHash,
+                label: "Transaction Hash",
+                placeholder: "0x123...456",
+              },
+              {
+                name: "chain",
+                type: "chain",
+                defaultValue: chain.toString(),
+              },
+            ]}
+            onSubmit={onSubmit}
+          />
         </Popover>
       )}
     </NodeViewWrapper>

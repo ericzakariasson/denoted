@@ -1,13 +1,13 @@
 import { NodeViewWrapper } from "@tiptap/react";
 
+import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { CommandExtensionProps } from "../../../lib/tiptap/types";
 import { Badge } from "../../ui/badge";
-import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
-import { useCommandExtensionConfig } from "../../use-command-extension-config";
-import { ConfigForm } from "../ConfigForm";
+import { Popover } from "../../ui/popover";
+import { useBlockConfigProps } from "../../use-command-extension-config";
+import { BlockConfigButton, BlockConfigForm } from "../BlockConfig";
 import { DuneProps } from "./Dune";
-import { ExternalLink } from "lucide-react";
 
 function formatHref(src: string) {
   if (src.startsWith("https://dune.com/embeds/")) {
@@ -26,7 +26,7 @@ function formatSrc(src: string) {
 }
 
 export const DuneConfig = (props: CommandExtensionProps<DuneProps>) => {
-  const { isConfigured, isOpen, onSubmit, setOpen } = useCommandExtensionConfig(
+  const { isConfigured, isOpen, onSubmit, setOpen } = useBlockConfigProps(
     props,
     (key, value) => {
       if (key === "src") {
@@ -53,25 +53,20 @@ export const DuneConfig = (props: CommandExtensionProps<DuneProps>) => {
             onOpenChange={setOpen}
             open={isOpen}
           >
-            <PopoverTrigger>
-              <Badge variant={"outline"}>
-                {isConfigured ? "settings" : "setup"}
-              </Badge>
-            </PopoverTrigger>
-
-            <PopoverContent sideOffset={5} align="start">
-              <ConfigForm
-                fields={[
-                  {
-                    name: "src",
-                    type: "text",
-                    defaultValue: src,
-                    placeholder: "https://dune.com/embeds/...",
-                  },
-                ]}
-                onSubmit={onSubmit}
-              />
-            </PopoverContent>
+            <BlockConfigButton isConfigured={isConfigured}>
+              settings
+            </BlockConfigButton>
+            <BlockConfigForm
+              fields={[
+                {
+                  name: "src",
+                  type: "text",
+                  defaultValue: src,
+                  placeholder: "https://dune.com/embeds/...",
+                },
+              ]}
+              onSubmit={onSubmit}
+            />
           </Popover>
         )}
         {isConfigured && (
