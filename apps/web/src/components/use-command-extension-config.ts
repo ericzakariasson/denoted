@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { CommandExtensionProps } from "../lib/tiptap/types";
 
 export function useCommandExtensionConfig<
   Props extends Record<string, string | number | null>
 >(
   props: CommandExtensionProps<Props>,
-  transform?: <T extends keyof Props>(key: T, value: Props[T]) => Props[T]
+  propTransform?: <T extends keyof Props>(key: T, value: Props[T]) => Props[T]
 ) {
   const isConfigured = Object.values(props.node.attrs).every(
     (value) =>
@@ -24,7 +24,7 @@ export function useCommandExtensionConfig<
     const updatedProps = Object.keys(values).reduce<Props>((data, key) => {
       const k = key as keyof Props;
       const value = (values[key]?.toString() ?? null) as Props[keyof Props];
-      data[k] = transform ? transform(k, value) : value;
+      data[k] = propTransform ? propTransform(k, value) : value;
       return data;
     }, {} as Props);
 
