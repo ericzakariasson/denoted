@@ -3,6 +3,7 @@ import { Badge } from "../ui/badge";
 import { PopoverContent, PopoverTrigger } from "../ui/popover";
 import { FormSubmitHandler } from "../use-command-extension-config";
 import { ConfigForm, FormField } from "./ConfigForm";
+import { Settings2 } from "lucide-react";
 
 export function BlockConfigButton({
   isConfigured,
@@ -11,8 +12,18 @@ export function BlockConfigButton({
   isConfigured: boolean;
 }>) {
   return (
-    <PopoverTrigger>
-      {isConfigured ? children : <Badge variant="outline">config</Badge>}
+    <PopoverTrigger className="leading-normal">
+      {isConfigured ? (
+        children
+      ) : (
+        <Badge
+          className="text-md  h-6 px-2 py-0 font-normal"
+          variant="secondary"
+        >
+          <Settings2 className="mr-1 inline h-3 w-3" />
+          setup
+        </Badge>
+      )}
     </PopoverTrigger>
   );
 }

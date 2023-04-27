@@ -5,6 +5,8 @@ import ContentLoader from "react-content-loader";
 import * as Sentry from "@sentry/nextjs";
 
 import * as Tooltip from "@radix-ui/react-tooltip";
+import { Badge } from "./ui/badge";
+import { Skeleton } from "./ui/skeleton";
 
 type DataPillProps = PropsWithChildren<{
   query: UseQueryResult;
@@ -30,22 +32,7 @@ export const DataPill = ({
   }, [query.isError, query.error]);
 
   if (isStatus("loading")) {
-    return (
-      <span
-        className={cn(base, "relative top-1 inline-flex overflow-hidden p-0")}
-      >
-        <ContentLoader
-          speed={2}
-          width={85}
-          height={18.5}
-          viewBox="0 0 85 18.5"
-          backgroundColor="#f3f3f3"
-          foregroundColor="#e3e3e3"
-        >
-          <rect x="0" y="0" rx="0" ry="0" width="85" height="18.5" />
-        </ContentLoader>
-      </span>
-    );
+    return <Skeleton className=" inline-flex h-6 w-20 rounded-full" />;
   }
 
   if (isStatus("error")) {
@@ -57,7 +44,14 @@ export const DataPill = ({
       <Tooltip.Provider>
         <Tooltip.Root>
           <Tooltip.Trigger>
-            <span className={cn(base, "bg-red-200")}>error</span>
+            <Badge
+              variant="outline"
+              className={cn(
+                "text-md c h-6 border-red-400 px-1 py-0 font-normal text-inherit"
+              )}
+            >
+              error
+            </Badge>
           </Tooltip.Trigger>
           <Tooltip.Portal>
             <Tooltip.Content>
@@ -70,6 +64,14 @@ export const DataPill = ({
   }
 
   return (
-    <span className={cn(base, "bg-slate-200", className)}>{children}</span>
+    <Badge
+      variant="outline"
+      className={cn(
+        "text-md h-6 px-1 py-0 font-normal text-inherit",
+        className
+      )}
+    >
+      {children}
+    </Badge>
   );
 };
