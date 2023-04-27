@@ -9,9 +9,10 @@ import {
   SelectItem,
 } from "../ui/select";
 
-import * as chains from "wagmi/chains";
+import { Textarea } from "../ui/textarea";
+import { SUPPORTED_CHAINS } from "../../supported-chains";
 
-type Field =
+export type FormField =
   | {
       name: string;
       type: "address";
@@ -28,10 +29,23 @@ type Field =
       name: string;
       type: "chain";
       defaultValue: string;
+    }
+  | {
+      name: string;
+      type: "text";
+      label?: string;
+      placeholder: string;
+      defaultValue: string;
+    }
+  | {
+      name: string;
+      type: "textarea";
+      placeholder: string;
+      defaultValue: string;
     };
 
 type ConfigFormProps = {
-  fields: Field[];
+  fields: FormField[];
   onSubmit: (values: Record<string, FormDataEntryValue>) => void;
 };
 
@@ -48,7 +62,7 @@ export function ConfigForm({ fields, onSubmit }: ConfigFormProps) {
         switch (field.type) {
           case "address": {
             return (
-              <div className="grid gap-2">
+              <div key={field.name} className="grid gap-2">
                 <Label htmlFor={field.name}>Address</Label>
                 <Input
                   id={field.name}
@@ -62,11 +76,12 @@ export function ConfigForm({ fields, onSubmit }: ConfigFormProps) {
           }
           case "select": {
             return (
-              <div className="grid gap-2">
+              <div key={field.name} className="grid gap-2">
                 <Label htmlFor={field.name}>{field.label}</Label>
                 <Select
                   name={field.name}
                   defaultValue={field.defaultValue ?? ""}
+                  required
                 >
                   <SelectTrigger id={field.name}>
                     <SelectValue />
@@ -84,25 +99,56 @@ export function ConfigForm({ fields, onSubmit }: ConfigFormProps) {
           }
           case "chain": {
             return (
-              <div className="grid gap-2">
+              <div key={field.name} className="grid gap-2">
                 <Label htmlFor={field.name}>Chain</Label>
-                <Select name={field.name} defaultValue={field.defaultValue}>
+                <Select
+                  name={field.name}
+                  defaultValue={field.defaultValue}
+                  required
+                >
                   <SelectTrigger id={field.name}>
                     <SelectValue placeholder="Chain" />
                   </SelectTrigger>
                   <SelectContent className="w-full">
-                    {Object.values(chains)
-                      .filter((chain) => ("testnet" in chain ? false : true))
-                      .map((chain) => (
-                        <SelectItem
-                          key={chain.name}
-                          value={chain.id.toString()}
-                        >
-                          {chain.name}
-                        </SelectItem>
-                      ))}
+                    {SUPPORTED_CHAINS.map((chain) => (
+                      <SelectItem key={chain.name} value={chain.id.toString()}>
+                        {chain.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
+              </div>
+            );
+          }
+          case "text": {
+            return (
+              <div key={field.name} className="grid gap-2">
+                <Label htmlFor={field.name} className="capitalize">
+                  {field.label ?? field.name}
+                </Label>
+                <Input
+                  id={field.name}
+                  name={field.name}
+                  placeholder={field.placeholder}
+                  defaultValue={field.defaultValue ?? ""}
+                  required
+                />
+              </div>
+            );
+          }
+          case "textarea": {
+            return (
+              <div key={field.name} className="grid gap-2">
+                <Label htmlFor={field.name} className="capitalize">
+                  {field.name}
+                </Label>
+                <Textarea
+                  id={field.name}
+                  name={field.name}
+                  placeholder={field.placeholder}
+                  defaultValue={field.defaultValue ?? ""}
+                  required
+                />
               </div>
             );
           }

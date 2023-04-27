@@ -3,10 +3,11 @@ import { useQuery } from "react-query";
 import { PortalsResponse, Token } from "./types";
 import { findToken } from "./helpers";
 import Image from "next/image";
+import { SUPPORTED_CHAINS } from "../../../supported-chains";
 
 export type TokenWidgetProps = {
   property: "price";
-  chainName: string;
+  chainId: number;
   token: string;
 };
 
@@ -20,10 +21,10 @@ export const TokenWidget = ({ property, ...props }: TokenWidgetProps) => {
 };
 
 const TokenPriceWidget = ({
-  chainName,
+  chainId,
   token,
-}: Pick<TokenWidgetProps, "chainName" | "token">) => {
-  const query = useQuery(["TOKEN", "PRICE", chainName, token], async () => {
+}: Pick<TokenWidgetProps, "chainId" | "token">) => {
+  const query = useQuery(["TOKEN", "PRICE", chainId, token], async () => {
     let platforms;
     if (token.toLowerCase().trim() === "eth") {
       platforms = "native";
@@ -31,7 +32,11 @@ const TokenPriceWidget = ({
     if (token.toLowerCase().trim() !== "eth") {
       platforms = "basic";
     }
-    const url = `https://api.portals.fi/v2/tokens?search=${token}&platforms=${platforms}&networks=${chainName}`;
+    const chain = SUPPORTED_CHAINS.find(
+      (chain) => Number(chainId) === chain.id
+    );
+
+    const url = `https://api.portals.fi/v2/tokens?search=${token}&platforms=${platforms}&networks=${chain?.name.toLowerCase()}`;
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(

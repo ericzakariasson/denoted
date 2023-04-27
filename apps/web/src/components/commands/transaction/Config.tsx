@@ -4,18 +4,20 @@ import { CommandExtensionProps } from "../../../lib/tiptap/types";
 import { Popover } from "../../ui/popover";
 import { useBlockConfigProps } from "../../use-block-config-props";
 import { BlockConfigButton, BlockConfigForm } from "../BlockConfig";
-import { TallyWidget, TallyWidgetProps } from "./Tally";
+import { TransactionWidget, TransactionWidgetProps } from "./Transaction";
 
-export const TallyConfig = (props: CommandExtensionProps<TallyWidgetProps>) => {
+export const TransactionConfig = (
+  props: CommandExtensionProps<TransactionWidgetProps>
+) => {
   const { isConfigured, isOpen, onSubmit, setOpen } =
     useBlockConfigProps(props);
 
-  const { query, path } = props.node.attrs;
+  const { txHash, chain } = props.node.attrs;
 
   return (
     <NodeViewWrapper as="span">
       {isConfigured && !props.editor.isEditable && (
-        <TallyWidget query={query} path={path} />
+        <TransactionWidget txHash={txHash} chain={Number(chain)} />
       )}
       {props.editor.isEditable && (
         <Popover
@@ -24,26 +26,22 @@ export const TallyConfig = (props: CommandExtensionProps<TallyWidgetProps>) => {
           open={isOpen}
         >
           <BlockConfigButton isConfigured={isConfigured}>
-            <TallyWidget query={query} path={path} />
+            <TransactionWidget txHash={txHash} chain={Number(chain)} />
           </BlockConfigButton>
 
           <BlockConfigForm
             fields={[
               {
-                name: "query",
-                type: "textarea",
-                defaultValue: query,
-                placeholder: `query {
-  foo {
-    bar
-  }
-}`,
+                name: "txHash",
+                type: "text",
+                defaultValue: txHash,
+                label: "Transaction Hash",
+                placeholder: "0x123...456",
               },
               {
-                name: "path",
-                type: "text",
-                defaultValue: path,
-                placeholder: "foo.bar",
+                name: "chain",
+                type: "chain",
+                defaultValue: chain.toString(),
               },
             ]}
             onSubmit={onSubmit}

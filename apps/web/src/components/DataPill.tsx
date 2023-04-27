@@ -1,10 +1,11 @@
-import { cn } from "../utils/classnames";
+import * as Sentry from "@sentry/nextjs";
 import { PropsWithChildren, useEffect } from "react";
 import { QueryStatus, UseQueryResult } from "react-query";
-import ContentLoader from "react-content-loader";
-import * as Sentry from "@sentry/nextjs";
+import { cn } from "../utils/classnames";
 
 import * as Tooltip from "@radix-ui/react-tooltip";
+import { Badge } from "./ui/badge";
+import { Skeleton } from "./ui/skeleton";
 
 type DataPillProps = PropsWithChildren<{
   query: UseQueryResult;
@@ -18,8 +19,6 @@ export const DataPill = ({
   status,
   children,
 }: DataPillProps) => {
-  const base = "rounded-full px-1 py-0";
-
   const isStatus = (s: QueryStatus) =>
     [query.status, status].some((x) => x === s);
 
@@ -31,20 +30,16 @@ export const DataPill = ({
 
   if (isStatus("loading")) {
     return (
-      <span
-        className={cn(base, "relative top-1 inline-flex overflow-hidden p-0")}
+      <Badge
+        variant="outline"
+        className={cn(
+          "text-md rela relative h-6 w-20 animate-pulse overflow-hidden p-0 font-normal text-inherit",
+          className
+        )}
       >
-        <ContentLoader
-          speed={2}
-          width={85}
-          height={18.5}
-          viewBox="0 0 85 18.5"
-          backgroundColor="#f3f3f3"
-          foregroundColor="#e3e3e3"
-        >
-          <rect x="0" y="0" rx="0" ry="0" width="85" height="18.5" />
-        </ContentLoader>
-      </span>
+        <Skeleton className="absolute h-full w-full" />
+        <span className="opacity-0">loading</span>
+      </Badge>
     );
   }
 
@@ -57,7 +52,14 @@ export const DataPill = ({
       <Tooltip.Provider>
         <Tooltip.Root>
           <Tooltip.Trigger>
-            <span className={cn(base, "bg-red-200")}>error</span>
+            <Badge
+              variant="outline"
+              className={cn(
+                "text-md h-6 border-red-400 px-1 py-0 font-normal text-inherit"
+              )}
+            >
+              error
+            </Badge>
           </Tooltip.Trigger>
           <Tooltip.Portal>
             <Tooltip.Content>
@@ -70,6 +72,14 @@ export const DataPill = ({
   }
 
   return (
-    <span className={cn(base, "bg-slate-200", className)}>{children}</span>
+    <Badge
+      variant="outline"
+      className={cn(
+        "text-md relative h-6 border-slate-300 px-1 py-0 font-normal text-inherit",
+        className
+      )}
+    >
+      {children}
+    </Badge>
   );
 };

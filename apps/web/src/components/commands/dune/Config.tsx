@@ -1,11 +1,12 @@
 import { NodeViewWrapper } from "@tiptap/react";
-import React, { useState } from "react";
 
-import * as Popover from "@radix-ui/react-popover";
+import { ExternalLink } from "lucide-react";
 import Link from "next/link";
-import { useEffect } from "react";
 import { CommandExtensionProps } from "../../../lib/tiptap/types";
-import { Label } from "../../Label";
+import { Badge } from "../../ui/badge";
+import { Popover } from "../../ui/popover";
+import { useBlockConfigProps } from "../../use-block-config-props";
+import { BlockConfigButton, BlockConfigForm } from "../BlockConfig";
 import { DuneProps } from "./Dune";
 
 function formatHref(src: string) {
@@ -25,27 +26,18 @@ function formatSrc(src: string) {
 }
 
 export const DuneConfig = (props: CommandExtensionProps<DuneProps>) => {
-  const [isOpen, setOpen] = useState(false);
+  const { isConfigured, isOpen, onSubmit, setOpen } = useBlockConfigProps(
+    props,
+    (key, value) => {
+      if (key === "src") {
+        return formatSrc(value);
+      }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    props.updateAttributes({
-      src: formatSrc(formData.get("src")?.toString() ?? ""),
-    });
-    setOpen(false);
-    props.editor.view.dom.focus();
-  }
+      return value;
+    }
+  );
 
   const { src } = props.node.attrs;
-
-  const isConfigured = src !== undefined;
-
-  useEffect(() => {
-    if (!isConfigured) {
-      setOpen(true);
-    }
-  }, [isConfigured]);
 
   return (
     <NodeViewWrapper>
@@ -56,53 +48,32 @@ export const DuneConfig = (props: CommandExtensionProps<DuneProps>) => {
       )}
       <div className="flex items-start justify-start gap-2">
         {props.editor.isEditable && (
-          <Popover.Root
+          <Popover
             defaultOpen={!isConfigured}
             onOpenChange={setOpen}
             open={isOpen}
           >
-            <Popover.Trigger className="rounded-full border border-slate-300 py-0 px-1 leading-normal text-slate-500">
-              {isConfigured ? "update" : "setup"}
-            </Popover.Trigger>
-            <Popover.Portal>
-              <Popover.Content
-                sideOffset={5}
-                align="start"
-                className="s z-50 w-64 overflow-hidden rounded-2xl bg-slate-100 p-4 outline-none"
-              >
-                <form
-                  onSubmit={handleSubmit}
-                  className="flex flex-col items-start gap-4"
-                  name="iframe-setup"
-                >
-                  <Label label="Source">
-                    <input
-                      name="src"
-                      type="url"
-                      defaultValue={src ?? ""}
-                      required
-                      placeholder="https://"
-                      className="rounded-lg border-none bg-slate-200 px-3 py-2"
-                    />
-                  </Label>
-                  <button
-                    type="submit"
-                    className="rounded-full border border-black px-2 py-0 text-black"
-                  >
-                    save
-                  </button>
-                </form>
-              </Popover.Content>
-            </Popover.Portal>
-          </Popover.Root>
+            <BlockConfigButton isConfigured={isConfigured}>
+              settings
+            </BlockConfigButton>
+            <BlockConfigForm
+              fields={[
+                {
+                  name: "src",
+                  type: "text",
+                  defaultValue: src,
+                  placeholder: "https://dune.com/embeds/...",
+                },
+              ]}
+              onSubmit={onSubmit}
+            />
+          </Popover>
         )}
         {isConfigured && (
-          <Link
-            href={formatHref(src)}
-            target="_blank"
-            className="rounded-full border border-slate-300 py-0 px-1 font-normal leading-normal text-slate-500 no-underline"
-          >
-            open
+          <Link href={formatHref(src)} target="_blank">
+            <Badge variant="secondary">
+              open <ExternalLink className="ml-1 h-3 w-3" />
+            </Badge>
           </Link>
         )}
       </div>

@@ -1,9 +1,9 @@
 import { cn } from "../utils/classnames";
 import { PropsWithChildren } from "react";
 import { QueryStatus, UseQueryResult } from "react-query";
-import ContentLoader from "react-content-loader";
 
 import * as Tooltip from "@radix-ui/react-tooltip";
+import { Skeleton } from "./ui/skeleton";
 
 type DataStackProps = PropsWithChildren<{
   query: UseQueryResult;
@@ -27,16 +27,7 @@ export const DataStack = ({
       <span
         className={cn(base, "relative top-1 inline-flex overflow-hidden p-0")}
       >
-        <ContentLoader
-          speed={2}
-          width={85}
-          height={18.5}
-          viewBox="0 0 85 18.5"
-          backgroundColor="#f3f3f3"
-          foregroundColor="#e3e3e3"
-        >
-          <rect x="0" y="0" rx="0" ry="0" width="85" height="18.5" />
-        </ContentLoader>
+        <Skeleton className="inline-flex h-6 w-20" />
       </span>
     );
   }
@@ -64,10 +55,8 @@ export const DataStack = ({
 
   return (
     <div className={cn(base, "bg-slate-100", className)}>
-      <ul className="list-none px-0 divide-y divide-solid divide-slate-200 dark:divide-slate-700">
-        <li className="py-3 px-0 sm:py-4">
-          {children}
-        </li>
+      <ul className="list-none divide-y divide-solid divide-slate-200 px-0 dark:divide-slate-700">
+        <li className="px-0 py-3 sm:py-4">{children}</li>
       </ul>
     </div>
   );
