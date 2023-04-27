@@ -13,7 +13,7 @@ export const balanceCommand: CommandConfiguration<WalletBalanceWidgetProps> = {
   blockType: "inline",
   defaultValues: {
     address: undefined,
-    symbol: undefined,
+    symbol: mainnet.nativeCurrency.symbol,
     chain: mainnet.id,
   },
   ConfigComponent: WalletBalanceWidgetConfig,
