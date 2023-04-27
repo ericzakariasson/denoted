@@ -1,8 +1,7 @@
-import { cn } from "../utils/classnames";
+import * as Sentry from "@sentry/nextjs";
 import { PropsWithChildren, useEffect } from "react";
 import { QueryStatus, UseQueryResult } from "react-query";
-import ContentLoader from "react-content-loader";
-import * as Sentry from "@sentry/nextjs";
+import { cn } from "../utils/classnames";
 
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { Badge } from "./ui/badge";
@@ -76,7 +75,7 @@ export const DataPill = ({
     <Badge
       variant="outline"
       className={cn(
-        "text-md h-6 px-1 py-0 font-normal text-inherit",
+        "text-md relative h-6 border-slate-300 px-1 py-0 font-normal text-inherit",
         className
       )}
     >
