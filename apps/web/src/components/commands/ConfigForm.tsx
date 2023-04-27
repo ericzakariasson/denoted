@@ -9,7 +9,6 @@ import {
   SelectItem,
 } from "../ui/select";
 
-import * as chains from "wagmi/chains";
 import { Textarea } from "../ui/textarea";
 import { SUPPORTED_CHAINS } from "../../supported-chains";
 
@@ -63,7 +62,7 @@ export function ConfigForm({ fields, onSubmit }: ConfigFormProps) {
         switch (field.type) {
           case "address": {
             return (
-              <div className="grid gap-2">
+              <div key={field.name} className="grid gap-2">
                 <Label htmlFor={field.name}>Address</Label>
                 <Input
                   id={field.name}
@@ -77,7 +76,7 @@ export function ConfigForm({ fields, onSubmit }: ConfigFormProps) {
           }
           case "select": {
             return (
-              <div className="grid gap-2">
+              <div key={field.name} className="grid gap-2">
                 <Label htmlFor={field.name}>{field.label}</Label>
                 <Select
                   name={field.name}
@@ -100,7 +99,7 @@ export function ConfigForm({ fields, onSubmit }: ConfigFormProps) {
           }
           case "chain": {
             return (
-              <div className="grid gap-2">
+              <div key={field.name} className="grid gap-2">
                 <Label htmlFor={field.name}>Chain</Label>
                 <Select
                   name={field.name}
@@ -123,7 +122,7 @@ export function ConfigForm({ fields, onSubmit }: ConfigFormProps) {
           }
           case "text": {
             return (
-              <div className="grid gap-2">
+              <div key={field.name} className="grid gap-2">
                 <Label htmlFor={field.name} className="capitalize">
                   {field.label ?? field.name}
                 </Label>
@@ -139,7 +138,7 @@ export function ConfigForm({ fields, onSubmit }: ConfigFormProps) {
           }
           case "textarea": {
             return (
-              <div className="grid gap-2">
+              <div key={field.name} className="grid gap-2">
                 <Label htmlFor={field.name} className="capitalize">
                   {field.name}
                 </Label>
