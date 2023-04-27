@@ -20,8 +20,6 @@ export const DataPill = ({
   status,
   children,
 }: DataPillProps) => {
-  const base = "rounded-full px-1 py-0";
-
   const isStatus = (s: QueryStatus) =>
     [query.status, status].some((x) => x === s);
 
@@ -32,7 +30,18 @@ export const DataPill = ({
   }, [query.isError, query.error]);
 
   if (isStatus("loading")) {
-    return <Skeleton className=" inline-flex h-6 w-20 rounded-full" />;
+    return (
+      <Badge
+        variant="outline"
+        className={cn(
+          "text-md rela relative h-6 w-20 animate-pulse overflow-hidden p-0 font-normal text-inherit",
+          className
+        )}
+      >
+        <Skeleton className="absolute h-full w-full" />
+        <span className="opacity-0">loading</span>
+      </Badge>
+    );
   }
 
   if (isStatus("error")) {
@@ -47,7 +56,7 @@ export const DataPill = ({
             <Badge
               variant="outline"
               className={cn(
-                "text-md c h-6 border-red-400 px-1 py-0 font-normal text-inherit"
+                "text-md h-6 border-red-400 px-1 py-0 font-normal text-inherit"
               )}
             >
               error
