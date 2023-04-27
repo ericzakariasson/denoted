@@ -80,6 +80,50 @@
   }
 }
 
+@layer components {
+  .prose ul {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .prose ul li {
+    position: relative;
+    padding-left: 1.5em;
+  }
+
+  .prose ul li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.65em; /* Adjust this value if necessary */
+    width: 0.5em;
+    height: 0.5em;
+    margin-right: 0.5em;
+  }
+
+  .prose ul > li::before {
+    background-color: black;
+    border-radius: 50%;
+  }
+
+  .prose ul ul > li::before {
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 50%;
+  }
+
+  .prose ul ul ul > li::before {
+    background-color: black;
+    border-radius: 0;
+  }
+
+  .prose ul ul {
+    padding-left: 1.5em;
+  }
+}
+
+
+
 .ProseMirror p.is-empty::before {
   color: #adb5bd;
   content: attr(data-placeholder);
