@@ -40,7 +40,12 @@ export const WalletBalanceWidgetConfig = (
               <Badge variant={"outline"}>setup</Badge>
             )}
           </PopoverTrigger>
-          <PopoverContent align="start">
+          <PopoverContent
+            align="start"
+            onFocusOutside={(event) => {
+              event.preventDefault();
+            }}
+          >
             <ConfigForm
               fields={[
                 {
@@ -52,7 +57,9 @@ export const WalletBalanceWidgetConfig = (
                   name: "symbol",
                   label: "Ticker Symbol",
                   type: "select",
-                  options: ["eth", "usdc", "op", "spork"],
+                  options: ["eth", "usdc", "op", "spork"].map((symbol) =>
+                    symbol.toUpperCase()
+                  ),
                   defaultValue: symbol,
                 },
                 {
