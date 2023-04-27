@@ -204,7 +204,7 @@ export const Editor = ({
           >
             <AlignJustify className="h-4 w-4" />
           </BubbleMenuButton>
-          <div className="inline-block min-h-[1em] w-2 self-stretch"></div>          <BubbleMenuButton
+          <div className="inline-block w-2"></div>          <BubbleMenuButton
             onClick={() => editor.chain().focus().toggleBold().run()}
             isActive={editor.isActive("bold")}
           >
