@@ -1,11 +1,12 @@
 import { JSONContent } from "@tiptap/react";
 import dynamic from "next/dynamic";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAccount } from "wagmi";
 import { useCeramic } from "../hooks/useCeramic";
 import { useLit } from "../hooks/useLit";
 import { deserializePage } from "../utils/page-helper";
 import { Editor } from "./Editor";
+import { useQuery } from "react-query";
 
 const AuthDialog = dynamic(
   async () =>
@@ -41,24 +42,34 @@ export function PageEditor({ page, renderSubmit }: PageEditorProps) {
       : []
   );
 
-  const [isCeramicSessionValid, setIsCeramicSessionValid] =
-    useState<boolean>(false);
   const [focusEditor, setFocusEditor] = useState(false);
 
   const ceramic = useCeramic();
   const lit = useLit();
   const account = useAccount();
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
-    const run = async () =>
-      setIsCeramicSessionValid(await ceramic.hasSession());
-    run();
-  }, [ceramic]);
+    inputRef.current?.focus();
+  }, []);
+
+  const ceramicSessionQuery = useQuery(
+    [],
+    async () => await ceramic.hasSession(),
+    { cacheTime: 0 }
+  );
+
+  const isLoading =
+    account.isConnecting ||
+    ceramic.isLoading ||
+    lit.isLoading ||
+    ceramicSessionQuery.isLoading;
 
   const isAuthenticated =
     account.isConnected &&
     ceramic.isComposeResourcesSigned &&
-    isCeramicSessionValid &&
+    ceramicSessionQuery.data &&
     lit.isLitAuthenticated;
 
   const isEnabled =
@@ -84,9 +95,9 @@ export function PageEditor({ page, renderSubmit }: PageEditorProps) {
           isPublic: false,
         },
       })}
-      <AuthDialog open={!isAuthenticated} />
+      <AuthDialog open={!isLoading && !isAuthenticated} />
       <input
-        autoFocus
+        ref={inputRef}
         placeholder="Untitled"
         className="mb-8 w-full text-5xl font-bold leading-tight placeholder:text-slate-200 focus:outline-none"
         value={title}
