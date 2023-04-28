@@ -48,7 +48,7 @@ const Page: NextPage<Props> = ({ pagePublications }) => {
           </p>
         </div>
         <Link
-          href={{ pathname: "/create", query: { autofocus: true } }}
+          href={{ pathname: "/create" }}
           className={cn(buttonVariants())}
           onClick={() =>
             trackEvent("Create Page Link Clicked", { from: "/explore" })
