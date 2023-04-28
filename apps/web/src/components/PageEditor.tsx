@@ -6,7 +6,7 @@ import { useCeramic } from "../hooks/useCeramic";
 import { useLit } from "../hooks/useLit";
 import { deserializePage } from "../utils/page-helper";
 import { Editor } from "./Editor";
-import { useRouter } from "next/router";
+import { useQuery } from "react-query";
 
 const AuthDialog = dynamic(
   async () =>
@@ -24,7 +24,6 @@ export type SavePageData = {
 };
 
 type PageEditorProps = {
-  autofocusProp?: boolean;
   page?: ReturnType<typeof deserializePage>;
   renderSubmit: (props: {
     isDisabled: boolean;
@@ -32,7 +31,7 @@ type PageEditorProps = {
   }) => React.ReactNode;
 };
 
-export function PageEditor({ page, renderSubmit, autofocusProp }: PageEditorProps) {
+export function PageEditor({ page, renderSubmit }: PageEditorProps) {
   const [title, setTitle] = useState(page?.title ?? "");
   const [json, setJson] = useState<JSONContent>(
     page
@@ -43,39 +42,34 @@ export function PageEditor({ page, renderSubmit, autofocusProp }: PageEditorProp
       : []
   );
 
-  const [isCeramicSessionValid, setIsCeramicSessionValid] =
-    useState<boolean>(false);
   const [focusEditor, setFocusEditor] = useState(false);
 
   const ceramic = useCeramic();
   const lit = useLit();
   const account = useAccount();
-  
+
   const inputRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
-  const { query } = router;
-  const autofocusQuery = query.autofocus === "true";
-
-  const autofocusTitle = autofocusQuery || autofocusProp;
 
   useEffect(() => {
-    if (autofocusTitle && inputRef.current) {
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
-    }
-  }, [autofocusTitle])
+    inputRef.current?.focus();
+  }, []);
 
-  useEffect(() => {
-    const run = async () =>
-      setIsCeramicSessionValid(await ceramic.hasSession());
-    run();
-  }, [ceramic]);
+  const ceramicSessionQuery = useQuery(
+    [],
+    async () => await ceramic.hasSession(),
+    { cacheTime: 0 }
+  );
+
+  const isLoading =
+    account.isConnecting ||
+    ceramic.isLoading ||
+    lit.isLoading ||
+    ceramicSessionQuery.isLoading;
 
   const isAuthenticated =
     account.isConnected &&
     ceramic.isComposeResourcesSigned &&
-    isCeramicSessionValid &&
+    ceramicSessionQuery.data &&
     lit.isLitAuthenticated;
 
   const isEnabled =
@@ -101,7 +95,7 @@ export function PageEditor({ page, renderSubmit, autofocusProp }: PageEditorProp
           isPublic: false,
         },
       })}
-      <AuthDialog open={!isAuthenticated} />
+      <AuthDialog open={!isLoading && !isAuthenticated} />
       <input
         ref={inputRef}
         placeholder="Untitled"
