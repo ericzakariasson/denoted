@@ -138,7 +138,7 @@ const CommandItemButton = <T extends Record<string, string>>({
   return (
     <button
       className={cn(
-        "flex w-full items-center gap-3 border-t border-slate-50 px-3 py-2 text-left",
+        "flex w-full items-center gap-3 border-t border-slate-50 px-3 py-2 text-left hover:bg-slate-100",
         index === selectedIndex && "bg-slate-100"
       )}
       onClick={() => onSelect(index)}

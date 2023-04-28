@@ -1,29 +1,29 @@
 import { Content, JSONContent } from "@tiptap/core";
 import Highlight from "@tiptap/extension-highlight";
+import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
-import Typography from "@tiptap/extension-typography";
 import TextAlign from "@tiptap/extension-text-align";
+import Typography from "@tiptap/extension-typography";
+import { EditorView } from "@tiptap/pm/view";
 import { BubbleMenu, EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { PropsWithChildren } from "react";
-import Image from "@tiptap/extension-image";
+import { PropsWithChildren, useEffect } from "react";
 import { useAccount } from "wagmi";
-import { useEffect } from "react";
 import { Command } from "../lib/tiptap/command/command-extension";
 import { commandSuggestions } from "../lib/tiptap/command/command-suggestions";
 import { getCommandExtensions } from "../lib/tiptap/tiptap";
-import { EditorView } from "@tiptap/pm/view";
 import { Toggle } from "./ui/toggle";
 
 import {
+  AlignCenter,
+  AlignJustify,
+  AlignLeft,
+  AlignRight,
   Bold,
   Italic,
   Strikethrough,
-  AlignLeft,
-  AlignRight,
-  AlignCenter,
-  AlignJustify,
 } from "lucide-react";
+import { TrailingNode } from "../lib/tiptap/extensions/trailing-node";
 
 type BubbleMenuButtonProps = {
   onClick: () => void;
@@ -40,7 +40,7 @@ const BubbleMenuButton = ({
       pressed={isActive}
       variant={"outline"}
       onPressedChange={onClick}
-      className="h-8 p-2"
+      className="h-8 bg-white p-2"
     >
       {children}
     </Toggle>
@@ -56,12 +56,18 @@ type EditorProps = {
 
 const commandExtensions = getCommandExtensions();
 export const extensions = [
-  StarterKit,
+  StarterKit.configure({
+    dropcursor: {
+      width: 4,
+      class: "text-slate-400",
+    },
+  }),
   Highlight,
   Typography,
   Image,
   TextAlign,
   ...commandExtensions,
+  TrailingNode,
 ];
 
 export const Editor = ({
@@ -137,9 +143,9 @@ export const Editor = ({
             const img = new global.Image();
             img.src = URL.createObjectURL(file);
             img.onload = () => {
-              if (img.width > 2000 || img.height > 2000) {
+              if (img.width > 5000 || img.height > 5000) {
                 throw new Error(
-                  "Images need to be less than 2000px in width or height."
+                  "Images need to be less than 5000px in width or height."
                 );
               }
 
@@ -204,7 +210,8 @@ export const Editor = ({
           >
             <AlignJustify className="h-4 w-4" />
           </BubbleMenuButton>
-          <div className="inline-block w-2"></div>          <BubbleMenuButton
+          <div className="inline-block w-2"></div>{" "}
+          <BubbleMenuButton
             onClick={() => editor.chain().focus().toggleBold().run()}
             isActive={editor.isActive("bold")}
           >
