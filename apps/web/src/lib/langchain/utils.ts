@@ -1,4 +1,4 @@
-import { SUPPORTED_CHAINS } from "../../utils";
+import { SUPPORTED_CHAINS } from "../../supported-chains";
 
 const chainTable = [
   ["chain id", "name", "network", "symbol"].join(","),

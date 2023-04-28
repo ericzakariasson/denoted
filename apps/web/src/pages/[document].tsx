@@ -1,19 +1,31 @@
 import { JSONContent } from "@tiptap/react";
-import { GetServerSideProps, NextPage } from "next/types";
-
-import { useCallback, useEffect, useState } from "react";
-import { useAccount, useMutation, useQueryClient } from "wagmi";
+import { Edit, Loader2, Save } from "lucide-react";
+import { GetServerSideProps, NextPage } from "next";
+import dynamic from "next/dynamic";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "react-query";
+import { useAccount, useMutation } from "wagmi";
+import { Layout } from "../components/Layout";
 import { PageEditor, SavePageData } from "../components/PageEditor";
 import { Viewer } from "../components/Viewer";
-import { getPageQuery, Page, updatePage } from "../composedb/page";
+import { Button } from "../components/ui/button";
+import { Skeleton } from "../components/ui/skeleton";
+import { Page, getPageQuery, updatePage } from "../composedb/page";
 import { trackEvent } from "../lib/analytics";
 import { composeClient } from "../lib/compose";
 import {
+  DeserializedPage,
   decryptPage,
   deserializePage,
   encryptPage,
   serializePage,
 } from "../utils/page-helper";
+
+const PublishMenu = dynamic(
+  async () =>
+    import("../components/PublishMenu").then((module) => module.PublishMenu),
+  { ssr: false }
+);
 
 type Props = {
   page: Page;
@@ -28,8 +40,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     };
   }
 
-  const query = await getPageQuery(pageId);
-  const page = query.data?.node;
+  const pageQuery = await getPageQuery(pageId);
+  const page = pageQuery.data?.node;
 
   if (!page) {
     return {
@@ -45,36 +57,36 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 };
 
 const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
-  const [page, setPage] = useState<ReturnType<typeof deserializePage> | null>(
-    null
-  );
-
   const [isEditing, setIsEditing] = useState(false);
-
   const { address } = useAccount();
 
-  const handlePageLoad = useCallback(async () => {
-    if (!initialPage.key) {
-      const deserializedPage = deserializePage(initialPage);
-      setPage(deserializedPage);
+  const PAGE_QUERY_KEY = [
+    "DESERIALIZED_PAGE",
+    initialPage.id,
+    initialPage.key,
+    address,
+  ];
+  const queryClient = useQueryClient();
+
+  const { data: page, isLoading } = useQuery<DeserializedPage>(
+    PAGE_QUERY_KEY,
+    async () => {
+      if (!initialPage.key) {
+        const deserializedPage = deserializePage(initialPage);
+        return deserializedPage;
+      }
+
+      if (!address) {
+        throw new Error("No address");
+      }
+
+      const decryptedPage = await decryptPage(initialPage, address);
+      const deserializedPage = deserializePage(decryptedPage);
+      return deserializedPage;
     }
-
-    if (!address) {
-      return;
-    }
-
-    const decryptedPage = await decryptPage(initialPage, address);
-    const deserializedPage = deserializePage(decryptedPage);
-    setPage(deserializedPage);
-  }, [initialPage, address]);
-
-  useEffect(() => {
-    handlePageLoad();
-  }, [initialPage, handlePageLoad]);
+  );
 
   const isOwner = page?.createdBy.id === composeClient.id;
-
-  const queryClient = useQueryClient();
 
   const updatePageMutation = useMutation(
     async ({ page: updatedPage, address, isPublic }: SavePageData) => {
@@ -90,22 +102,34 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
         isPublic ? pageInput : await encryptPage(pageInput, address)
       );
 
-      // NOTE: Updating here instead of onSuccess to avoid decrypting the returned result
-      setPage((currentPage) =>
-        currentPage
-          ? {
-              ...currentPage,
-              title: updatedPage.title,
-              data: updatedPage.content,
-            }
-          : null
-      );
       return updateResult;
     },
     {
-      onMutate: () => trackEvent("Page Save Clicked"),
-      onError: (error) => {
+      onMutate: ({ page }) => {
+        trackEvent("Page Save Clicked");
+
+        const previousPage =
+          queryClient.getQueryData<DeserializedPage>(PAGE_QUERY_KEY);
+
+        if (previousPage) {
+          queryClient.setQueryData<DeserializedPage>(PAGE_QUERY_KEY, {
+            ...previousPage,
+            title: page.title,
+            data: page.content,
+          });
+        }
+
+        return { previousPage };
+      },
+      onError: (error, _, context) => {
         console.error("Update Page Error", error);
+
+        if (context?.previousPage) {
+          queryClient.setQueryData<DeserializedPage>(
+            PAGE_QUERY_KEY,
+            context.previousPage
+          );
+        }
       },
       onSuccess: async ({ data, errors }) => {
         console.info("Update Page Success", data, errors);
@@ -123,27 +147,50 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
     }
   );
 
-  if (initialPage.createdBy.id !== composeClient.id) {
+  if (isLoading) {
     return (
-      <div>
-        <h1 className="text-gray- text-3xl font-bold">Page not found</h1>
-      </div>
+      <Layout className="pt-20">
+        <Skeleton className="mb-8 h-[60px] w-full rounded-lg" />
+        <Skeleton className="mb-2 h-[20px] w-full rounded-lg" />
+        <Skeleton className="mb-2 h-[20px] w-full rounded-lg" />
+        <Skeleton className="mb-2 h-[20px] w-full rounded-lg" />
+      </Layout>
     );
   }
 
   if (!page) {
-    return null;
+    return (
+      <div>
+        <h1 className="text-3xl font-bold text-slate-500">Page not found</h1>
+      </div>
+    );
   }
 
   if (isEditing) {
     return (
-      <div>
+      <Layout>
         <PageEditor
           page={page}
-          onSave={updatePageMutation.mutate}
-          isSaving={updatePageMutation.isLoading}
+          renderSubmit={({ isDisabled, data }) => (
+            <div className="mb-10 flex gap-4">
+              <Button
+                onClick={() => updatePageMutation.mutate(data)}
+                disabled={isDisabled || updatePageMutation.isLoading}
+              >
+                {updatePageMutation.isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="mr-2 h-4 w-4" />
+                )}
+                {updatePageMutation.isLoading ? "Saving..." : "Save page"}
+              </Button>
+              <Button variant={"ghost"} onClick={() => setIsEditing(false)}>
+                Cancel
+              </Button>
+            </div>
+          )}
         />
-      </div>
+      </Layout>
     );
   }
 
@@ -153,20 +200,24 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
   };
 
   return (
-    <div>
-      <div className="flex items-start justify-between">
-        <h1 className="mb-8 text-5xl font-bold">{page.title}</h1>
-      </div>
-      <Viewer key={page.id} json={json} />
+    <Layout>
       {isOwner && (
-        <button
-          className="mt-4 flex justify-between rounded-xl border border-gray-700 px-4 py-3 leading-tight text-gray-700 shadow-sm"
-          onClick={() => setIsEditing(true)}
-        >
-          Edit page
-        </button>
+        <div className="mb-10 flex items-end gap-4">
+          <Button
+            variant={"outline"}
+            onClick={() => {
+              setIsEditing(true);
+            }}
+          >
+            <Edit className="mr-2 h-4 w-4" />
+            Edit page
+          </Button>
+          <PublishMenu page={page} />
+        </div>
       )}
-    </div>
+      <h1 className="mb-8 text-5xl font-bold leading-tight">{page.title}</h1>
+      <Viewer key={page.id} json={json} />
+    </Layout>
   );
 };
 

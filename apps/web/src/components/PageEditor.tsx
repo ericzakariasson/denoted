@@ -1,21 +1,12 @@
 import { JSONContent } from "@tiptap/react";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
-import { useQueryClient, useMutation } from "react-query";
+import { useEffect, useState, useRef } from "react";
 import { useAccount } from "wagmi";
-import { createPage, Page } from "../composedb/page";
 import { useCeramic } from "../hooks/useCeramic";
 import { useLit } from "../hooks/useLit";
-import { trackEvent } from "../lib/analytics";
-import { composeClient } from "../lib/compose";
-import { cn } from "../utils/classnames";
-import {
-  serializePage,
-  encryptPage,
-  deserializePage,
-} from "../utils/page-helper";
+import { deserializePage } from "../utils/page-helper";
 import { Editor } from "./Editor";
+import { useQuery } from "react-query";
 
 const AuthDialog = dynamic(
   async () =>
@@ -34,11 +25,13 @@ export type SavePageData = {
 
 type PageEditorProps = {
   page?: ReturnType<typeof deserializePage>;
-  onSave: (data: SavePageData) => void;
-  isSaving: boolean;
+  renderSubmit: (props: {
+    isDisabled: boolean;
+    data: SavePageData;
+  }) => React.ReactNode;
 };
 
-export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
+export function PageEditor({ page, renderSubmit }: PageEditorProps) {
   const [title, setTitle] = useState(page?.title ?? "");
   const [json, setJson] = useState<JSONContent>(
     page
@@ -49,71 +42,83 @@ export function PageEditor({ page, onSave, isSaving }: PageEditorProps) {
       : []
   );
 
-  const [isCeramicSessionValid, setIsCeramicSessionValid] =
-    useState<boolean>(false);
+  const [focusEditor, setFocusEditor] = useState(false);
 
   const ceramic = useCeramic();
   const lit = useLit();
   const account = useAccount();
 
-  useEffect(() => {
-    const run = async () =>
-      setIsCeramicSessionValid(await ceramic.hasSession());
-    run();
-  }, [ceramic]);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  function handleSave() {
-    onSave({
-      page: {
-        title,
-        content: json?.content ?? [],
-      },
-      address: account.address as string,
-      isPublic: false,
-    });
-  }
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  const ceramicSessionQuery = useQuery(
+    [],
+    async () => await ceramic.hasSession(),
+    { cacheTime: 0 }
+  );
+
+  const isLoading =
+    account.isConnecting ||
+    ceramic.isLoading ||
+    lit.isLoading ||
+    ceramicSessionQuery.isLoading;
 
   const isAuthenticated =
     account.isConnected &&
     ceramic.isComposeResourcesSigned &&
-    isCeramicSessionValid &&
+    ceramicSessionQuery.data &&
     lit.isLitAuthenticated;
 
   const isEnabled =
     isAuthenticated && title.length > 0 && (json?.content ?? []).length > 0;
 
+  const onEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      setFocusEditor(true);
+    }
+  };
+
   return (
-    <div>
-      <AuthDialog open={!isAuthenticated} />
-      <div className="mb-4">
-        <input
-          placeholder="Untitled"
-          className="mb-4 w-full text-5xl font-bold placeholder:text-gray-200 focus:outline-none"
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          required
-        />
-        <Editor
-          initialContent={
-            page
-              ? {
-                  type: "doc",
-                  content: page.data ?? [],
-                }
-              : []
-          }
-          onUpdate={(json) => setJson(json)}
-        />
-      </div>
-      <button
-        className={cn(
-          "rounded-xl from-gray-700 to-gray-900 px-6 py-3 leading-tight text-white enabled:bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] enabled:shadow-md disabled:bg-gray-300"
-        )}
-        onClick={() => handleSave()}
-        disabled={!isEnabled}
-      >
-        {isSaving ? "Saving..." : "Save page"}
-      </button>
+    <div className="flex h-full flex-col">
+      {renderSubmit({
+        isDisabled: !isEnabled,
+        data: {
+          page: {
+            title,
+            content: json?.content ?? [],
+          },
+          address: account.address as string,
+          isPublic: false,
+        },
+      })}
+      <AuthDialog open={!isLoading && !isAuthenticated} />
+      <input
+        ref={inputRef}
+        placeholder="Untitled"
+        className="mb-8 w-full text-5xl font-bold leading-tight placeholder:text-slate-200 focus:outline-none"
+        value={title}
+        onChange={(event) => setTitle(event.target.value)}
+        onClick={() => setFocusEditor(false)}
+        onKeyUp={onEnter}
+        required
+      />
+      <Editor
+        className="flex-grow"
+        initialContent={
+          page
+            ? {
+                type: "doc",
+                content: page.data ?? [],
+              }
+            : []
+        }
+        onUpdate={(json) => setJson(json)}
+        focusedEditorState={[focusEditor, setFocusEditor]}
+      />
     </div>
   );
 }

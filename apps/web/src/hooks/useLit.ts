@@ -20,5 +20,6 @@ export function useLit() {
   return {
     authenticate,
     isLitAuthenticated: isLitAuthenticatedQuery.data ?? false,
+    isLoading: isLitAuthenticatedQuery.isLoading,
   };
 }

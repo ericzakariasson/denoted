@@ -16,14 +16,49 @@ const LOCAL_STORAGE_KEYS = {
   KEY_PAIR: "lit-comms-keypair",
 };
 
+function extractExpirationTimeAndConvertToDate(input: string) {
+  const expirationTimeRegex =
+    /Expiration Time: (\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)/;
+  const match = input.match(expirationTimeRegex);
+
+  if (match && match[1]) {
+    return new Date(match[1]);
+  }
+
+  return null;
+}
+
 export function getIsLitAuthenticated() {
   try {
-    return [
+    const values = [
       LOCAL_STORAGE_KEYS.AUTH_SIGNATURE,
       LOCAL_STORAGE_KEYS.KEY_PAIR,
-    ].every((key) => {
-      return Boolean(localStorage.getItem(key));
+    ].map((key) => {
+      return localStorage.getItem(key);
     });
+
+    if (!values.every((value) => Boolean(value))) {
+      return false;
+    }
+
+    const authSignature = JSON.parse(values[0] ?? "");
+
+    const expiresAt = extractExpirationTimeAndConvertToDate(
+      authSignature.signedMessage
+    );
+
+    if (!expiresAt) {
+      return false;
+    }
+
+    const isExpired = expiresAt.getTime() < new Date().getTime();
+
+    if (isExpired) {
+      localStorage.removeItem(LOCAL_STORAGE_KEYS.AUTH_SIGNATURE);
+      return false;
+    }
+
+    return true;
   } catch {
     return false;
   }

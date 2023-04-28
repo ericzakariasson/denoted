@@ -8,10 +8,9 @@ import type { AppProps } from "next/app";
 import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 import { Analytics } from "../components/Analytics";
 import { InitializeCeramic } from "../components/Sessions";
-import { Sidebar } from "../components/Sidebar";
 import { Web3Provider } from "../components/Web3Provider";
 import { cn } from "../utils/classnames";
-import { Header } from "../components/Header";
+import { Toaster } from "../components/Toaster";
 
 const queryClient = new QueryClient({});
 
@@ -21,14 +20,9 @@ function MyApp({ Component, pageProps }: AppProps) {
       <Hydrate state={pageProps.dehydratedState}>
         <Web3Provider>
           <InitializeCeramic />
-          <div className={cn("min-h-screen", inter.className)}>
-            <Sidebar className="fixed w-64" />
-            <div className="py-4 pl-64">
-              <Header className="px-4" />
-              <main className="m-auto max-w-3xl px-4 py-8">
-                <Component {...pageProps} />
-              </main>
-            </div>
+          <div className={cn(inter.className)}>
+            <Component {...pageProps} />
+            <Toaster />
           </div>
           <Analytics />
           <VercelAnalytics />

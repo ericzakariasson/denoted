@@ -1,15 +1,29 @@
 import { Content, JSONContent } from "@tiptap/core";
 import Highlight from "@tiptap/extension-highlight";
+import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
+import TextAlign from "@tiptap/extension-text-align";
 import Typography from "@tiptap/extension-typography";
+import { EditorView } from "@tiptap/pm/view";
 import { BubbleMenu, EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { PropsWithChildren } from "react";
-
+import { PropsWithChildren, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { Command } from "../lib/tiptap/command/command-extension";
 import { commandSuggestions } from "../lib/tiptap/command/command-suggestions";
 import { getCommandExtensions } from "../lib/tiptap/tiptap";
+import { Toggle } from "./ui/toggle";
+
+import {
+  AlignCenter,
+  AlignJustify,
+  AlignLeft,
+  AlignRight,
+  Bold,
+  Italic,
+  Strikethrough,
+} from "lucide-react";
+import { TrailingNode } from "../lib/tiptap/extensions/trailing-node";
 
 type BubbleMenuButtonProps = {
   onClick: () => void;
@@ -22,33 +36,49 @@ const BubbleMenuButton = ({
   children,
 }: PropsWithChildren<BubbleMenuButtonProps>) => {
   return (
-    <button
-      onClick={onClick}
-      className={
-        "border border-r-0 border-black px-2 first:rounded-tl-full first:rounded-bl-full last:rounded-tr-full last:rounded-br-full last:border-r " +
-        (isActive ? "bg-black text-white" : "bg-white")
-      }
+    <Toggle
+      pressed={isActive}
+      variant={"outline"}
+      onPressedChange={onClick}
+      className="h-8 bg-white p-2"
     >
       {children}
-    </button>
+    </Toggle>
   );
 };
 
 type EditorProps = {
   initialContent?: Content;
   onUpdate?: (json: JSONContent) => void;
+  focusedEditorState: [boolean, (state: boolean) => void];
+  className?: string;
 };
 
 const commandExtensions = getCommandExtensions();
 export const extensions = [
-  StarterKit,
+  StarterKit.configure({
+    dropcursor: {
+      width: 4,
+      class: "text-slate-400",
+    },
+  }),
   Highlight,
   Typography,
+  Image,
+  TextAlign,
   ...commandExtensions,
+  TrailingNode,
 ];
 
-export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
+export const Editor = ({
+  initialContent,
+  onUpdate,
+  focusedEditorState,
+  className,
+}: EditorProps) => {
   const { address } = useAccount();
+  const [focusEditor, setFocusEditor] = focusedEditorState;
+
   const editor = useEditor({
     extensions: [
       ...extensions,
@@ -61,15 +91,88 @@ export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
         },
         suggestion: commandSuggestions,
       }),
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
     ],
     content: initialContent,
     editorProps: {
       attributes: {
-        class: "prose dark:prose-invert focus:outline-none max-w-none",
+        class: "h-full prose dark:prose-invert focus:outline-none max-w-none",
+      },
+      handleDrop(view, event, slice, moved) {
+        if (
+          !moved &&
+          event.dataTransfer &&
+          event.dataTransfer.files &&
+          event.dataTransfer.files[0]
+        ) {
+          event.preventDefault();
+
+          const isValidImageType = (file: File) =>
+            file.type === "image/jpeg" || file.type === "image/png";
+
+          const getImageSizeInMB = (file: File) =>
+            parseFloat((file.size / 1024 / 1024).toFixed(4));
+
+          const insertImageToEditor = (
+            view: EditorView,
+            event: DragEvent,
+            src: string
+          ) => {
+            const { schema } = view.state;
+            const coordinates = view.posAtCoords({
+              left: event.clientX,
+              top: event.clientY,
+            });
+            const node = schema.nodes.image.create({ src });
+            const transaction = view.state.tr.insert(coordinates!.pos, node);
+            return view.dispatch(transaction);
+          };
+
+          try {
+            const file = event.dataTransfer.files[0];
+            const fileSize = getImageSizeInMB(file);
+
+            if (!isValidImageType(file) || fileSize >= 10) {
+              throw new Error(
+                "Images need to be in jpg or png format and less than 10mb in size."
+              );
+            }
+
+            const img = new global.Image();
+            img.src = URL.createObjectURL(file);
+            img.onload = () => {
+              if (img.width > 5000 || img.height > 5000) {
+                throw new Error(
+                  "Images need to be less than 5000px in width or height."
+                );
+              }
+
+              uploadImage(file).then((response) => {
+                const img = new global.Image();
+                img.src = response;
+                img.onload = () => {
+                  return insertImageToEditor(view, event, response);
+                };
+              });
+            };
+          } catch (error) {
+            return false;
+          }
+        }
+        return false;
       },
     },
     onUpdate: (data) => onUpdate?.(data.editor.getJSON()),
   });
+
+  useEffect(() => {
+    if (focusEditor) {
+      editor?.chain().focus();
+      setFocusEditor(false);
+    }
+  }, [focusEditor, editor, setFocusEditor]);
 
   if (editor) {
     editor.storage.connectedAddress = address;
@@ -81,29 +184,58 @@ export const Editor = ({ initialContent, onUpdate }: EditorProps) => {
         <BubbleMenu
           editor={editor}
           tippyOptions={{ duration: 100 }}
-          className="flex"
+          className="flex gap-1"
         >
+          <BubbleMenuButton
+            onClick={() => editor.chain().focus().setTextAlign("left").run()}
+            isActive={editor.isActive("bold")}
+          >
+            <AlignLeft className="h-4 w-4" />
+          </BubbleMenuButton>
+          <BubbleMenuButton
+            onClick={() => editor.chain().focus().setTextAlign("center").run()}
+            isActive={editor.isActive("bold")}
+          >
+            <AlignCenter className="h-4 w-4" />
+          </BubbleMenuButton>
+          <BubbleMenuButton
+            onClick={() => editor.chain().focus().setTextAlign("right").run()}
+            isActive={editor.isActive("bold")}
+          >
+            <AlignRight className="h-4 w-4" />
+          </BubbleMenuButton>
+          <BubbleMenuButton
+            onClick={() => editor.chain().focus().setTextAlign("justify").run()}
+            isActive={editor.isActive("bold")}
+          >
+            <AlignJustify className="h-4 w-4" />
+          </BubbleMenuButton>
+          <div className="inline-block w-2"></div>{" "}
           <BubbleMenuButton
             onClick={() => editor.chain().focus().toggleBold().run()}
             isActive={editor.isActive("bold")}
           >
-            bold
+            <Bold className="h-4 w-4" />
           </BubbleMenuButton>
           <BubbleMenuButton
             onClick={() => editor.chain().focus().toggleItalic().run()}
             isActive={editor.isActive("italic")}
           >
-            italic
+            <Italic className="h-4 w-4" />
           </BubbleMenuButton>
           <BubbleMenuButton
             onClick={() => editor.chain().focus().toggleStrike().run()}
             isActive={editor.isActive("strike")}
           >
-            strike
+            <Strikethrough className="h-4 w-4" />
           </BubbleMenuButton>
         </BubbleMenu>
       )}
-      <EditorContent editor={editor} />
+      <EditorContent className={className} editor={editor} />
     </>
   );
 };
+
+async function uploadImage(file: File): Promise<string> {
+  return URL.createObjectURL(file);
+}

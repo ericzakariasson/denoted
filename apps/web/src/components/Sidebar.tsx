@@ -9,6 +9,10 @@ import { composeClient } from "../lib/compose";
 import { cn } from "../utils/classnames";
 import { DecryptedText } from "./DecryptedText";
 import { Logo } from "./Logo";
+import { Footer } from "./Footer";
+import { Compass, PenBox } from "lucide-react";
+import { buttonVariants } from "./ui/button";
+import { useRouter } from "next/router";
 
 type SidebarProps = {
   className?: string;
@@ -17,6 +21,7 @@ type SidebarProps = {
 export function Sidebar({ className }: SidebarProps) {
   const [isCeramicSessionValid, setIsCeramicSessionValid] = useState(false);
 
+  const router = useRouter();
   const ceramic = useCeramic();
   const lit = useLit();
   const account = useAccount();
@@ -51,7 +56,7 @@ export function Sidebar({ className }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "flex h-full flex-col items-start gap-6 bg-gray-100 p-4",
+        "flex h-full flex-col items-start gap-6 bg-slate-50 p-4",
         className
       )}
     >
@@ -66,60 +71,40 @@ export function Sidebar({ className }: SidebarProps) {
         <ul className="flex flex-col gap-6">
           <li className="flex flex-col gap-3">
             <Link
-              href="/create"
-              className={
-                "shadow-m flex w-full justify-between rounded-xl bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] from-gray-700 to-gray-900 px-4 py-3 leading-tight text-white"
-              }
+              href={{
+                pathname: "/create",
+              }}
+              className={buttonVariants()}
             >
-              <span>Create page</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-              </svg>
+              <PenBox className="mr-2 h-4 w-4" />
+              Create page
             </Link>
             <Link
               href="/explore"
-              className={
-                "flex w-full justify-between rounded-xl border border-gray-700 px-4 py-3 leading-tight text-gray-700 shadow-sm"
-              }
+              className={buttonVariants({ variant: "secondary" })}
             >
-              <span>Explore</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
-              </svg>
+              <Compass className="mr-2 h-4 w-4" />
+              Explore
             </Link>
           </li>
           {isAuthenticated && (
             <li>
-              <span className="mb-4 block text-sm text-gray-400">Pages</span>
+              <span className="mb-4 block text-sm text-slate-400">Pages</span>
               <ul className="flex flex-col gap-3">
                 {myPagesQuery.data?.map((page) => {
+                  const url = `/${page.id}`;
+
                   return (
                     <li key={page.id}>
                       <Link
-                        href={`/${page.id}`}
-                        className="block rounded-lg border border-gray-300 bg-gray-200 p-2 px-3"
+                        href={{
+                          pathname: url,
+                        }}
+                        className={cn(
+                          buttonVariants({ variant: "outline" }),
+                          "w-full justify-start",
+                          url === router.asPath && "border-slate-600"
+                        )}
                       >
                         {page.key ? (
                           <DecryptedText
@@ -138,6 +123,7 @@ export function Sidebar({ className }: SidebarProps) {
           )}
         </ul>
       </nav>
+      <Footer className="mt-auto" />
     </aside>
   );
 }

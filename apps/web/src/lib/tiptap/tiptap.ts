@@ -39,7 +39,7 @@ export function getCommandExtensions() {
       name: command.command,
       group: command.blockType === "inline" ? "inline" : "block",
       inline: command.blockType === "inline",
-      selectable: command.blockType === "block",
+      selectable: command.blockType === "inline",
       atom: command.blockType === "block",
 
       addAttributes() {

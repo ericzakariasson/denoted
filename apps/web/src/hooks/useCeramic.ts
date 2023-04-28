@@ -1,15 +1,20 @@
 import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
 import { InjectedConnector } from "@wagmi/core";
 import { DIDSession } from "did-session";
-import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useAccount } from "wagmi";
 import { trackEvent } from "../lib/analytics";
 import { composeClient } from "../lib/compose";
 
 export const LOCAL_STORAGE_KEYS = {
-  DID: "denoted.ceramic.did",
-  SIGNED_RESOURCES: "denoted.ceramic.signed-resources",
+  DID:
+    process.env.NODE_ENV === "production"
+      ? "denoted.ceramic.did"
+      : "denoted.DEV.ceramic.did",
+  SIGNED_RESOURCES:
+    process.env.NODE_ENV === "production"
+      ? "denoted.ceramic.signed-resources"
+      : "denoted.DEV.ceramic.signed-resources",
 };
 
 export function useCeramic() {
@@ -115,5 +120,6 @@ export function useCeramic() {
     hasSession,
     isInitialized: Boolean(composeClient.id),
     isComposeResourcesSigned: isComposeResourcesSignedQuery.data ?? false,
+    isLoading: isComposeResourcesSignedQuery.isLoading,
   };
 }

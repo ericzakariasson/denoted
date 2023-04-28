@@ -1,46 +1,21 @@
 import { NodeViewWrapper } from "@tiptap/react";
-import React, { useEffect, useMemo } from "react";
 
-import * as Popover from "@radix-ui/react-popover";
-import { useState } from "react";
-import { LensWidget, LensWidgetProps } from "./Lens";
 import { CommandExtensionProps } from "../../../../lib/tiptap/types";
-import { Label } from "../../../Label";
+import { Popover } from "../../../ui/popover";
+import { useBlockConfigProps } from "../../../use-block-config-props";
+import { BlockConfigButton, BlockConfigForm } from "../../BlockConfig";
+import { LensWidget, LensWidgetProps } from "./Lens";
+
+const PLACEHOLDER = {
+  handle: "ericz.lens",
+  publicationId: "0x0f-0x01",
+};
 
 export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    props.updateAttributes({
-      publicationId: formData.get("publicationId")?.toString() ?? undefined,
-      handle: formData.get("handle")?.toString() ?? undefined,
-    });
-    setOpen(false);
-    props.editor.view.dom.focus();
-  }
+  const { isConfigured, isOpen, onSubmit, setOpen } =
+    useBlockConfigProps(props);
 
   const { property, publicationId, handle } = props.node.attrs;
-  const isConfigured =
-    publicationId !== undefined || handle !== undefined;
-
-  const [isOpen, setOpen] = useState(false);
-
-  const placeHolder = useMemo(() => {
-    switch (property) {
-      case "handle":
-        return "E.g. ericz.lens";
-      case "publicationId":
-        return "E.g. 0x0f-0x01";
-      default:
-        return "";
-    }
-  }, [property])
-
-  useEffect(() => {
-    if (!isConfigured) {
-      setOpen(true);
-    }
-  }, [isConfigured]);
 
   return (
     <NodeViewWrapper as="span">
@@ -52,53 +27,30 @@ export const LensConfig = (props: CommandExtensionProps<LensWidgetProps>) => {
         />
       )}
       {props.editor.isEditable && (
-        <Popover.Root
+        <Popover
           defaultOpen={!isConfigured}
           onOpenChange={setOpen}
           open={isOpen}
         >
-          <Popover.Trigger>
-            {isConfigured ? (
-              <LensWidget
-                property={property}
-                publicationId={publicationId}
-                handle={handle}
-              />
-            ) : (
-              <span className="rounded-full border border-gray-300 py-0 px-1 leading-normal text-gray-500">
-                setup
-              </span>
-            )}
-          </Popover.Trigger>
-          <Popover.Portal>
-            <Popover.Content
-              sideOffset={5}
-              align="start"
-              className="s z-50 w-64 overflow-hidden rounded-2xl bg-gray-100 p-4 outline-none"
-            >
-              <form
-                onSubmit={handleSubmit}
-                className="flex flex-col items-start gap-4"
-                name="lens-post-setup"
-              >
-                <Label label={property}>
-                  <input
-                    name={property}
-                    placeholder={placeHolder}
-                    className="rounded-lg bg-gray-200 px-3 py-2"
-                    required
-                  />
-                </Label>
-                <button
-                  type="submit"
-                  className="rounded-full border border-black px-2 py-0 text-black"
-                >
-                  save
-                </button>
-              </form>
-            </Popover.Content>
-          </Popover.Portal>
-        </Popover.Root>
+          <BlockConfigButton isConfigured={isConfigured}>
+            <LensWidget
+              property={property}
+              publicationId={publicationId}
+              handle={handle}
+            />
+          </BlockConfigButton>
+          <BlockConfigForm
+            fields={[
+              {
+                name: property,
+                type: "text",
+                defaultValue: props.node.attrs[property],
+                placeholder: PLACEHOLDER[property],
+              },
+            ]}
+            onSubmit={onSubmit}
+          />
+        </Popover>
       )}
     </NodeViewWrapper>
   );
