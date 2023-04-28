@@ -15,6 +15,7 @@ import { EditorView } from "@tiptap/pm/view";
 import { Toggle } from "./ui/toggle";
 
 import { Bold, Italic, Strikethrough } from "lucide-react";
+import { TrailingNode } from "../lib/tiptap/extensions/trailing-node";
 
 type BubbleMenuButtonProps = {
   onClick: () => void;
@@ -31,7 +32,7 @@ const BubbleMenuButton = ({
       pressed={isActive}
       variant={"outline"}
       onPressedChange={onClick}
-      className="h-8 p-2"
+      className="h-8 bg-white p-2"
     >
       {children}
     </Toggle>
@@ -47,11 +48,17 @@ type EditorProps = {
 
 const commandExtensions = getCommandExtensions();
 export const extensions = [
-  StarterKit,
+  StarterKit.configure({
+    dropcursor: {
+      width: 4,
+      class: "text-slate-400",
+    },
+  }),
   Highlight,
   Typography,
   Image,
   ...commandExtensions,
+  TrailingNode,
 ];
 
 export const Editor = ({
@@ -124,9 +131,9 @@ export const Editor = ({
             const img = new global.Image();
             img.src = URL.createObjectURL(file);
             img.onload = () => {
-              if (img.width > 2000 || img.height > 2000) {
+              if (img.width > 5000 || img.height > 5000) {
                 throw new Error(
-                  "Images need to be less than 2000px in width or height."
+                  "Images need to be less than 5000px in width or height."
                 );
               }
 
