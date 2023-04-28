@@ -38,7 +38,10 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
 const Page: NextPage<Props> = ({ pagePublications }) => {
   if (pagePublications.length === 0) {
     return (
-      <Layout className="flex flex-col items-start gap-4 pt-3.5">
+      <Layout
+        className="flex flex-col items-start gap-4 pt-3.5"
+        title="explore"
+      >
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-bold text-slate-800">
             No public pages found
@@ -61,7 +64,7 @@ const Page: NextPage<Props> = ({ pagePublications }) => {
   }
 
   return (
-    <Layout className="flex flex-col gap-8 pt-3.5">
+    <Layout className="flex flex-col gap-8 pt-3.5" title="explore">
       {pagePublications.length > 0 && (
         <div>
           <h1 className="mb-4 text-3xl font-bold text-slate-800">

@@ -7,6 +7,8 @@ import { useLit } from "../hooks/useLit";
 import { deserializePage } from "../utils/page-helper";
 import { Editor } from "./Editor";
 import { useQuery } from "react-query";
+import Head from "next/head";
+import { formatTitle } from "./Layout";
 
 const AuthDialog = dynamic(
   async () =>
@@ -83,42 +85,47 @@ export function PageEditor({ page, renderSubmit }: PageEditorProps) {
   };
 
   return (
-    <div className="flex h-full flex-col">
-      {renderSubmit({
-        isDisabled: !isEnabled,
-        data: {
-          page: {
-            title,
-            content: json?.content ?? [],
+    <>
+      <Head>
+        <title>{formatTitle(title)}</title>
+      </Head>
+      <div className="flex h-full flex-col">
+        {renderSubmit({
+          isDisabled: !isEnabled,
+          data: {
+            page: {
+              title,
+              content: json?.content ?? [],
+            },
+            address: account.address as string,
+            isPublic: false,
           },
-          address: account.address as string,
-          isPublic: false,
-        },
-      })}
-      <AuthDialog open={!isLoading && !isAuthenticated} />
-      <input
-        ref={inputRef}
-        placeholder="Untitled"
-        className="mb-8 w-full text-5xl font-bold leading-tight placeholder:text-slate-200 focus:outline-none"
-        value={title}
-        onChange={(event) => setTitle(event.target.value)}
-        onClick={() => setFocusEditor(false)}
-        onKeyUp={onEnter}
-        required
-      />
-      <Editor
-        className="flex-grow"
-        initialContent={
-          page
-            ? {
-                type: "doc",
-                content: page.data ?? [],
-              }
-            : []
-        }
-        onUpdate={(json) => setJson(json)}
-        focusedEditorState={[focusEditor, setFocusEditor]}
-      />
-    </div>
+        })}
+        <AuthDialog open={!isLoading && !isAuthenticated} />
+        <input
+          ref={inputRef}
+          placeholder="Untitled"
+          className="mb-8 w-full text-5xl font-bold leading-tight placeholder:text-slate-200 focus:outline-none"
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+          onClick={() => setFocusEditor(false)}
+          onKeyUp={onEnter}
+          required
+        />
+        <Editor
+          className="flex-grow"
+          initialContent={
+            page
+              ? {
+                  type: "doc",
+                  content: page.data ?? [],
+                }
+              : []
+          }
+          onUpdate={(json) => setJson(json)}
+          focusedEditorState={[focusEditor, setFocusEditor]}
+        />
+      </div>
+    </>
   );
 }

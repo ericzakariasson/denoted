@@ -2,21 +2,34 @@ import { PropsWithChildren } from "react";
 import { cn } from "../lib/utils";
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
+import Head from "next/head";
+
+export function formatTitle(title: string) {
+  return `${title.trim().length > 0 ? title : "Untitled"} — denoted`;
+}
 
 type LayuotProps = PropsWithChildren<{
   className?: string;
+  title?: string;
 }>;
 
-export function Layout({ children, className }: LayuotProps) {
+export function Layout({ children, className, title }: LayuotProps) {
   return (
-    <div className={cn("grid min-h-screen")}>
-      <Sidebar className="fixed w-64" />
-      <div className="py-4 pl-64">
-        <Header className="absolute right-0 top-0 p-4" />
-        <main className={cn("m-auto h-full max-w-3xl px-4", className)}>
-          {children}
-        </main>
+    <>
+      {title && (
+        <Head>
+          <title>{title ? formatTitle(title) : "denoted"}</title>
+        </Head>
+      )}
+      <div className={cn("grid min-h-screen")}>
+        <Sidebar className="fixed w-64" />
+        <div className="py-4 pl-64">
+          <Header className="absolute right-0 top-0 p-4" />
+          <main className={cn("m-auto h-full max-w-3xl px-4", className)}>
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
