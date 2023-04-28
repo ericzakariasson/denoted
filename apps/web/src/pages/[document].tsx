@@ -149,7 +149,7 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
 
   if (isLoading) {
     return (
-      <Layout className="pt-20">
+      <Layout className="pt-20" title="Loading...">
         <Skeleton className="mb-8 h-[60px] w-full rounded-lg" />
         <Skeleton className="mb-2 h-[20px] w-full rounded-lg" />
         <Skeleton className="mb-2 h-[20px] w-full rounded-lg" />
@@ -200,7 +200,7 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
   };
 
   return (
-    <Layout>
+    <Layout title={page.title}>
       {isOwner && (
         <div className="mb-10 flex items-end gap-4">
           <Button
