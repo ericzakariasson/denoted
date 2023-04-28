@@ -58,7 +58,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 
 const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
   const [isEditing, setIsEditing] = useState(false);
-
   const { address } = useAccount();
 
   const PAGE_QUERY_KEY = [
@@ -204,7 +203,12 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
     <Layout>
       {isOwner && (
         <div className="mb-10 flex items-end gap-4">
-          <Button variant={"outline"} onClick={() => setIsEditing(true)}>
+          <Button
+            variant={"outline"}
+            onClick={() => {
+              setIsEditing(true);
+            }}
+          >
             <Edit className="mr-2 h-4 w-4" />
             Edit page
           </Button>

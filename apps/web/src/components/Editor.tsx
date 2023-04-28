@@ -1,20 +1,28 @@
 import { Content, JSONContent } from "@tiptap/core";
 import Highlight from "@tiptap/extension-highlight";
+import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
+import TextAlign from "@tiptap/extension-text-align";
 import Typography from "@tiptap/extension-typography";
+import { EditorView } from "@tiptap/pm/view";
 import { BubbleMenu, EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { PropsWithChildren } from "react";
-import Image from "@tiptap/extension-image";
+import { PropsWithChildren, useEffect } from "react";
 import { useAccount } from "wagmi";
-import { useEffect } from "react";
 import { Command } from "../lib/tiptap/command/command-extension";
 import { commandSuggestions } from "../lib/tiptap/command/command-suggestions";
 import { getCommandExtensions } from "../lib/tiptap/tiptap";
-import { EditorView } from "@tiptap/pm/view";
 import { Toggle } from "./ui/toggle";
 
-import { Bold, Italic, Strikethrough } from "lucide-react";
+import {
+  AlignCenter,
+  AlignJustify,
+  AlignLeft,
+  AlignRight,
+  Bold,
+  Italic,
+  Strikethrough,
+} from "lucide-react";
 import { TrailingNode } from "../lib/tiptap/extensions/trailing-node";
 
 type BubbleMenuButtonProps = {
@@ -57,6 +65,7 @@ export const extensions = [
   Highlight,
   Typography,
   Image,
+  TextAlign,
   ...commandExtensions,
   TrailingNode,
 ];
@@ -81,6 +90,9 @@ export const Editor = ({
           class: "command",
         },
         suggestion: commandSuggestions,
+      }),
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
       }),
     ],
     content: initialContent,
@@ -172,8 +184,33 @@ export const Editor = ({
         <BubbleMenu
           editor={editor}
           tippyOptions={{ duration: 100 }}
-          className="flex gap-2"
+          className="flex gap-1"
         >
+          <BubbleMenuButton
+            onClick={() => editor.chain().focus().setTextAlign("left").run()}
+            isActive={editor.isActive("bold")}
+          >
+            <AlignLeft className="h-4 w-4" />
+          </BubbleMenuButton>
+          <BubbleMenuButton
+            onClick={() => editor.chain().focus().setTextAlign("center").run()}
+            isActive={editor.isActive("bold")}
+          >
+            <AlignCenter className="h-4 w-4" />
+          </BubbleMenuButton>
+          <BubbleMenuButton
+            onClick={() => editor.chain().focus().setTextAlign("right").run()}
+            isActive={editor.isActive("bold")}
+          >
+            <AlignRight className="h-4 w-4" />
+          </BubbleMenuButton>
+          <BubbleMenuButton
+            onClick={() => editor.chain().focus().setTextAlign("justify").run()}
+            isActive={editor.isActive("bold")}
+          >
+            <AlignJustify className="h-4 w-4" />
+          </BubbleMenuButton>
+          <div className="inline-block w-2"></div>{" "}
           <BubbleMenuButton
             onClick={() => editor.chain().focus().toggleBold().run()}
             isActive={editor.isActive("bold")}
