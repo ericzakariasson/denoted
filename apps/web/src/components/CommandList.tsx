@@ -1,5 +1,6 @@
 import { Editor, Range } from "@tiptap/core";
 import { SuggestionKeyDownProps, SuggestionProps } from "@tiptap/suggestion";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import {
   forwardRef,
@@ -9,10 +10,9 @@ import {
   useState,
 } from "react";
 import { useMutation } from "react-query";
-import { getCommandInsertAction } from "../lib/tiptap/tiptap";
 import { cn } from "../utils/classnames";
-import { COMMAND_ITEMS } from "./commands/commands";
 import { CommandConfiguration } from "./commands/types";
+import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 
 export type CommandContext = {
@@ -105,14 +105,14 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(
       },
       {
         onSuccess: (data) => {
-          const cmd = COMMAND_ITEMS.find(
-            (c) => c.command === data.output.command
-          );
-
-          if (cmd) {
-            const insert = getCommandInsertAction(cmd, data.output.args);
-            insert({ editor: props.editor, range: props.range });
-          }
+          props.editor
+            .chain()
+            .deleteRange(props.range)
+            .insertContent({
+              type: "steps-block",
+              attrs: { steps: data.intermediateSteps },
+            })
+            .run();
         },
       }
     );
@@ -120,9 +120,17 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(
     if (props.items.length === 0) {
       return (
         <div className="w-64 overflow-hidden rounded-2xl bg-gray-100 p-4">
-          <button onClick={() => promptMutation.mutate(props.query)}>
-            proompt
-          </button>
+          <Button
+            disabled={promptMutation.isLoading}
+            onClick={() => promptMutation.mutate(props.query)}
+          >
+            {promptMutation.isLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <span className="mr-2">✨</span>
+            )}
+            Proompt
+          </Button>
         </div>
       );
     }
