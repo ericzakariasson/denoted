@@ -57,6 +57,7 @@
     "formidable": "^2.1.1",
     "framer-motion": "^10.0.1",
     "graphql-request": "^5.1.0",
+    "langchain": "^0.0.56",
     "lodash.get": "^4.4.2",
     "lucide-react": "^0.171.0",
     "mixpanel-browser": "^2.46.0",

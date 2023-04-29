@@ -24,6 +24,7 @@ import {
   Strikethrough,
 } from "lucide-react";
 import { TrailingNode } from "../lib/tiptap/extensions/trailing-node";
+import { extension } from "./commands/StepsBlock";
 
 type BubbleMenuButtonProps = {
   onClick: () => void;
@@ -67,6 +68,7 @@ export const extensions = [
   Image,
   TextAlign,
   ...commandExtensions,
+  extension,
   TrailingNode,
 ];
 

@@ -1,15 +1,18 @@
 import { Editor, Range } from "@tiptap/core";
 import { SuggestionKeyDownProps, SuggestionProps } from "@tiptap/suggestion";
-import Image, { StaticImageData } from "next/image";
-import React, {
+import { Loader2 } from "lucide-react";
+import Image from "next/image";
+import {
   forwardRef,
   useEffect,
   useImperativeHandle,
   useMemo,
   useState,
 } from "react";
+import { useMutation } from "react-query";
 import { cn } from "../utils/classnames";
 import { CommandConfiguration } from "./commands/types";
+import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 
 export type CommandContext = {
@@ -84,10 +87,50 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(
       },
     }));
 
+    const promptMutation = useMutation(
+      async (prompt: string) => {
+        const response = await fetch("/api/prompt", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            prompt,
+          }),
+        });
+
+        const data = await response.json();
+
+        return data;
+      },
+      {
+        onSuccess: (data) => {
+          props.editor
+            .chain()
+            .deleteRange(props.range)
+            .insertContent({
+              type: "steps-block",
+              attrs: { steps: data.intermediateSteps },
+            })
+            .run();
+        },
+      }
+    );
+
     if (props.items.length === 0) {
       return (
-        <div className="w-64 overflow-hidden rounded-2xl bg-slate-100">
-          <p className="w-full px-3 py-2 text-left">no result</p>
+        <div className="w-64 overflow-hidden rounded-2xl bg-gray-100 p-4">
+          <Button
+            disabled={promptMutation.isLoading}
+            onClick={() => promptMutation.mutate(props.query)}
+          >
+            {promptMutation.isLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <span className="mr-2">✨</span>
+            )}
+            Proompt
+          </Button>
         </div>
       );
     }
