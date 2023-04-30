@@ -8,12 +8,12 @@ import {
 } from "./types";
 import { formatEther } from "../../../utils/format";
 import { exponentialToDecimal } from "../../../utils/exponents";
+import { SUPPORTED_CHAINS } from "../../../supported-chains";
 
 export type NftWidgetProps = {
   property: "holders" | "floor" | "total-sales-volume" | "image";
   address: string;
-  chainName: string;
-  chainId: number;
+  chain: number | string;
   tokenId?: number;
 };
 
@@ -34,9 +34,12 @@ export const NftWidget = ({ property, ...props }: NftWidgetProps) => {
 
 const NftFloorWidget = ({
   address,
-  chainName,
-}: Pick<NftWidgetProps, "address" | "chainName">) => {
-  const query = useQuery(["NFT", "FLOOR", address, chainName], async () => {
+  chain,
+}: Pick<NftWidgetProps, "address" | "chain">) => {
+  const query = useQuery(["NFT", "FLOOR", address, chain], async () => {
+    const chainName = SUPPORTED_CHAINS.find(
+      (c) => c.id === Number(chain)
+    )?.name.toLowerCase();
     const url = `https://api.simplehash.com/api/v0/nfts/collections/${chainName}/${address}`;
     const response = await fetch(url, {
       headers: {
@@ -44,7 +47,6 @@ const NftFloorWidget = ({
         accept: "application/json",
       },
     });
-
     if (!response.ok) {
       throw new Error(
         `SimpleHash API error. Status: ${response.status} ${response.statusText}`
@@ -71,9 +73,12 @@ const NftFloorWidget = ({
 
 const NftUniqueHoldersWidget = ({
   address,
-  chainName,
-}: Pick<NftWidgetProps, "address" | "chainName">) => {
-  const query = useQuery(["NFT", "FLOOR", address, chainName], async () => {
+  chain,
+}: Pick<NftWidgetProps, "address" | "chain">) => {
+  const query = useQuery(["NFT", "FLOOR", address, chain], async () => {
+    const chainName = SUPPORTED_CHAINS.find(
+      (c) => c.id === Number(chain)
+    )?.name.toLowerCase();
     const url = `https://api.simplehash.com/api/v0/nfts/collections/${chainName}/${address}`;
     const response = await fetch(url, {
       headers: {
@@ -92,7 +97,7 @@ const NftUniqueHoldersWidget = ({
       return null;
     }
     return {
-      uniqueHolders: json.collections[0].distinct_owner_count
+      uniqueHolders: json.collections[0].distinct_owner_count,
     };
   });
 
@@ -107,9 +112,12 @@ const NftUniqueHoldersWidget = ({
 
 const NftTotalSalesVolumeWidget = ({
   address,
-  chainName,
-}: Pick<NftWidgetProps, "address" | "chainName">) => {
-  const query = useQuery(["NFT", "VOLUME", address, chainName], async () => {
+  chain,
+}: Pick<NftWidgetProps, "address" | "chain">) => {
+  const query = useQuery(["NFT", "VOLUME", address, chain], async () => {
+    const chainName = SUPPORTED_CHAINS.find(
+      (c) => c.id === Number(chain)
+    )?.name.toLowerCase();
     const collectionUrl = `https://api.simplehash.com/api/v0/nfts/collections/${chainName}/${address}`;
     const response = await fetch(collectionUrl, {
       headers: {
@@ -159,10 +167,13 @@ const NftTotalSalesVolumeWidget = ({
 
 const NftImageWidget = ({
   address,
-  chainName,
+  chain,
   tokenId,
-}: Pick<NftWidgetProps, "address" | "chainName" | "tokenId">) => {
-  const query = useQuery(["NFT", "IMAGE", address, chainName], async () => {
+}: Pick<NftWidgetProps, "address" | "chain" | "tokenId">) => {
+  const query = useQuery(["NFT", "IMAGE", address, chain], async () => {
+    const chainName = SUPPORTED_CHAINS.find(
+      (c) => c.id === Number(chain)
+    )?.name.toLowerCase();
     const url = `https://api.simplehash.com/api/v0/nfts/${chainName}/${address}/${tokenId}`;
     const response = await fetch(url, {
       headers: {

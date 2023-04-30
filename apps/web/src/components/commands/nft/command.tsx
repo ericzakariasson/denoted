@@ -13,8 +13,7 @@ export const nftFloorPriceCommand: CommandConfiguration<NftWidgetProps> = {
   defaultValues: {
     property: "floor",
     address: undefined,
-    chainId: mainnet.id,
-    chainName: mainnet.name
+    chain: mainnet.id,
   },
   ConfigComponent: NftConfig,
 };
@@ -28,8 +27,7 @@ export const nftTotalSalesVolumeCommand: CommandConfiguration<NftWidgetProps> = 
   defaultValues: {
     property: "total-sales-volume",
     address: undefined,
-    chainId: mainnet.id,
-    chainName: mainnet.name
+    chain: mainnet.id,
       },
   ConfigComponent: NftConfig,
 };
@@ -43,8 +41,7 @@ export const nftUniqueHoldersCommand: CommandConfiguration<NftWidgetProps> = {
   defaultValues: {
     property: "holders",
     address: undefined,
-    chainId: mainnet.id,
-    chainName: mainnet.name
+    chain: mainnet.id,
       },
   ConfigComponent: NftConfig,
 };
@@ -58,8 +55,7 @@ export const nftImageCommand: CommandConfiguration<NftWidgetProps> = {
   defaultValues: {
     property: "image",
     address: undefined,
-    chainId: mainnet.id,
-    chainName: mainnet.name,
+    chain: mainnet.id,
     tokenId: undefined
   },
   ConfigComponent: NftConfig,
