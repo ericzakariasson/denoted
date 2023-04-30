@@ -124,7 +124,11 @@ export const Editor = ({
               left: event.clientX,
               top: event.clientY,
             });
-            const node = view.state.schema.nodes['ipfs-image'].create({ file });
+            const node = view.state.schema.nodes['ipfs-image'].create({
+              file,
+              title: file.name,
+              alt: file.name
+            });
             const transaction = view.state.tr.insert(coordinates!.pos, node);
             view.dispatch(transaction);
           };
