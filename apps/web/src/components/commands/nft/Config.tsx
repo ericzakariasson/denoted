@@ -11,12 +11,12 @@ export const NftConfig = (props: CommandExtensionProps<NftWidgetProps>) => {
   const { isConfigured, isOpen, onSubmit, setOpen } =
     useBlockConfigProps(props);
 
-  const { property, address, chain, tokenId } = props.node.attrs;
+  const { property, address, chainName, chainId, tokenId } = props.node.attrs;
 
   return (
     <NodeViewWrapper as="span">
       {isConfigured && !props.editor.isEditable && (
-        <NftWidget property={property} address={address} chain={chain} />
+        <NftWidget property={property} address={address} chainName={chainName.toLowerCase()} chainId={chainId} />
       )}
       {props.editor.isEditable && (
         <Popover
@@ -28,8 +28,9 @@ export const NftConfig = (props: CommandExtensionProps<NftWidgetProps>) => {
             <NftWidget
               property={property}
               address={address}
-              chain={chain}
+              chainName={chainName.toLowerCase()}
               tokenId={tokenId}
+              chainId={chainId}
             />
           </BlockConfigButton>
 
@@ -52,7 +53,7 @@ export const NftConfig = (props: CommandExtensionProps<NftWidgetProps>) => {
               {
                 name: "chain",
                 type: "chain",
-                defaultValue: chain.toString(),
+                defaultValue: chainId.toString(),
               },
             ].filter((field): field is FormField => field !== null)}
             onSubmit={onSubmit}

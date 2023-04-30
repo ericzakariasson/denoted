@@ -30,6 +30,12 @@ module.exports = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.simplehash.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 };
