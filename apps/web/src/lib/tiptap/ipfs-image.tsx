@@ -5,6 +5,7 @@ import { CommandConfiguration } from "../../components/commands/types";
 import { useEffect, useState } from "react";
 import { useQuery, useMutation } from "react-query";
 import { Loader2 } from "lucide-react";
+import { DataPill } from "../../components/DataPill";
 
 export type IpfsImageProps = {
   cid: string;
@@ -51,7 +52,6 @@ export const IpfsImage = (
     },
     onSuccess: () => {
       if (localFileUrl) {
-        console.log("cleanup localFileUrl", localFileUrl);
         URL.revokeObjectURL(localFileUrl);
         setLocalUrl(null);
       }
@@ -70,8 +70,6 @@ export const IpfsImage = (
       });
     },
   });
-  
-  console.log("render", { attrs: props.node.attrs, localFileUrl, objectUrlQuery, uploadAndSetCidMutation });
 
   useEffect(() => {
     if (cid === null && !uploadAndSetCidMutation.isLoading) {
@@ -83,35 +81,39 @@ export const IpfsImage = (
   useEffect(() => {
     return () => {
       if (objectUrlQuery.data) {
-        console.log("cleanup objectUrlQuery", objectUrlQuery.data);
         URL.revokeObjectURL(objectUrlQuery.data);
       }
     };
   }, [objectUrlQuery.data]);
 
   const isError = uploadAndSetCidMutation.isError || objectUrlQuery.isError;
-  const isLoading = true; // uploadAndSetCidMutation.isLoading || objectUrlQuery.isLoading;
+  const isLoading = uploadAndSetCidMutation.isLoading || objectUrlQuery.isLoading;
 
   if (isError) {
     return (
       <NodeViewWrapper as="span">
-        invalid image
+        <DataPill query={objectUrlQuery}>no data</DataPill>;
       </NodeViewWrapper>
     );
   }
 
   return (
     <NodeViewWrapper as="span">
-      <picture>
+      <picture className="relative">
         <img
-          src={objectUrlQuery.data || localFileUrl || ''}
+          src={objectUrlQuery.data || localFileUrl || ""}
           alt={alt} title={title}
-          className={[
-            isLoading ? "blur-sm" : "",
-            "inline-block",
-          ].join(' ')}
+          className="inline-block"
+          style={{ filter: "blur(4px)" }}
         />
-        {isLoading && <Loader2 className="animate-spin" />}
+        {isLoading && (
+          <Loader2
+            width={32}
+            height={32}
+            style={{ top: "calc(50% - 16px)", left: "calc(50% - 16px)" }}
+            className="animate-spin absolute"
+          />
+        )}
       </picture>
     </NodeViewWrapper>
   );
@@ -132,55 +134,55 @@ export const command: CommandConfiguration<IpfsImageProps> = {
 }
 
 export const extension = Node.create({
-    name: 'ipfs-image',
+  name: 'ipfs-image',
 
-    addOptions() {
-      return {
-        inline: false,
-        HTMLAttributes: {},
+  addOptions() {
+    return {
+      inline: false,
+      HTMLAttributes: {},
+    }
+  },
+
+  inline() {
+    return this.options.inline;
+  },
+
+  group() {
+    return this.options.inline ? 'inline' : 'block';
+  },
+
+  draggable: true,
+
+  addAttributes() {
+    return {
+      cid: {
+        default: null,
+      },
+      alt: {
+        default: null,
+      },
+      title: {
+        default: null,
+      },
+      file: {
+        default: null,
       }
-    },
-  
-    inline() {
-      return this.options.inline;
-    },
-  
-    group() {
-      return this.options.inline ? 'inline' : 'block';
-    },
-  
-    draggable: true,
-  
-    addAttributes() {
-      return {
-        cid: {
-          default: null,
-        },
-        alt: {
-          default: null,
-        },
-        title: {
-          default: null,
-        },
-        file: {
-          default: null,
-        }
-      };
-    },
+    };
+  },
 
-    parseHTML() {
-      return [
-        {
-          tag: 'ipfs-image',
-        },
-      ];
-    },
-  
-    renderHTML({ HTMLAttributes }) {
-      return ['ipfs-image', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)];
-    },
-  
-    addNodeView() {
-      return ReactNodeViewRenderer(IpfsImage);
-    },
-  });
+  parseHTML() {
+    return [
+      {
+        tag: 'ipfs-image',
+      },
+    ];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return ['ipfs-image', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)];
+  },
+
+  addNodeView() {
+    return ReactNodeViewRenderer(IpfsImage);
+  },
+});

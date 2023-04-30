@@ -23,7 +23,7 @@ import {
   Strikethrough,
 } from "lucide-react";
 import { TrailingNode } from "../lib/tiptap/extensions/trailing-node";
-import { IpfsImage } from '../lib/tiptap/image';
+import * as IpfsImage from '../lib/tiptap/ipfs-image';
 
 type BubbleMenuButtonProps = {
   onClick: () => void;
