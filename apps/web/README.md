@@ -7,13 +7,19 @@
 
 ### dotenv
 
-To pull preset `.env` containing environment variables for local development.
+To pull preset `.env` containing environment variables for local development. Make sure to in the right folder `/apps/web`
 
 ```sh
 npx dotenv-vault login
 npx dotenv-vault pull
 ```
 
+To push new `.env` variables.
+
+```sh
+npx dotenv-vault login
+npx dotenv-vault push
+```
 ## Adding a command
 
 > ⚠️ NOTE: This is likely subject to change in order to improve developer experience
