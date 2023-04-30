@@ -1,9 +1,9 @@
 import process from "process";
 import { useQuery } from "react-query";
-import { ethers } from "ethers";
 import { DataPill } from "../../DataPill";
 import { DataStack } from "../../DataStack";
 import * as chains from "wagmi/chains";
+import { formatEther, formatGwei } from "../../../utils/format";
 
 interface TxLogEvent {
   sender_contract_decimals: number;
@@ -37,11 +37,6 @@ export type TransactionWidgetProps = {
   txHash: string;
   chain: number;
 };
-
-const formatEther = (wei: string) =>
-  Number(ethers.utils.formatEther(wei)).toFixed(3);
-const formatGwei = (wei: string) =>
-  Number(ethers.utils.formatUnits(wei, "gwei")).toFixed(1);
 
 const truncateAddress = (hex: string) =>
   `${hex.slice(0, 5)}...${hex.slice(-3)}`;

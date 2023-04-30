@@ -16,7 +16,7 @@ export const NftConfig = (props: CommandExtensionProps<NftWidgetProps>) => {
   return (
     <NodeViewWrapper as="span">
       {isConfigured && !props.editor.isEditable && (
-        <NftWidget property={property} address={address} chain={chain} />
+        <NftWidget property={property} address={address} chain={chain}  />
       )}
       {props.editor.isEditable && (
         <Popover

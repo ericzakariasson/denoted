@@ -1,12 +1,19 @@
 import { DataPill } from "../../DataPill";
 import { useQuery } from "react-query";
 import Image from "next/image";
-import { NftPortAPIAssetResponse, NftPortAPIStatsResponse } from "./types";
+import {
+  SimpleHashNFTDetailsResponse,
+  SimpleHashCollectionActivityResponse,
+  SimpleHashCollectionResponse,
+} from "./types";
+import { formatEther } from "../../../utils/format";
+import { exponentialToDecimal } from "../../../utils/exponents";
+import { SUPPORTED_CHAINS } from "../../../supported-chains";
 
 export type NftWidgetProps = {
   property: "holders" | "floor" | "total-sales-volume" | "image";
   address: string;
-  chain: number;
+  chain: number | string;
   tokenId?: number;
 };
 
@@ -15,7 +22,7 @@ export const NftWidget = ({ property, ...props }: NftWidgetProps) => {
     case "floor":
       return <NftFloorWidget {...props} />;
     case "holders":
-      return null;
+      return <NftUniqueHoldersWidget {...props} />;
     case "total-sales-volume":
       return <NftTotalSalesVolumeWidget {...props} />;
     case "image":
@@ -25,47 +32,81 @@ export const NftWidget = ({ property, ...props }: NftWidgetProps) => {
   }
 };
 
-const NFT_PORT_CHAINS: Record<number, string> = {
-  1: "ethereum",
-};
-
 const NftFloorWidget = ({
   address,
   chain,
 }: Pick<NftWidgetProps, "address" | "chain">) => {
   const query = useQuery(["NFT", "FLOOR", address, chain], async () => {
-    const url = `https://api.nftport.xyz/v0/transactions/stats/${address}?chain=${NFT_PORT_CHAINS[chain]}`;
+    const chainName = SUPPORTED_CHAINS.find(
+      (c) => c.id === Number(chain)
+    )?.name.toLowerCase();
+    const url = `https://api.simplehash.com/api/v0/nfts/collections/${chainName}/${address}`;
     const response = await fetch(url, {
       headers: {
-        Authorization: process.env.NEXT_PUBLIC_NFT_PORT_API_KEY as string,
+        "X-API-KEY": process.env.NEXT_PUBLIC_SIMPLEHASH_API_KEY as string,
+        accept: "application/json",
       },
     });
-
-    if (response.status === 404) {
+    if (!response.ok) {
+      throw new Error(
+        `SimpleHash API error. Status: ${response.status} ${response.statusText}`
+      );
+    }
+    const json: SimpleHashCollectionResponse = await response.json();
+    if (json.collections.length === 0) {
       return null;
     }
-
-    const json: NftPortAPIStatsResponse = await response.json();
-
-    if (json.response === "NOK") {
-      throw new Error(json?.error?.message);
-    }
-
-    if (!response.ok) {
-      throw new Error(`NFT Port API error. Status: ${response.status} ${response.statusText}`);
-    }
-
+    const rawFloorPrice = json.collections[0].floor_prices[0].value.toString();
     return {
-      floorPrice: json.statistics.floor_price as number,
+      floorPrice: formatEther(rawFloorPrice),
     };
   });
 
   return (
-    <DataPill query={query}>{
-      query.data?.floorPrice !== undefined
-      ? `${query.data.floorPrice} ETH`
-      : "no data"
-    }</DataPill>
+    <DataPill query={query}>
+      {query.data?.floorPrice !== undefined
+        ? `${query.data.floorPrice} ETH`
+        : "no data"}
+    </DataPill>
+  );
+};
+
+const NftUniqueHoldersWidget = ({
+  address,
+  chain,
+}: Pick<NftWidgetProps, "address" | "chain">) => {
+  const query = useQuery(["NFT", "FLOOR", address, chain], async () => {
+    const chainName = SUPPORTED_CHAINS.find(
+      (c) => c.id === Number(chain)
+    )?.name.toLowerCase();
+    const url = `https://api.simplehash.com/api/v0/nfts/collections/${chainName}/${address}`;
+    const response = await fetch(url, {
+      headers: {
+        "X-API-KEY": process.env.NEXT_PUBLIC_SIMPLEHASH_API_KEY as string,
+        accept: "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `SimpleHash API error. Status: ${response.status} ${response.statusText}`
+      );
+    }
+    const json: SimpleHashCollectionResponse = await response.json();
+    if (json.collections.length === 0) {
+      return null;
+    }
+    return {
+      uniqueHolders: json.collections[0].distinct_owner_count,
+    };
+  });
+
+  return (
+    <DataPill query={query}>
+      {query.data?.uniqueHolders !== undefined
+        ? `${query.data.uniqueHolders} Holders`
+        : "no data"}
+    </DataPill>
   );
 };
 
@@ -74,40 +115,53 @@ const NftTotalSalesVolumeWidget = ({
   chain,
 }: Pick<NftWidgetProps, "address" | "chain">) => {
   const query = useQuery(["NFT", "VOLUME", address, chain], async () => {
-    const response = await fetch(
-      `https://api.nftport.xyz/v0/transactions/stats/${address}?chain=${NFT_PORT_CHAINS[chain]}`,
-      {
-        headers: {
-          Authorization: process.env.NEXT_PUBLIC_NFT_PORT_API_KEY as string,
-        },
-      }
-    );
-
-    if (response.status === 404) {
-      return null;
-    }
-
-    const json: NftPortAPIStatsResponse = await response.json();
-
-    if (json.response === "NOK") {
-      throw new Error(json?.error?.message);
-    }
+    const chainName = SUPPORTED_CHAINS.find(
+      (c) => c.id === Number(chain)
+    )?.name.toLowerCase();
+    const collectionUrl = `https://api.simplehash.com/api/v0/nfts/collections/${chainName}/${address}`;
+    const response = await fetch(collectionUrl, {
+      headers: {
+        "X-API-KEY": process.env.NEXT_PUBLIC_SIMPLEHASH_API_KEY as string,
+        accept: "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data: SimpleHashCollectionResponse) => {
+        const collectionId = data.collections[0].collection_id;
+        const collectionActivityUrl = `https://api.simplehash.com/api/v0/nfts/collections_activity?collection_ids=${collectionId}`;
+        return fetch(collectionActivityUrl, {
+          headers: {
+            "X-API-KEY": process.env.NEXT_PUBLIC_SIMPLEHASH_API_KEY as string,
+            accept: "application/json",
+          },
+        });
+      });
 
     if (!response.ok) {
-      throw new Error(`NFT Port API error. Status: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `SimpleHash API error. Status: ${response.status} ${response.statusText}`
+      );
     }
-
+    const json: SimpleHashCollectionActivityResponse = await response.json();
+    if (json.collections.length === 0) {
+      return null;
+    }
+    // NOTE: The Simple Hash API only stretches back 90 days
+    const rawNinetyDaysSalesVolume = json.collections[0].all_time_volume;
+    const formattedNumber = exponentialToDecimal(
+      Number(rawNinetyDaysSalesVolume)
+    );
     return {
-      totalSalesVolume: json.statistics.total_volume as number,
+      ninetyDaysSalesVolume: formatEther(formattedNumber),
     };
   });
 
   return (
-    <DataPill query={query}>{
-      query.data?.totalSalesVolume !== undefined
-      ? `${query.data.totalSalesVolume} ETH`
-      : "no data"
-    }</DataPill>
+    <DataPill query={query}>
+      {query.data?.ninetyDaysSalesVolume !== undefined
+        ? `${query.data.ninetyDaysSalesVolume} ETH`
+        : "no data"}
+    </DataPill>
   );
 };
 
@@ -117,30 +171,27 @@ const NftImageWidget = ({
   tokenId,
 }: Pick<NftWidgetProps, "address" | "chain" | "tokenId">) => {
   const query = useQuery(["NFT", "IMAGE", address, chain], async () => {
-    const url = `https://api.nftport.xyz/v0/nfts/${address}/${tokenId}?chain=${NFT_PORT_CHAINS[chain]}`;
+    const chainName = SUPPORTED_CHAINS.find(
+      (c) => c.id === Number(chain)
+    )?.name.toLowerCase();
+    const url = `https://api.simplehash.com/api/v0/nfts/${chainName}/${address}/${tokenId}`;
     const response = await fetch(url, {
       headers: {
-        Authorization: process.env.NEXT_PUBLIC_NFT_PORT_API_KEY as string,
+        "X-API-KEY": process.env.NEXT_PUBLIC_SIMPLEHASH_API_KEY as string,
+        accept: "application/json",
       },
     });
 
-    if (response.status === 404) {
-      return null;
-    }
-
-    const json: NftPortAPIAssetResponse = await response.json();
-
-    if (json.response === "NOK") {
-      throw new Error(json?.error?.message);
-    }
-
     if (!response.ok) {
-      throw new Error(`NFT Port API error. Status: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `SimpleHash API error. Status: ${response.status} ${response.statusText}`
+      );
     }
+    const json: SimpleHashNFTDetailsResponse = await response.json();
 
     return {
-      image: json.nft.cached_file_url as string,
-      collectionName: json.contract.name as string,
+      image: json.image_url,
+      collectionName: json.collection.name,
     };
   });
   if (!query.data) return null;

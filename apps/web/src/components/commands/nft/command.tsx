@@ -28,7 +28,21 @@ export const nftTotalSalesVolumeCommand: CommandConfiguration<NftWidgetProps> = 
     property: "total-sales-volume",
     address: undefined,
     chain: mainnet.id,
-  },
+      },
+  ConfigComponent: NftConfig,
+};
+
+export const nftUniqueHoldersCommand: CommandConfiguration<NftWidgetProps> = {
+  command: "total-unique-holders",
+  title: "Total Unique Holders",
+  description: "Total amount of unique NFT Holders",
+  icon,
+  blockType: "inline",
+  defaultValues: {
+    property: "holders",
+    address: undefined,
+    chain: mainnet.id,
+      },
   ConfigComponent: NftConfig,
 };
 
