@@ -1,25 +1,24 @@
 import { Node } from "@tiptap/core";
 import { mergeAttributes, NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
-import { CommandExtensionProps } from "./types";
-import { CommandConfiguration } from "../../components/commands/types";
 import { useEffect, useState } from "react";
 import { useQuery, useMutation } from "react-query";
 import { Loader2 } from "lucide-react";
+import { CommandExtensionProps } from "./types";
 import { DataPill } from "../../components/DataPill";
 
 export type IpfsImageProps = {
-  cid: string;
+  cid: string | null;
   alt: string;
   title: string;
-  file: File;
+  file: File | undefined;
 };
 
 async function uploadImageToIpfs(file: File): Promise<string> {
   const formData = new FormData();
-  formData.append('image', file);
+  formData.append("image", file);
 
-  const res = await fetch('/api/editor/upload', {
-    method: 'POST',
+  const res = await fetch("/api/editor/upload", {
+    method: "POST",
     body: formData,
     headers: {
       "Accept": "application/json",
@@ -27,7 +26,7 @@ async function uploadImageToIpfs(file: File): Promise<string> {
   });
 
   if (!res.ok) {
-    throw new Error('Failed to upload image to IPFS');
+    throw new Error("Failed to upload image to IPFS");
   }
 
   const { uploads } = await res.json();
@@ -41,70 +40,79 @@ export const IpfsImage = (
   props: CommandExtensionProps<IpfsImageProps>
 ) => {
   const { cid, file, alt, title } = props.node.attrs;
-  const [localFileUrl, setLocalUrl] = useState<string | null>();
+  const [objectUrl, setObjectUrl] = useState<string | null>(null);
 
-  const objectUrlQuery = useQuery({
-    queryKey: ['ipfs-image', 'object-url', cid],
+  const fetchImage = useQuery({
+    queryKey: ["ipfs-image", cid],
     queryFn: async () => {
       const res = await fetch(`https://gateway.pinata.cloud/ipfs/${cid}`);
       const imageBlob = await res.blob();
-      return URL.createObjectURL(imageBlob);
+      return imageBlob;
     },
-    onSuccess: () => {
-      if (localFileUrl) {
-        URL.revokeObjectURL(localFileUrl);
-        setLocalUrl(null);
-      }
-    },
+    refetchOnWindowFocus: false,
+    staleTime: 3 * 60 * 1000,
+    cacheTime: 5 * 60 * 1000,
     enabled: cid !== null,
   });
 
-  const uploadAndSetCidMutation = useMutation({
+  const uploadImage = useMutation({
     mutationFn: uploadImageToIpfs,
     onSuccess: (cid) => {
       props.updateAttributes({
         cid,
         file: undefined,
-        alt: file.name,
-        title: `${file.name} uploaded to IPFS with CID ${cid}`,
+        alt: file?.name,
+        title: `${file?.name} uploaded to IPFS with CID ${cid}`,
       });
     },
   });
 
+  const isError = uploadImage.isError || fetchImage.isError;
+  const isLoading = uploadImage.isLoading || fetchImage.isLoading || objectUrl === null;
+
   useEffect(() => {
-    if (cid === null && !uploadAndSetCidMutation.isLoading) {
-      setLocalUrl(URL.createObjectURL(file));
-      uploadAndSetCidMutation.mutate(file);
+    if (file && cid === null && !uploadImage.isLoading) {
+      setObjectUrl(URL.createObjectURL(file));
+      uploadImage.mutate(file);
     }
-  }, [cid, file, uploadAndSetCidMutation]);
+  }, [cid, file, uploadImage]);
+
+  useEffect(() => {
+    if (fetchImage.data) {
+      setObjectUrl(URL.createObjectURL(fetchImage.data));
+    }
+  }, [fetchImage.data]);
 
   useEffect(() => {
     return () => {
-      if (objectUrlQuery.data) {
-        URL.revokeObjectURL(objectUrlQuery.data);
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [objectUrlQuery.data]);
-
-  const isError = uploadAndSetCidMutation.isError || objectUrlQuery.isError;
-  const isLoading = uploadAndSetCidMutation.isLoading || objectUrlQuery.isLoading;
+  }, [objectUrl]);
 
   if (isError) {
     return (
       <NodeViewWrapper as="span">
-        <DataPill query={objectUrlQuery}>no data</DataPill>;
+        <DataPill query={fetchImage}>no data</DataPill>;
       </NodeViewWrapper>
     );
   }
 
   return (
     <NodeViewWrapper as="span">
-      <picture className="relative">
+      <picture
+        className="relative inline-block drag-handle"
+        data-drag-handle
+        draggable={true}
+        contentEditable={false}
+      >
         <img
-          src={objectUrlQuery.data || localFileUrl || ""}
-          alt={alt} title={title}
+          src={objectUrl || ""}
+          alt={alt}
+          title={title}
           className="inline-block"
-          style={{ filter: "blur(4px)" }}
+          style={{ filter: isLoading ? "blur(4px)" : "none" }}
         />
         {isLoading && (
           <Loader2
@@ -118,20 +126,6 @@ export const IpfsImage = (
     </NodeViewWrapper>
   );
 };
-
-export const command: CommandConfiguration<IpfsImageProps> = {
-  command: 'ipfs-image',
-  title: 'IPFS Image',
-  icon: null,
-  blockType: "inline",
-  defaultValues: {
-    cid: undefined,
-    alt: undefined,
-    title: undefined,
-    file: undefined,
-  },
-  ConfigComponent: IpfsImage,
-}
 
 export const extension = Node.create({
   name: 'ipfs-image',
