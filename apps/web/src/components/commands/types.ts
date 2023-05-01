@@ -2,7 +2,7 @@ import { StaticImageData } from "next/image";
 import { FunctionComponent } from "react";
 import { CommandExtensionProps } from "../../lib/tiptap/types";
 
-export type BaseProps = Record<string, string | number | undefined>;
+export type BaseProps = Record<string, string | number | undefined | File>;
 
 export type CommandConfiguration<Props extends BaseProps> = {
   // visual

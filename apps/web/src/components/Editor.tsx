@@ -1,6 +1,5 @@
 import { Content, JSONContent } from "@tiptap/core";
 import Highlight from "@tiptap/extension-highlight";
-import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import TextAlign from "@tiptap/extension-text-align";
 import Typography from "@tiptap/extension-typography";
@@ -24,6 +23,7 @@ import {
   Strikethrough,
 } from "lucide-react";
 import { TrailingNode } from "../lib/tiptap/extensions/trailing-node";
+import * as IpfsImage from "../components/commands/ipfs-image";
 
 type BubbleMenuButtonProps = {
   onClick: () => void;
@@ -64,7 +64,7 @@ export const extensions = [
   }),
   Highlight,
   Typography,
-  Image,
+  IpfsImage.extension,
   TextAlign,
   ...commandExtensions,
   TrailingNode,
@@ -118,16 +118,19 @@ export const Editor = ({
           const insertImageToEditor = (
             view: EditorView,
             event: DragEvent,
-            src: string
+            file: File,
           ) => {
-            const { schema } = view.state;
             const coordinates = view.posAtCoords({
               left: event.clientX,
               top: event.clientY,
             });
-            const node = schema.nodes.image.create({ src });
+            const node = view.state.schema.nodes['ipfs-image'].create({
+              file,
+              title: file.name,
+              alt: file.name
+            });
             const transaction = view.state.tr.insert(coordinates!.pos, node);
-            return view.dispatch(transaction);
+            view.dispatch(transaction);
           };
 
           try {
@@ -139,24 +142,8 @@ export const Editor = ({
                 "Images need to be in jpg or png format and less than 10mb in size."
               );
             }
-
-            const img = new global.Image();
-            img.src = URL.createObjectURL(file);
-            img.onload = () => {
-              if (img.width > 5000 || img.height > 5000) {
-                throw new Error(
-                  "Images need to be less than 5000px in width or height."
-                );
-              }
-
-              uploadImage(file).then((response) => {
-                const img = new global.Image();
-                img.src = response;
-                img.onload = () => {
-                  return insertImageToEditor(view, event, response);
-                };
-              });
-            };
+ 
+            insertImageToEditor(view, event, file);
           } catch (error) {
             return false;
           }
@@ -236,6 +223,4 @@ export const Editor = ({
   );
 };
 
-async function uploadImage(file: File): Promise<string> {
-  return URL.createObjectURL(file);
-}
+
