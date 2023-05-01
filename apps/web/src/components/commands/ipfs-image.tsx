@@ -1,10 +1,10 @@
 import { Node } from "@tiptap/core";
-import { mergeAttributes, NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
+import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
 import { useEffect, useState } from "react";
 import { useQuery, useMutation } from "react-query";
 import { Loader2 } from "lucide-react";
-import { CommandExtensionProps } from "./types";
-import { DataPill } from "../../components/DataPill";
+import { CommandExtensionProps } from "../../lib/tiptap/types";
+import { DataPill } from "../DataPill";
 
 export type IpfsImageProps = {
   cid: string | null;
@@ -100,7 +100,7 @@ export const IpfsImage = (
   }
 
   return (
-    <NodeViewWrapper as="span">
+    <NodeViewWrapper as="div">
       <picture
         className="relative inline-block drag-handle"
         data-drag-handle
@@ -111,16 +111,12 @@ export const IpfsImage = (
           src={objectUrl || ""}
           alt={alt}
           title={title}
-          className="inline-block"
-          style={{ filter: isLoading ? "blur(4px)" : "none" }}
+          className={isLoading ? "blur-sm line-block" : "line-block"}
         />
         {isLoading && (
-          <Loader2
-            width={32}
-            height={32}
-            style={{ top: "calc(50% - 16px)", left: "calc(50% - 16px)" }}
-            className="animate-spin absolute"
-          />
+          <span className="absolute w-[32px] h-[32px] inset-1/2 -translate-x-1/2 -translate-y-1/2">
+            <Loader2 width={32} height={32} className="animate-spin" />
+          </span>
         )}
       </picture>
     </NodeViewWrapper>
@@ -130,20 +126,9 @@ export const IpfsImage = (
 export const extension = Node.create({
   name: 'ipfs-image',
 
-  addOptions() {
-    return {
-      inline: false,
-      HTMLAttributes: {},
-    }
-  },
+  inline: false,
 
-  inline() {
-    return this.options.inline;
-  },
-
-  group() {
-    return this.options.inline ? 'inline' : 'block';
-  },
+  group: 'block',
 
   draggable: true,
 
@@ -173,7 +158,7 @@ export const extension = Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['ipfs-image', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)];
+    return ['ipfs-image', HTMLAttributes];
   },
 
   addNodeView() {
