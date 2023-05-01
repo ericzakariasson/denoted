@@ -24,6 +24,7 @@ import {
 import { DeletePageDialog } from "../components/DeletePageDialog";
 import { useRouter } from "next/router";
 import { toast } from "../components/ui/use-toast";
+import { useCeramic } from "../hooks/useCeramic";
 
 const PublishMenu = dynamic(
   async () =>
@@ -73,6 +74,8 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
     address,
   ];
   const queryClient = useQueryClient();
+
+  const ceramic = useCeramic();
 
   const { data: page, isLoading } = useQuery<DeserializedPage>(
     PAGE_QUERY_KEY,
@@ -155,9 +158,14 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
 
   const deletePageMutation = useMutation(
     async () => {
+      const ceramicSession = await ceramic.getSession();
+
       const response = await fetch("/api/page/unpublish", {
         method: "POST",
-        body: JSON.stringify({ pageId: page!.id }),
+        body: JSON.stringify({
+          pageId: page!.id,
+          ceramicSession: ceramicSession?.serialize(),
+        }),
       });
 
       if (!response.ok) {
