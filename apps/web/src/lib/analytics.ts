@@ -23,6 +23,9 @@ type EventName =
   | "Lit Authenticate Clicked"
   | "Page Save Clicked"
   | "Page Saved"
+  | "Page Delete Clicked"
+  | "Page Deleted"
+  | "Page Unpublished"
   | "Lit Authenticated";
 
 export type EventProperties = Record<string, unknown>;

@@ -4,7 +4,7 @@ import { getBaseUrl } from "../utils/base-url";
 import { useMutation, useQuery } from "react-query";
 import { DeserializedPage } from "../utils/page-helper";
 import { Database } from "../lib/supabase/supabase.types";
-import { Share, Link as LinkIcon, TwitterIcon } from "lucide-react";
+import { Share, Link as LinkIcon, TwitterIcon, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button, buttonVariants } from "./ui/button";
@@ -87,7 +87,15 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ page }) => {
       <PopoverContent>
         <p className="mb-2 text-sm text-slate-500">Publications</p>
         <div className="flex w-full flex-col gap-4">
-          <Button onClick={() => publishMutation.mutate()}>
+          <Button
+            onClick={() => publishMutation.mutate()}
+            disabled={publishMutation.isLoading}
+          >
+            {publishMutation.isLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Share className="mr-2 h-4 w-4" />
+            )}
             Publish to IPFS
           </Button>
           {publicationsQuery.data?.slice(0, 1).map((publication) => {

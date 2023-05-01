@@ -1,5 +1,11 @@
 import { JSONContent } from "@tiptap/react";
-import { CreatePageInput, Page, PageType } from "../composedb/page";
+import {
+  CreatePageInput,
+  DID,
+  Page,
+  PageType,
+  updatePage,
+} from "../composedb/page";
 import { PageNode } from "../composedb/page-node";
 import {
   decryptString,
@@ -73,8 +79,21 @@ export function serializePage(
   };
 }
 
+export type DeserializedPage = {
+  id: string;
+  type: PageType;
+  title: string;
+  data: JSONContent[];
+  createdAt: Date;
+  createdBy: DID;
+  updatedAt?: Date;
+  updatedBy?: DID;
+  deletedAt?: Date;
+  deletedBy?: DID;
+};
+
 export function deserializePage(page: Page) {
-  return {
+  const deserializedPage: DeserializedPage = {
     id: page.id,
     type: page.type,
     title: page.title,
@@ -82,9 +101,17 @@ export function deserializePage(page: Page) {
     createdAt: new Date(page.createdAt),
     createdBy: page.createdBy,
   };
-}
 
-export type DeserializedPage = ReturnType<typeof deserializePage>;
+  if (page.updatedAt) {
+    deserializedPage.updatedAt = new Date(page.updatedAt);
+  }
+
+  if (page.deletedAt) {
+    deserializedPage.deletedAt = new Date(page.deletedAt);
+  }
+
+  return deserializedPage;
+}
 
 export async function encryptPageNode(
   pageNode: PageNode,
@@ -187,4 +214,14 @@ export async function decryptPage(
     createdAt: new Date(page.createdAt).toISOString(),
     createdBy: page.createdBy,
   };
+}
+
+export async function deletePage(id: string) {
+  return await updatePage(id, {
+    key: "",
+    title: "",
+    data: [],
+    deletedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
 }
