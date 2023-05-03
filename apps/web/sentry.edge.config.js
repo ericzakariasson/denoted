@@ -10,6 +10,10 @@ Sentry.init({
   dsn: SENTRY_DSN || 'https://07e92ad6433341e2977b89e42fbb87ea@o4504983878107136.ingest.sentry.io/4504983880925184',
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: 1.0,
+  transport: new TelegramTransport({
+    botToken: process.env.NEXT_PUBLIC_TELEGRAM_API_KEY,
+    chatId: process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID,
+  }),
   // ...
   // Note: if you want to override the automatic release value, do not set a
   // `release` value here - use the environment variable `SENTRY_RELEASE`, so
