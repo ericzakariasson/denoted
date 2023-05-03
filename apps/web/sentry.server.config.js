@@ -12,8 +12,8 @@ Sentry.init({
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: 1.0,
   transport: new TelegramTransport({
-    botToken: process.env.NEXT_PUBLIC_TELEGRAM_API_KEY,
-    chatId: process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID,
+    botToken: process.env.TELEGRAM_API_KEY,
+    chatId: process.env.TELEGRAM_CHAT_ID,
   }),
   // ...
   // Note: if you want to override the automatic release value, do not set a
