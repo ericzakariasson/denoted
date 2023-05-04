@@ -30,10 +30,10 @@ function verifySignature(
   return digest === request.headers["sentry-hook-signature"];
 }
 
-const sentryWebhookHandler = async (
+export default async function sentryWebhookHandler(
   req: NextApiRequest,
   res: NextApiResponse
-): Promise<void> => {
+): Promise<void> {
   const sentryWebhookSecret = process.env.SENTRY_WEBHOOK_SECRET || "";
 
   if (req.method === "POST" && verifySignature(req, sentryWebhookSecret)) {
@@ -50,4 +50,3 @@ const sentryWebhookHandler = async (
   }
 };
 
-export default sentryWebhookHandler;
