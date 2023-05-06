@@ -68,7 +68,6 @@ ${data.event.culprit}
 ${data.event.web_url}`;
       }
     };
-
     await bot.sendMessage(chatId as string, getErrorMsg(), {
       message_thread_id: Number(topicId)
     });
