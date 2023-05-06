@@ -15,19 +15,20 @@ async function buffer(readable: Readable) {
   return Buffer.concat(chunks);
 }
 
-type SentryWebhookPayload = {
-  action: string;
-  installation: {
-    uuid: string;
+type SentryWebhookPayloadData = {
+  resource: "issue";
+  issue: {
+    id: string;
+    title: string;
+    culprit: string;
   };
-  data: {
-    issue: {
-      id: string;
-      title: string;
-      culprit: string;
-    };
+} | {
+  resource: "event_alert";
+  event: {
+    title: string;
+    culprit: string;
+    web_url: string;
   };
-  actor: { id: string; type: string; name: string };
 };
 
 function verifySignature(
@@ -51,15 +52,23 @@ export default async function sentryWebhookHandler(
   const rawBody = buf.toString('utf8');
   
   if (req.method === "POST" && verifySignature(req, rawBody, sentryWebhookSecret)) {
-    const body = JSON.parse(rawBody) as SentryWebhookPayload;
-    console.log(body)
+    const body = JSON.parse(rawBody);
+    const data = { ...body.data, resource: req.headers["sentry-hook-resource"] } as SentryWebhookPayloadData;
 
-    if (body && body.data) {
-      const errorMessage = `🚨${body.data.issue.title}
-${body.data.issue.culprit}
-https://denoted.sentry.io/issues/${body.data.issue.id}/`;
-      await bot.sendMessage(chatId as string, errorMessage);
-    }
+    const getErrorMsg = () => {
+      switch (data.resource) {
+        case "issue":
+          return `🚨${data.issue.title}
+${data.issue.culprit}
+https://denoted.sentry.io/issues/${data.issue.id}/`;
+        case "event_alert":
+          return `🚨${data.event.title}
+${data.event.culprit}
+${data.event.web_url}`;
+      }
+    };
+
+    await bot.sendMessage(chatId as string, getErrorMsg());
 
     res.status(200).json({ message: "Webhook processed successfully." });
   } else {
