@@ -5,6 +5,7 @@ import type { Readable } from 'node:stream';
 
 const botToken = process.env.TELEGRAM_API_KEY;
 const chatId = process.env.TELEGRAM_CHAT_ID;
+const topicId = process.env.TELEGRAM_TOPIC_ID;
 const bot = new TelegramBot(botToken as string, { polling: false });
 
 async function buffer(readable: Readable) {
@@ -68,7 +69,9 @@ ${data.event.web_url}`;
       }
     };
 
-    await bot.sendMessage(chatId as string, getErrorMsg());
+    await bot.sendMessage(chatId as string, getErrorMsg(), {
+      message_thread_id: Number(topicId)
+    });
 
     res.status(200).json({ message: "Webhook processed successfully." });
   } else {
