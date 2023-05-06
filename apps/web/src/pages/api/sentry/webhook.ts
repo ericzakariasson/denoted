@@ -1,33 +1,44 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import TelegramBot from "node-telegram-bot-api";
 import crypto from "crypto";
-import { IncomingHttpHeaders } from "http";
+import type { Readable } from 'node:stream';
 
 const botToken = process.env.TELEGRAM_API_KEY;
 const chatId = process.env.TELEGRAM_CHAT_ID;
 const bot = new TelegramBot(botToken as string, { polling: false });
+
+async function buffer(readable: Readable) {
+  const chunks = [];
+  for await (const chunk of readable) {
+    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
+  }
+  return Buffer.concat(chunks);
+}
 
 type SentryWebhookPayload = {
   action: string;
   installation: {
     uuid: string;
   };
-  data: Record<string, unknown>;
+  data: {
+    issue: {
+      id: string;
+      title: string;
+      culprit: string;
+    };
+  };
   actor: { id: string; type: string; name: string };
 };
 
 function verifySignature(
-  request: {
-    body: unknown;
-    headers: IncomingHttpHeaders;
-  },
+  { headers }: NextApiRequest,
+  rawBody: string,
   secret: string = ""
-): boolean {
+) : boolean {
   const hmac = crypto.createHmac("sha256", secret);
-  const bodyString = JSON.stringify(request.body);
-  hmac.update(bodyString, "utf8");
+  hmac.update(rawBody, "utf8");
   const digest = hmac.digest("hex");
-  return digest === request.headers["sentry-hook-signature"];
+  return digest === headers["sentry-hook-signature"];
 }
 
 export default async function sentryWebhookHandler(
@@ -36,11 +47,17 @@ export default async function sentryWebhookHandler(
 ): Promise<void> {
   const sentryWebhookSecret = process.env.SENTRY_WEBHOOK_SECRET || "";
 
-  if (req.method === "POST" && verifySignature(req, sentryWebhookSecret)) {
-    const payload = req.body as SentryWebhookPayload;
+  const buf = await buffer(req);
+  const rawBody = buf.toString('utf8');
+  
+  if (req.method === "POST" && verifySignature(req, rawBody, sentryWebhookSecret)) {
+    const body = JSON.parse(rawBody) as SentryWebhookPayload;
+    console.log(body)
 
-    if (payload && payload.data) {
-      const errorMessage = `Error: ${JSON.stringify(payload.data)}`;
+    if (body && body.data) {
+      const errorMessage = `🚨${body.data.issue.title}
+${body.data.issue.culprit}
+https://denoted.sentry.io/issues/${body.data.issue.id}/`;
       await bot.sendMessage(chatId as string, errorMessage);
     }
 
@@ -50,3 +67,8 @@ export default async function sentryWebhookHandler(
   }
 };
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
