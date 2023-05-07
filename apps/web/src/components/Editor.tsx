@@ -54,6 +54,8 @@ type EditorProps = {
   onUpdate?: (json: JSONContent) => void;
   focusedEditorState: [boolean, (state: boolean) => void];
   className?: string;
+  encryptionKey?: CryptoKey;
+  // pageId?: string;
 };
 
 const commandExtensions = getCommandExtensions();
@@ -84,6 +86,8 @@ export const Editor = ({
   onUpdate,
   focusedEditorState,
   className,
+  encryptionKey,
+  // pageId,
 }: EditorProps) => {
   const { address } = useAccount();
   const [focusEditor, setFocusEditor] = focusedEditorState;
@@ -168,6 +172,8 @@ export const Editor = ({
   }, [focusEditor, editor, setFocusEditor]);
 
   if (editor) {
+    // editor.storage.pageId
+    editor.storage.encryptionKey = encryptionKey; 
     editor.storage.connectedAddress = address;
   }
 

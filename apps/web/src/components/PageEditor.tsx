@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useAccount } from "wagmi";
 import { useCeramic } from "../hooks/useCeramic";
 import { useLit } from "../hooks/useLit";
-import { deserializePage } from "../utils/page-helper";
+import { deserializePage } from '../utils/page-helper';
 import { Editor } from "./Editor";
 import { useQuery } from "react-query";
 import Head from "next/head";
@@ -21,19 +21,21 @@ export type SavePageData = {
     title: string;
     content: JSONContent[];
   };
-  address: string;
+  address?: string;
+  encryptionKey?: CryptoKey;
   isPublic: boolean;
 };
 
 type PageEditorProps = {
   page?: ReturnType<typeof deserializePage>;
+  encryptionKey?: CryptoKey;
   renderSubmit: (props: {
     isDisabled: boolean;
     data: SavePageData;
   }) => React.ReactNode;
 };
 
-export function PageEditor({ page, renderSubmit }: PageEditorProps) {
+export function PageEditor({ page, encryptionKey, renderSubmit }: PageEditorProps) {
   const [title, setTitle] = useState(page?.title ?? "");
   const [json, setJson] = useState<JSONContent>(
     page
@@ -97,7 +99,8 @@ export function PageEditor({ page, renderSubmit }: PageEditorProps) {
               title,
               content: json?.content ?? [],
             },
-            address: account.address as string,
+            address: account.address,
+            encryptionKey,
             isPublic: false,
           },
         })}
@@ -122,6 +125,8 @@ export function PageEditor({ page, renderSubmit }: PageEditorProps) {
                 }
               : []
           }
+          // pageId={page?.id}
+          encryptionKey={encryptionKey}
           onUpdate={(json) => setJson(json)}
           focusedEditorState={[focusEditor, setFocusEditor]}
         />

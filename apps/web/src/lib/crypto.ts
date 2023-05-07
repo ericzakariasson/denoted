@@ -5,7 +5,7 @@ const ENCRYPTION_ALGORITHM: AesKeyGenParams = {
 
 const KEY_USAGE: readonly KeyUsage[] = ["encrypt", "decrypt"];
 
-export async function generateEncryptionKey() {
+export async function generateEncryptionKey() : Promise<CryptoKey> {
   return crypto.subtle.generateKey(
     ENCRYPTION_ALGORITHM,
     true,
@@ -45,12 +45,10 @@ type EncryptedValue = {
   encrypted: string;
 };
 
-export async function encryptString<T extends string>(
-  str: T,
+export async function encrypt(
+  buf: BufferSource,
   symmetricKey: CryptoKey
 ): Promise<string> {
-  const encodedString = new TextEncoder().encode(str);
-
   const iv = crypto.getRandomValues(new Uint8Array(16));
 
   const encrypted = await crypto.subtle.encrypt(
@@ -59,7 +57,7 @@ export async function encryptString<T extends string>(
       iv,
     },
     symmetricKey,
-    encodedString
+    buf
   );
 
   const data: EncryptedValue = {
@@ -70,10 +68,18 @@ export async function encryptString<T extends string>(
   return JSON.stringify(data);
 }
 
-export async function decryptString<T extends string>(
+export async function encryptString<T extends string>(
+  str: T,
+  symmetricKey: CryptoKey
+): Promise<string> {
+  const encodedString = new TextEncoder().encode(str);
+  return encrypt(encodedString, symmetricKey);
+}
+
+export async function decrypt(
   encryptedStr: string,
   key: CryptoKey
-): Promise<T> {
+): Promise<ArrayBuffer> {
   const { iv, encrypted } = JSON.parse(encryptedStr) as EncryptedValue;
 
   const decrypted = await crypto.subtle.decrypt(
@@ -84,6 +90,15 @@ export async function decryptString<T extends string>(
     key,
     base64ToUint8Array(encrypted)
   );
+
+  return decrypted;
+}
+
+export async function decryptString<T extends string>(
+  encryptedStr: string,
+  key: CryptoKey
+): Promise<T> {
+  const decrypted = await decrypt(encryptedStr, key);
 
   const str = new TextDecoder().decode(decrypted);
 

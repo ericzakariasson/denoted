@@ -5,6 +5,7 @@ import { useQuery, useMutation } from "react-query";
 import { Loader2 } from "lucide-react";
 import { CommandExtensionProps } from "../../lib/tiptap/types";
 import { DataPill } from "../DataPill";
+import { decrypt, encrypt } from "../../lib/crypto";
 
 export type IpfsImageProps = {
   cid: string | null;
@@ -36,6 +37,27 @@ async function uploadImageToIpfs(file: File): Promise<string> {
   return cid;
 }
 
+function readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
+  return new Promise<ArrayBuffer>((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = (event: ProgressEvent<FileReader>) => {
+      if (event.target && event.target.result) {
+        resolve(event.target.result as ArrayBuffer);
+      } else {
+        reject(new Error('Failed to read file as ArrayBuffer.'));
+      }
+    };
+
+    reader.onerror = (event: ProgressEvent<FileReader>) => {
+      reject(event.target?.error || new Error('Failed to read file.'));
+    };
+
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+
 export const IpfsImage = (
   props: CommandExtensionProps<IpfsImageProps>
 ) => {
@@ -46,6 +68,8 @@ export const IpfsImage = (
     queryKey: ["ipfs-image", cid],
     queryFn: async () => {
       const res = await fetch(`https://gateway.pinata.cloud/ipfs/${cid}`);
+      awires.json()
+      decrypt(res.body, props.editor.extensionStorage.encryptionKey);
       const imageBlob = await res.blob();
       return imageBlob;
     },
@@ -56,7 +80,17 @@ export const IpfsImage = (
   });
 
   const uploadImage = useMutation({
-    mutationFn: uploadImageToIpfs,
+    mutationFn: async (file: File) => {
+      const fileBuffer = await readFileAsArrayBuffer(file);
+
+      const encryptedFile = await encrypt(fileBuffer, props.editor.extensionStorage.encryptionKey);
+      console.log("ipfs-image storage",
+        encryptedFile,
+        new Uint8Array(await crypto.subtle.exportKey("raw", props.editor.extensionStorage.encryptionKey))
+      );
+
+      return uploadImageToIpfs(file);
+    },
     onSuccess: (cid) => {
       props.updateAttributes({
         cid,
