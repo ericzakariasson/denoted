@@ -10,13 +10,23 @@ import { encryptPage, serializePage } from "../utils/page-helper";
 import { Layout } from "../components/Layout";
 import { Button } from "../components/ui/button";
 import { Loader2, Save } from "lucide-react";
+import { generateEncryptionKey } from "../lib/crypto";
+import { useEffect } from "react";
 
 const CreatePage: NextPage = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
 
+  const generateKeyMutation = useMutation(
+    async () => {
+      const key = await generateEncryptionKey();
+      console.log("Generated key", new Uint8Array(await crypto.subtle.exportKey("raw", key)))
+      return key;
+    },
+  );
+
   const createPageMutation = useMutation(
-    async ({ page, address, isPublic }: SavePageData) => {
+    async ({ page, address, encryptionKey, isPublic }: SavePageData) => {
       const pageInput = serializePage(
         "PAGE",
         page.title,
@@ -24,8 +34,12 @@ const CreatePage: NextPage = () => {
         new Date()
       );
 
+      if (!address || !encryptionKey) {
+        throw new Error("No user address or encryption key");
+      }
+
       return await createPage(
-        isPublic ? pageInput : await encryptPage(pageInput, address)
+        isPublic ? pageInput : await encryptPage(pageInput, address, encryptionKey)
       );
     },
     {
@@ -48,9 +62,17 @@ const CreatePage: NextPage = () => {
       },
     }
   );
+
+  useEffect(() => {
+    if (generateKeyMutation.isIdle) {
+      generateKeyMutation.mutate();
+    }
+  }, [generateKeyMutation]);
+
   return (
     <Layout>
       <PageEditor
+        encryptionKey={generateKeyMutation.data}
         renderSubmit={({ isDisabled, data }) => (
           <div className="mb-10 flex gap-4">
             <Button

@@ -6,18 +6,11 @@ const ENCRYPTION_ALGORITHM: AesKeyGenParams = {
 const KEY_USAGE: readonly KeyUsage[] = ["encrypt", "decrypt"];
 
 export async function generateEncryptionKey() {
-  const key = await crypto.subtle.generateKey(
+  return crypto.subtle.generateKey(
     ENCRYPTION_ALGORITHM,
     true,
     KEY_USAGE
   );
-
-  const exportedKey = new Uint8Array(await crypto.subtle.exportKey("raw", key));
-
-  return {
-    key,
-    exportedKey,
-  };
 }
 
 export async function importEncryptionKey(symmetricKey: Uint8Array) {

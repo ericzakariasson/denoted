@@ -87,7 +87,7 @@ export async function authenticateLit() {
 }
 
 export async function storeEncryptionKey(
-  symmetricEncryptionKey: Uint8Array,
+  symmetricEncryptionKey: CryptoKey,
   address: string
 ): Promise<{
   encryptedKey: string;
@@ -96,9 +96,11 @@ export async function storeEncryptionKey(
 
   const authSig = await authenticateLit();
 
+  const exportedKey = new Uint8Array(await crypto.subtle.exportKey("raw", symmetricEncryptionKey));
+
   const encryptedKey = await litClient.saveEncryptionKey({
     accessControlConditions: [getAddressOwnerAcl(address)],
-    symmetricKey: symmetricEncryptionKey,
+    symmetricKey: exportedKey,
     authSig,
     chain: litChain,
   });

@@ -10,7 +10,6 @@ import { PageNode } from "../composedb/page-node";
 import {
   decryptString,
   encryptString,
-  generateEncryptionKey,
   importEncryptionKey,
 } from "../lib/crypto";
 import { getStoredEncryptionKey, storeEncryptionKey } from "../lib/lit";
@@ -157,20 +156,19 @@ export async function decryptPageNode(
 
 export async function encryptPage(
   page: CreatePageInput,
-  userAddress: string
+  userAddress: string,
+  encryptionKey: CryptoKey,
 ): Promise<CreatePageInput> {
-  const { key, exportedKey } = await generateEncryptionKey();
-
   const [title, type] = await Promise.all([
-    await encryptString(page.title, key),
-    await encryptString(page.type, key),
+    await encryptString(page.title, encryptionKey),
+    await encryptString(page.type, encryptionKey),
   ]);
 
   const encryptedPageNodes = await Promise.all(
-    page.data.map(async (node) => await encryptPageNode(node, key))
+    page.data.map(async (node) => await encryptPageNode(node, encryptionKey))
   );
 
-  const { encryptedKey } = await storeEncryptionKey(exportedKey, userAddress);
+  const { encryptedKey } = await storeEncryptionKey(encryptionKey, userAddress);
 
   const input: CreatePageInput = {
     type: type as PageType,
