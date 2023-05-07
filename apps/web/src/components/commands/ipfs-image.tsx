@@ -68,7 +68,7 @@ export const IpfsImage = (
     queryKey: ["ipfs-image", cid],
     queryFn: async () => {
       const res = await fetch(`https://gateway.pinata.cloud/ipfs/${cid}`);
-      awires.json()
+
       decrypt(res.body, props.editor.extensionStorage.encryptionKey);
       const imageBlob = await res.blob();
       return imageBlob;
@@ -83,11 +83,19 @@ export const IpfsImage = (
     mutationFn: async (file: File) => {
       const fileBuffer = await readFileAsArrayBuffer(file);
 
+      console.log(file.type);
+
       const encryptedFile = await encrypt(fileBuffer, props.editor.extensionStorage.encryptionKey);
       console.log("ipfs-image storage",
         encryptedFile,
         new Uint8Array(await crypto.subtle.exportKey("raw", props.editor.extensionStorage.encryptionKey))
       );
+
+      // TODO put mime type in metadata
+      const encryptedImageJson = {
+        encryptedFile,
+        type: file.type,
+      };
 
       return uploadImageToIpfs(file);
     },
