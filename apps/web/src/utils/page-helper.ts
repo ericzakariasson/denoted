@@ -191,16 +191,15 @@ export async function importStoredEncryptionKey(
 
 export async function decryptPage(
   page: Page,
-  userAddress: string
+  encryptionKey: CryptoKey
 ): Promise<Page> {
-  const { key } = await importStoredEncryptionKey(page.key!, userAddress);
   const [title, type] = await Promise.all([
-    await decryptString(page.title, key),
-    await decryptString<PageType>(page.type, key),
+    await decryptString(page.title, encryptionKey),
+    await decryptString<PageType>(page.type, encryptionKey),
   ]);
 
   const decryptedPageNodes = await Promise.all(
-    page.data.map(async (node) => await decryptPageNode(node, key))
+    page.data.map(async (node) => await decryptPageNode(node, encryptionKey))
   );
 
   return {
