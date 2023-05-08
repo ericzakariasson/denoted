@@ -12,6 +12,8 @@ export type IpfsImageProps = {
   alt: string;
   title: string;
   file: File | undefined;
+  type: string | undefined;
+  iv: string | null;
 };
 
 async function uploadImageToIpfs(file: File): Promise<string> {
@@ -37,7 +39,7 @@ async function uploadImageToIpfs(file: File): Promise<string> {
   return cid;
 }
 
-function readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
+function readFileAsArrayBuffer(file: File | Blob): Promise<ArrayBuffer> {
   return new Promise<ArrayBuffer>((resolve, reject) => {
     const reader = new FileReader();
 
@@ -57,20 +59,26 @@ function readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
   });
 }
 
-
 export const IpfsImage = (
   props: CommandExtensionProps<IpfsImageProps>
 ) => {
-  const { cid, file, alt, title } = props.node.attrs;
+  const { cid, file, type, iv, alt, title } = props.node.attrs;
+  const { encryptionKey } = props.editor.extensionStorage;
   const [objectUrl, setObjectUrl] = useState<string | null>(null);
 
   const fetchImage = useQuery({
     queryKey: ["ipfs-image", cid],
     queryFn: async () => {
       const res = await fetch(`https://gateway.pinata.cloud/ipfs/${cid}`);
-
-      decrypt(res.body, props.editor.extensionStorage.encryptionKey);
       const imageBlob = await res.blob();
+
+      if (iv) {
+        console.log("iv", iv);
+        const encryptedBuffer = await readFileAsArrayBuffer(imageBlob);
+        const decyptedImageBuffer = await decrypt(encryptedBuffer, iv, encryptionKey);
+        return new Blob([decyptedImageBuffer], { type });
+      }
+
       return imageBlob;
     },
     refetchOnWindowFocus: false,
@@ -82,26 +90,22 @@ export const IpfsImage = (
   const uploadImage = useMutation({
     mutationFn: async (file: File) => {
       const fileBuffer = await readFileAsArrayBuffer(file);
+      const { iv, encrypted } = await encrypt(fileBuffer, encryptionKey);
+      const encryptedBlob = new Blob([encrypted], { type: "application/octet-stream" });
+      const encryptedFile = new File([encryptedBlob], file.name, { lastModified: file.lastModified, });
+      const cid = await uploadImageToIpfs(encryptedFile);
 
-      console.log(file.type);
-
-      const encryptedFile = await encrypt(fileBuffer, props.editor.extensionStorage.encryptionKey);
-      console.log("ipfs-image storage",
-        encryptedFile,
-        new Uint8Array(await crypto.subtle.exportKey("raw", props.editor.extensionStorage.encryptionKey))
-      );
-
-      // TODO put mime type in metadata
-      const encryptedImageJson = {
-        encryptedFile,
+      return {
+        cid,
+        iv,
         type: file.type,
       };
-
-      return uploadImageToIpfs(file);
     },
-    onSuccess: (cid) => {
+    onSuccess: ({ cid, iv, type }) => {
       props.updateAttributes({
         cid,
+        iv,
+        type,
         file: undefined,
         alt: file?.name,
         title: `${file?.name} uploaded to IPFS with CID ${cid}`,
@@ -187,7 +191,13 @@ export const extension = Node.create({
       },
       file: {
         default: null,
-      }
+      },
+      iv: {
+        default: null,
+      },
+      type: {
+        default: null,
+      },
     };
   },
 

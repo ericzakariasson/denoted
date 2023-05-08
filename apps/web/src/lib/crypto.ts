@@ -25,7 +25,7 @@ export async function importEncryptionKey(symmetricKey: Uint8Array) {
   return { key };
 }
 
-function arrayBufferToBase64(arrayBuffer: ArrayBuffer): string {
+export function arrayBufferToBase64(arrayBuffer: ArrayBuffer): string {
   return Buffer.from(
     String.fromCharCode(...new Uint8Array(arrayBuffer))
   ).toString("base64");
@@ -45,10 +45,15 @@ type EncryptedValue = {
   encrypted: string;
 };
 
+type EncryptedValueRaw = {
+  iv: string;
+  encrypted: ArrayBuffer;
+}
+
 export async function encrypt(
   buf: BufferSource,
   symmetricKey: CryptoKey
-): Promise<string> {
+): Promise<EncryptedValueRaw> {
   const iv = crypto.getRandomValues(new Uint8Array(16));
 
   const encrypted = await crypto.subtle.encrypt(
@@ -60,12 +65,25 @@ export async function encrypt(
     buf
   );
 
-  const data: EncryptedValue = {
+  return {
     iv: arrayBufferToBase64(iv),
-    encrypted: arrayBufferToBase64(encrypted),
+    encrypted,
   };
+}
 
-  return JSON.stringify(data);
+export async function decrypt(
+  encryptedBuf: BufferSource,
+  iv: string, 
+  key: CryptoKey
+): Promise<ArrayBuffer> {
+  return crypto.subtle.decrypt(
+    {
+      name: "AES-CBC",
+      iv: base64ToUint8Array(iv),
+    },
+    key,
+    encryptedBuf,
+  );
 }
 
 export async function encryptString<T extends string>(
@@ -73,32 +91,23 @@ export async function encryptString<T extends string>(
   symmetricKey: CryptoKey
 ): Promise<string> {
   const encodedString = new TextEncoder().encode(str);
-  return encrypt(encodedString, symmetricKey);
-}
+  const { iv, encrypted } = await encrypt(encodedString, symmetricKey);
 
-export async function decrypt(
-  encryptedStr: string,
-  key: CryptoKey
-): Promise<ArrayBuffer> {
-  const { iv, encrypted } = JSON.parse(encryptedStr) as EncryptedValue;
+  const data: EncryptedValue = {
+    iv,
+    encrypted: arrayBufferToBase64(encrypted),
+  };
 
-  const decrypted = await crypto.subtle.decrypt(
-    {
-      name: "AES-CBC",
-      iv: base64ToUint8Array(iv),
-    },
-    key,
-    base64ToUint8Array(encrypted)
-  );
-
-  return decrypted;
+  return JSON.stringify(data);
 }
 
 export async function decryptString<T extends string>(
   encryptedStr: string,
   key: CryptoKey
 ): Promise<T> {
-  const decrypted = await decrypt(encryptedStr, key);
+  const { iv, encrypted } = JSON.parse(encryptedStr) as EncryptedValue;
+
+  const decrypted = await decrypt(base64ToUint8Array(encrypted), iv, key);
 
   const str = new TextDecoder().decode(decrypted);
 
