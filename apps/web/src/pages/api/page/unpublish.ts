@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "../../../lib/supabase/supabase";
 import { DIDSession } from "did-session";
+import * as Sentry from "@sentry/nextjs";
 
 type Payload = {
   pageId: string;
@@ -29,12 +30,14 @@ export default async function handler(
       .eq("publisher_address", publisherAddress);
 
     if (result.error) {
+      Sentry.captureException(result.error);
       console.error(result.error);
       return res.status(500).json({ success: false });
     }
 
     return res.status(200).json({ data: result.data, sucess: true });
   } catch (error) {
+    Sentry.captureException(error);
     console.error(error);
     return res.status(500).json({ success: false });
   }
