@@ -26,8 +26,8 @@ export function DeletePageDialog({ onDelete }: DeletePageDialogProps) {
         <AlertDialogHeader>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot will delete this page and remove any publications
-            from the{" "}
+            This action will delete this page and remove any publications from
+            the{" "}
             <Link href={"/explore"} className="underline">
               explore
             </Link>{" "}

@@ -35,7 +35,7 @@ export default async function handler(
       return res.status(500).json({ success: false });
     }
 
-    return res.status(200).json({ data: result.data, sucess: true });
+    return res.status(200).json({ data: result.data, success: true });
   } catch (error) {
     Sentry.captureException(error);
     console.error(error);

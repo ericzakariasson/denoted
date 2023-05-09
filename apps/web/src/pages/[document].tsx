@@ -160,23 +160,30 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
     async () => {
       const ceramicSession = await ceramic.getSession();
 
-      const response = await fetch("/api/page/unpublish", {
-        method: "POST",
-        body: JSON.stringify({
-          pageId: page!.id,
-          ceramicSession: ceramicSession?.serialize(),
-        }),
-      });
+      try {
+        const response = await fetch("/api/page/unpublish", {
+          method: "POST",
+          body: JSON.stringify({
+            pageId: page!.id,
+            ceramicSession: ceramicSession?.serialize(),
+          }),
+        });
 
-      if (!response.ok) {
-        throw new Error(`${response.status} ${response.statusText}`);
+        if (!response.ok) {
+          throw new Error(`${response.status} ${response.statusText}`);
+        }
+
+        await response.json();
+      } catch (error) {
+        throw new Error("Unpublish Error", { cause: error });
       }
 
-      await response.json();
-
-      trackEvent("Page Unpublished");
-
-      return await deletePage(page!.id);
+      try {
+        trackEvent("Page Unpublished");
+        return await deletePage(page!.id);
+      } catch (error) {
+        throw new Error("Delete Error", { cause: error });
+      }
     },
     {
       onMutate: () => {
