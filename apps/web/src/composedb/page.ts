@@ -1,7 +1,7 @@
 import { gql } from "graphql-request";
 import { composeClient } from "../lib/compose";
 import { PageNode } from "./page-node";
-type DID = {
+export type DID = {
   id: string;
 };
 
@@ -17,6 +17,8 @@ export type Page = {
   createdAt: string;
   updatedBy?: DID | null;
   updatedAt?: string | null;
+  deletedBy?: DID | null;
+  deletedAt?: string | null;
 };
 
 type CreatePageMutation = {
@@ -82,6 +84,14 @@ export async function updatePage(id: string, input: UpdatePageInput) {
               id
             }
             createdAt
+            updatedBy {
+              id
+            }
+            updatedAt
+            deletedBy {
+              id
+            }
+            deletedAt
           }
         }
       }
@@ -115,6 +125,14 @@ export async function getPagesQuery() {
               id
             }
             createdAt
+            updatedBy {
+              id
+            }
+            updatedAt
+            deletedBy {
+              id
+            }
+            deletedAt
           }
         }
       }
@@ -146,6 +164,14 @@ export async function getPageQuery(id: string) {
               id
             }
             createdAt
+            updatedBy {
+              id
+            }
+            updatedAt
+            deletedBy {
+              id
+            }
+            deletedAt
           }
         }
       }

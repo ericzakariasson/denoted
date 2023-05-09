@@ -1,5 +1,5 @@
 import { JSONContent } from "@tiptap/react";
-import { Edit, Loader2, Save } from "lucide-react";
+import { Edit, Loader2, Router, Save } from "lucide-react";
 import { GetServerSideProps, NextPage } from "next";
 import dynamic from "next/dynamic";
 import { useState } from "react";
@@ -16,10 +16,15 @@ import { composeClient } from "../lib/compose";
 import {
   DeserializedPage,
   decryptPage,
+  deletePage,
   deserializePage,
   encryptPage,
   serializePage,
 } from "../utils/page-helper";
+import { DeletePageDialog } from "../components/DeletePageDialog";
+import { useRouter } from "next/router";
+import { toast } from "../components/ui/use-toast";
+import { useCeramic } from "../hooks/useCeramic";
 
 const PublishMenu = dynamic(
   async () =>
@@ -60,6 +65,8 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
   const [isEditing, setIsEditing] = useState(false);
   const { address } = useAccount();
 
+  const router = useRouter();
+
   const PAGE_QUERY_KEY = [
     "DESERIALIZED_PAGE",
     initialPage.id,
@@ -67,6 +74,8 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
     address,
   ];
   const queryClient = useQueryClient();
+
+  const ceramic = useCeramic();
 
   const { data: page, isLoading } = useQuery<DeserializedPage>(
     PAGE_QUERY_KEY,
@@ -147,6 +156,62 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
     }
   );
 
+  const deletePageMutation = useMutation(
+    async () => {
+      const ceramicSession = await ceramic.getSession();
+
+      try {
+        const response = await fetch("/api/page/unpublish", {
+          method: "POST",
+          body: JSON.stringify({
+            pageId: page!.id,
+            ceramicSession: ceramicSession?.serialize(),
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`${response.status} ${response.statusText}`);
+        }
+
+        await response.json();
+      } catch (error) {
+        throw new Error("Unpublish Error", { cause: error });
+      }
+
+      try {
+        trackEvent("Page Unpublished");
+        return await deletePage(page!.id);
+      } catch (error) {
+        throw new Error("Delete Error", { cause: error });
+      }
+    },
+    {
+      onMutate: () => {
+        trackEvent("Page Delete Clicked");
+      },
+      onSuccess: async ({ data, errors }) => {
+        console.info("Delete Page Success", data, errors);
+
+        const page = data?.updatePage?.document ?? null;
+
+        if (page) {
+          queryClient.invalidateQueries({
+            queryKey: ["PAGES", composeClient.id],
+          });
+          trackEvent("Page Deleted", { pageId: page!.id });
+
+          router.push("/create");
+
+          toast({
+            title: "Page deleted ✔️",
+            description:
+              "Your page has been deleted but is still accessible on IPFS if it was published.",
+          });
+        }
+      },
+    }
+  );
+
   if (isLoading) {
     return (
       <Layout className="pt-20" title="Loading...">
@@ -213,6 +278,7 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
             Edit page
           </Button>
           <PublishMenu page={page} />
+          <DeletePageDialog onDelete={deletePageMutation.mutate} />
         </div>
       )}
       <h1 className="mb-8 text-5xl font-bold leading-tight">{page.title}</h1>

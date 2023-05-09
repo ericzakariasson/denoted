@@ -44,7 +44,7 @@ export function Sidebar({ className }: SidebarProps) {
       const query = await getPagesQuery();
       const pages = query.data?.pageIndex?.edges.map((edge) => edge.node) ?? [];
       const myPages = pages.filter(
-        (page) => page.createdBy.id === composeClient.id
+        (page) => page.createdBy.id === composeClient.id && !page.deletedAt
       );
       return myPages;
     },

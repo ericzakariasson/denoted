@@ -118,6 +118,7 @@ export function useCeramic() {
   return {
     authenticate,
     hasSession,
+    getSession,
     isInitialized: Boolean(composeClient.id),
     isComposeResourcesSigned: isComposeResourcesSignedQuery.data ?? false,
     isLoading: isComposeResourcesSignedQuery.isLoading,
