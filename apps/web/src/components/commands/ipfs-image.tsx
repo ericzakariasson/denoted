@@ -58,47 +58,6 @@ async function uploadImageToIpfs(file: File): Promise<string> {
   return cid;
 }
 
-// async function uploadImageToIpfs(file: string): Promise<string> {
-//   const res = await fetch("/api/editor/uploadJson", {
-//     method: "POST",
-//     body: JSON.stringify({ file }),
-//     headers: {
-//       "Content-Type": "application/json",
-//       "Accept": "application/json",
-//     },
-//   });
-
-//   if (!res.ok) {
-//     throw new Error("Failed to upload image to IPFS");
-//   }
-
-//   const { upload } = await res.json();
-
-//   const cid = upload.IpfsHash;
-
-//   return cid;
-// }
-
-// function readFileAsArrayBuffer(file: File | Blob): Promise<ArrayBuffer> {
-//   return new Promise<ArrayBuffer>((resolve, reject) => {
-//     const reader = new FileReader();
-
-//     reader.onload = (event: ProgressEvent<FileReader>) => {
-//       if (event.target && event.target.result) {
-//         resolve(event.target.result as ArrayBuffer);
-//       } else {
-//         reject(new Error('Failed to read file as ArrayBuffer.'));
-//       }
-//     };
-
-//     reader.onerror = (event: ProgressEvent<FileReader>) => {
-//       reject(event.target?.error || new Error('Failed to read file.'));
-//     };
-
-//     reader.readAsArrayBuffer(file);
-//   });
-// }
-
 const IpfsImage = (
   props: CommandExtensionProps<IpfsImageProps>
 ) => {

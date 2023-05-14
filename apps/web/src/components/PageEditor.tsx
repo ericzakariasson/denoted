@@ -125,7 +125,6 @@ export function PageEditor({ page, encryptionKey, renderSubmit }: PageEditorProp
                 }
               : []
           }
-          // pageId={page?.id}
           encryptionKey={encryptionKey}
           onUpdate={(json) => setJson(json)}
           focusedEditorState={[focusEditor, setFocusEditor]}
