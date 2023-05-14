@@ -25,7 +25,7 @@ export async function importEncryptionKey(symmetricKey: Uint8Array) {
   return { key };
 }
 
-export function arrayBufferToBase64(arrayBuffer: ArrayBuffer): string {
+function arrayBufferToBase64(arrayBuffer: ArrayBuffer): string {
   return Buffer.from(
     String.fromCharCode(...new Uint8Array(arrayBuffer))
   ).toString("base64");

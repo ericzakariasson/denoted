@@ -10,6 +10,22 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button, buttonVariants } from "./ui/button";
 import { cn } from "../lib/utils";
 import { useToast } from "./ui/use-toast";
+import * as IpfsImage from './commands/ipfs-image';
+import { JSONContent } from "@tiptap/react";
+
+async function onPublishContent(blocks: JSONContent[], encryptionKey: CryptoKey | undefined) : Promise<JSONContent[]> {
+  return await Promise.all(blocks.map(async (block) => {
+    if (block.content) {
+      block.content = await onPublishContent(block.content, encryptionKey);
+    }
+
+    if (block.type === IpfsImage.extension.name) {
+      block.attrs = await IpfsImage.onPublish(block.attrs, encryptionKey);
+    }
+
+    return block;
+  }));
+}
 
 const generateTweetLink = (title: string, url: string) => {
   const base = "https://twitter.com/intent/tweet";
@@ -24,9 +40,10 @@ const generateTweetLink = (title: string, url: string) => {
 
 export type PublishmenuProps = {
   page: DeserializedPage;
+  encryptionKey: CryptoKey | undefined;
 };
 
-export const PublishMenu: React.FC<PublishmenuProps> = ({ page }) => {
+export const PublishMenu: React.FC<PublishmenuProps> = ({ page, encryptionKey }) => {
   const [isCopied, setIsCopied] = useState(false);
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -37,6 +54,8 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ page }) => {
 
   const publishMutation = useMutation(
     async () => {
+      page.data = await onPublishContent(page.data, encryptionKey);
+
       const response = await fetch("/api/page/publish", {
         method: "POST",
         body: JSON.stringify({ page }),

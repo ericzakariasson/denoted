@@ -94,8 +94,6 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
       }
 
       const { key } = await importStoredEncryptionKey(initialPage.key!, address);
-      console.log("Imported key", new Uint8Array(await crypto.subtle.exportKey("raw", key)))
-    
       const decryptedPage = await decryptPage(initialPage, key);
       const deserializedPage = deserializePage(decryptedPage);
 
@@ -296,12 +294,12 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
             <Edit className="mr-2 h-4 w-4" />
             Edit page
           </Button>
-          <PublishMenu page={page} />
+          <PublishMenu page={page} encryptionKey={key} />
           <DeletePageDialog onDelete={deletePageMutation.mutate} />
         </div>
       )}
       <h1 className="mb-8 text-5xl font-bold leading-tight">{page.title}</h1>
-      <Viewer key={page.id} json={json} />
+      <Viewer key={page.id} encryptionKey={key} json={json} />
     </Layout>
   );
 };

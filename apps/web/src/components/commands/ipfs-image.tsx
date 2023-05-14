@@ -7,7 +7,7 @@ import { CommandExtensionProps } from "../../lib/tiptap/types";
 import { DataPill } from "../DataPill";
 import { decrypt, encrypt } from "../../lib/crypto";
 
-export type IpfsImageProps = {
+type IpfsImageProps = {
   cid: string | null;
   alt: string;
   title: string;
@@ -15,6 +15,25 @@ export type IpfsImageProps = {
   type: string | undefined;
   iv: string | null;
 };
+
+async function getIpfsImage(
+  cid: string,
+  { type, iv, encryptionKey }: Pick<IpfsImageProps, 'type' | 'iv'> & { encryptionKey?: CryptoKey },
+) {
+  const res = await fetch(`https://cloudflare-ipfs.com/ipfs/${cid}`, { cache: "force-cache" });
+  const imageBlob = await res.blob();
+
+  if (iv) {
+    if (!encryptionKey) {
+      throw new Error("Can't load encrytped image from IPFS due to missing key"); 
+    }
+    const encryptedBuffer = await imageBlob.arrayBuffer();
+    const decyptedImageBuffer = await decrypt(encryptedBuffer, iv, encryptionKey);
+    return new Blob([decyptedImageBuffer], { type });
+  }
+
+  return imageBlob;
+}
 
 async function uploadImageToIpfs(file: File): Promise<string> {
   const formData = new FormData();
@@ -39,27 +58,48 @@ async function uploadImageToIpfs(file: File): Promise<string> {
   return cid;
 }
 
-function readFileAsArrayBuffer(file: File | Blob): Promise<ArrayBuffer> {
-  return new Promise<ArrayBuffer>((resolve, reject) => {
-    const reader = new FileReader();
+// async function uploadImageToIpfs(file: string): Promise<string> {
+//   const res = await fetch("/api/editor/uploadJson", {
+//     method: "POST",
+//     body: JSON.stringify({ file }),
+//     headers: {
+//       "Content-Type": "application/json",
+//       "Accept": "application/json",
+//     },
+//   });
 
-    reader.onload = (event: ProgressEvent<FileReader>) => {
-      if (event.target && event.target.result) {
-        resolve(event.target.result as ArrayBuffer);
-      } else {
-        reject(new Error('Failed to read file as ArrayBuffer.'));
-      }
-    };
+//   if (!res.ok) {
+//     throw new Error("Failed to upload image to IPFS");
+//   }
 
-    reader.onerror = (event: ProgressEvent<FileReader>) => {
-      reject(event.target?.error || new Error('Failed to read file.'));
-    };
+//   const { upload } = await res.json();
 
-    reader.readAsArrayBuffer(file);
-  });
-}
+//   const cid = upload.IpfsHash;
 
-export const IpfsImage = (
+//   return cid;
+// }
+
+// function readFileAsArrayBuffer(file: File | Blob): Promise<ArrayBuffer> {
+//   return new Promise<ArrayBuffer>((resolve, reject) => {
+//     const reader = new FileReader();
+
+//     reader.onload = (event: ProgressEvent<FileReader>) => {
+//       if (event.target && event.target.result) {
+//         resolve(event.target.result as ArrayBuffer);
+//       } else {
+//         reject(new Error('Failed to read file as ArrayBuffer.'));
+//       }
+//     };
+
+//     reader.onerror = (event: ProgressEvent<FileReader>) => {
+//       reject(event.target?.error || new Error('Failed to read file.'));
+//     };
+
+//     reader.readAsArrayBuffer(file);
+//   });
+// }
+
+const IpfsImage = (
   props: CommandExtensionProps<IpfsImageProps>
 ) => {
   const { cid, file, type, iv, alt, title } = props.node.attrs;
@@ -68,18 +108,14 @@ export const IpfsImage = (
 
   const fetchImage = useQuery({
     queryKey: ["ipfs-image", cid],
-    queryFn: async () => {
-      const res = await fetch(`https://gateway.pinata.cloud/ipfs/${cid}`);
-      const imageBlob = await res.blob();
+    queryFn: async ({ queryKey }) => {
+      const [_, cid] = queryKey;
 
-      if (iv) {
-        console.log("iv", iv);
-        const encryptedBuffer = await readFileAsArrayBuffer(imageBlob);
-        const decyptedImageBuffer = await decrypt(encryptedBuffer, iv, encryptionKey);
-        return new Blob([decyptedImageBuffer], { type });
+      if (!cid) {
+        throw new Error("Can't load image from IPFS due to missing CID");
       }
 
-      return imageBlob;
+      return await getIpfsImage(cid, { type, iv, encryptionKey: encryptionKey! });
     },
     refetchOnWindowFocus: false,
     staleTime: 3 * 60 * 1000,
@@ -89,7 +125,7 @@ export const IpfsImage = (
 
   const uploadImage = useMutation({
     mutationFn: async (file: File) => {
-      const fileBuffer = await readFileAsArrayBuffer(file);
+      const fileBuffer = await file.arrayBuffer();
       const { iv, encrypted } = await encrypt(fileBuffer, encryptionKey);
       const encryptedBlob = new Blob([encrypted], { type: "application/octet-stream" });
       const encryptedFile = new File([encryptedBlob], file.name, { lastModified: file.lastModified, });
@@ -97,24 +133,26 @@ export const IpfsImage = (
 
       return {
         cid,
-        iv,
+        file,
         type: file.type,
+        iv,
       };
     },
-    onSuccess: ({ cid, iv, type }) => {
+    onSuccess: ({ cid, file, type, iv }) => {
       props.updateAttributes({
         cid,
-        iv,
-        type,
-        file: undefined,
         alt: file?.name,
         title: `${file?.name} uploaded to IPFS with CID ${cid}`,
+        file: undefined,
+        type,
+        iv,
       });
     },
   });
 
   const isError = uploadImage.isError || fetchImage.isError;
-  const isLoading = uploadImage.isLoading || fetchImage.isLoading || objectUrl === null;
+
+  const placeholderImage = "data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg' viewBox%3D'0 0 200 150'%2F%3E";
 
   useEffect(() => {
     if (file && cid === null && !uploadImage.isLoading) {
@@ -139,8 +177,8 @@ export const IpfsImage = (
 
   if (isError) {
     return (
-      <NodeViewWrapper as="span">
-        <DataPill query={fetchImage}>no data</DataPill>;
+      <NodeViewWrapper as="div">
+        <DataPill query={fetchImage}>no data</DataPill>
       </NodeViewWrapper>
     );
   }
@@ -154,12 +192,12 @@ export const IpfsImage = (
         contentEditable={false}
       >
         <img
-          src={objectUrl || ""}
+          src={objectUrl ?? placeholderImage}
           alt={alt}
           title={title}
-          className={isLoading ? "blur-sm line-block" : "line-block"}
+          className={uploadImage.isLoading ? "blur-sm inline-block m-2" : "inline-block m-2"}
         />
-        {isLoading && (
+        {(uploadImage.isLoading || fetchImage.isLoading) && (
           <span className="absolute w-[32px] h-[32px] inset-1/2 -translate-x-1/2 -translate-y-1/2">
             <Loader2 width={32} height={32} className="animate-spin" />
           </span>
@@ -217,3 +255,23 @@ export const extension = Node.create({
     return ReactNodeViewRenderer(IpfsImage);
   },
 });
+
+export async function onPublish(attrs: Record<string, any> | undefined, encryptionKey?: CryptoKey) : Promise<Partial<IpfsImageProps>> {
+  const { cid, alt, type, iv } = attrs as IpfsImageProps;
+
+  if (!cid) {
+    throw new Error("Can't load image from IPFS due to missing CID");
+  }
+  
+  const imageBlob = await getIpfsImage(cid, { type, iv, encryptionKey });
+  const file = new File([imageBlob], alt);
+  
+  const unencryptedCid = await uploadImageToIpfs(file);
+
+  return {
+    ...attrs,
+    cid: unencryptedCid,
+    iv: null,
+    file: undefined,
+  };
+} 

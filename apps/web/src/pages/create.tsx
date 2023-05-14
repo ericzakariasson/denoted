@@ -19,9 +19,7 @@ const CreatePage: NextPage = () => {
 
   const generateKeyMutation = useMutation(
     async () => {
-      const key = await generateEncryptionKey();
-      console.log("Generated key", new Uint8Array(await crypto.subtle.exportKey("raw", key)))
-      return key;
+      return await generateEncryptionKey();
     },
   );
 
