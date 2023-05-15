@@ -21,6 +21,11 @@ async function getIpfsImage(
   { type, iv, encryptionKey }: Pick<IpfsImageProps, 'type' | 'iv'> & { encryptionKey?: CryptoKey },
 ) {
   const res = await fetch(`https://cloudflare-ipfs.com/ipfs/${cid}`, { cache: "force-cache" });
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch image with CID ${cid} from IPFS`);
+  }
+
   const imageBlob = await res.blob();
 
   if (iv) {
