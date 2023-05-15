@@ -20,6 +20,7 @@ import {
   deserializePage,
   encryptPage,
   serializePage,
+  importStoredEncryptionKey,
 } from "../utils/page-helper";
 import { DeletePageDialog } from "../components/DeletePageDialog";
 import { useRouter } from "next/router";
@@ -77,28 +78,39 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
 
   const ceramic = useCeramic();
 
-  const { data: page, isLoading } = useQuery<DeserializedPage>(
+  const { data, isLoading } = useQuery<{
+    page: DeserializedPage;
+    key?: CryptoKey;
+  }>(
     PAGE_QUERY_KEY,
     async () => {
       if (!initialPage.key) {
         const deserializedPage = deserializePage(initialPage);
-        return deserializedPage;
+        return { page: deserializedPage };
       }
 
       if (!address) {
         throw new Error("No address");
       }
 
-      const decryptedPage = await decryptPage(initialPage, address);
+      const { key } = await importStoredEncryptionKey(initialPage.key!, address);
+      const decryptedPage = await decryptPage(initialPage, key);
       const deserializedPage = deserializePage(decryptedPage);
-      return deserializedPage;
-    }
+
+      return {
+        page: deserializedPage,
+        key,
+      };
+    },
   );
+
+  const page = data?.page;
+  const key = data?.key;
 
   const isOwner = page?.createdBy.id === composeClient.id;
 
   const updatePageMutation = useMutation(
-    async ({ page: updatedPage, address, isPublic }: SavePageData) => {
+    async ({ page: updatedPage, address, isPublic, encryptionKey }: SavePageData) => {
       const pageInput = serializePage(
         "PAGE",
         updatedPage.title,
@@ -106,9 +118,13 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
         new Date()
       );
 
+      if (!address || !encryptionKey) {
+        throw new Error("No user address or encryption key");
+      }
+
       const updateResult = await updatePage(
         page!.id,
-        isPublic ? pageInput : await encryptPage(pageInput, address)
+        isPublic ? pageInput : await encryptPage(pageInput, address, encryptionKey)
       );
 
       return updateResult;
@@ -236,6 +252,7 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
       <Layout>
         <PageEditor
           page={page}
+          encryptionKey={key}
           renderSubmit={({ isDisabled, data }) => (
             <div className="mb-10 flex gap-4">
               <Button
@@ -277,12 +294,12 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
             <Edit className="mr-2 h-4 w-4" />
             Edit page
           </Button>
-          <PublishMenu page={page} />
+          <PublishMenu page={page} encryptionKey={key} />
           <DeletePageDialog onDelete={deletePageMutation.mutate} />
         </div>
       )}
       <h1 className="mb-8 text-5xl font-bold leading-tight">{page.title}</h1>
-      <Viewer key={page.id} json={json} />
+      <Viewer key={page.id} encryptionKey={key} json={json} />
     </Layout>
   );
 };

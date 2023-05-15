@@ -79,6 +79,10 @@ module.exports = {
             ul: {
               listStyleType: "revert",
             },
+            img: {
+              marginTop: "0.5rem",
+              marginBottom: "0.5rem",
+            }
           },
         },
       }),

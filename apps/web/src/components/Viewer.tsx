@@ -4,9 +4,10 @@ import { extensions } from "./Editor";
 
 type ViewerProps = {
   json: JSONContent;
+  encryptionKey?: CryptoKey;
 };
 
-export const Viewer = ({ json }: ViewerProps) => {
+export const Viewer = ({ json, encryptionKey }: ViewerProps) => {
   const editor = useEditor({
     editable: false,
     extensions: [...extensions],
@@ -17,6 +18,10 @@ export const Viewer = ({ json }: ViewerProps) => {
       },
     },
   });
+
+  if (editor) {
+    editor.storage.encryptionKey = encryptionKey; 
+  }
 
   return <EditorContent editor={editor} />;
 };
