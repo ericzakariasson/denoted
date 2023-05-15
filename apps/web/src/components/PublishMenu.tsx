@@ -54,11 +54,13 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ page, encryptionKey })
 
   const publishMutation = useMutation(
     async () => {
-      page.data = await onPublishContent(page.data, encryptionKey);
+      const pageToPublish = structuredClone(page);
+
+      pageToPublish.data = await onPublishContent(pageToPublish.data, encryptionKey);
 
       const response = await fetch("/api/page/publish", {
         method: "POST",
-        body: JSON.stringify({ page }),
+        body: JSON.stringify({ page: pageToPublish }),
       });
 
       if (!response.ok) {
