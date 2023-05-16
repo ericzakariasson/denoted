@@ -4,6 +4,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import TextAlign from "@tiptap/extension-text-align";
 import LinkExtension from "@tiptap/extension-link";
 import Typography from "@tiptap/extension-typography";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { EditorView } from "@tiptap/pm/view";
 import { BubbleMenu, EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -13,6 +14,11 @@ import { Command } from "../lib/tiptap/command/command-extension";
 import { commandSuggestions } from "../lib/tiptap/command/command-suggestions";
 import { getCommandExtensions } from "../lib/tiptap/tiptap";
 import { Toggle } from "./ui/toggle";
+import css from "highlight.js/lib/languages/css";
+import js from "highlight.js/lib/languages/javascript";
+import ts from "highlight.js/lib/languages/typescript";
+import html from "highlight.js/lib/languages/xml";
+import { lowlight } from "lowlight";
 
 import {
   AlignCenter,
@@ -21,9 +27,9 @@ import {
   AlignRight,
   Bold,
   Italic,
-  Link2,
   Link2Off,
   Strikethrough,
+  Code,
 } from "lucide-react";
 import { TrailingNode } from "../lib/tiptap/extensions/trailing-node";
 import * as IpfsImage from "../components/commands/ipfs-image";
@@ -78,6 +84,9 @@ export const extensions = [
   }),
   ...commandExtensions,
   TrailingNode,
+  CodeBlockLowlight.configure({
+    lowlight,
+  }),
 ];
 
 export const Editor = ({
@@ -170,7 +179,7 @@ export const Editor = ({
   }, [focusEditor, editor, setFocusEditor]);
 
   if (editor) {
-    editor.storage.encryptionKey = encryptionKey; 
+    editor.storage.encryptionKey = encryptionKey;
     editor.storage.connectedAddress = address;
   }
 
@@ -231,6 +240,12 @@ export const Editor = ({
               isActive={editor.isActive("strike")}
             >
               <Strikethrough className="h-4 w-4" />
+            </BubbleMenuButton>
+            <BubbleMenuButton
+              onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+              isActive={editor.isActive("codeBlock")}
+            >
+              <Code className="h-4 w-4" />
             </BubbleMenuButton>
           </div>
           {editor.isActive("link") && (
