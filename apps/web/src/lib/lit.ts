@@ -78,11 +78,18 @@ export function getAddressOwnerAcl(address: string): AccsDefaultParams {
   };
 }
 
+function daysInFuture(days: number) {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return date;
+}
+
 export async function authenticateLit() {
   await litClient.connect();
 
   return await checkAndSignAuthMessage({
     chain: litChain,
+    expiration: daysInFuture(7).toISOString()
   });
 }
 
