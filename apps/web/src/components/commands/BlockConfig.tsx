@@ -4,6 +4,7 @@ import { PopoverContent, PopoverTrigger } from "../ui/popover";
 import { FormSubmitHandler } from "../use-block-config-props";
 import { ConfigForm, FormField } from "./ConfigForm";
 import { Settings2 } from "lucide-react";
+import { PopperContentProps } from "@radix-ui/react-popover";
 
 export function BlockConfigButton({
   isConfigured,
@@ -31,12 +32,14 @@ export function BlockConfigButton({
 export function BlockConfigForm({
   fields,
   onSubmit,
+  align = "start",
 }: {
   fields: FormField[];
   onSubmit: FormSubmitHandler;
+  align?: PopperContentProps["align"];
 }) {
   return (
-    <PopoverContent align="start">
+    <PopoverContent align={align}>
       <ConfigForm fields={fields} onSubmit={onSubmit} />
     </PopoverContent>
   );

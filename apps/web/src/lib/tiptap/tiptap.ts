@@ -41,6 +41,7 @@ export function getCommandExtensions() {
       inline: command.blockType === "inline",
       selectable: command.blockType === "inline",
       atom: command.blockType === "block",
+      draggable: command.blockType === "block",
 
       addAttributes() {
         const attributes = Object.entries(

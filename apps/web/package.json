@@ -59,6 +59,7 @@
     "formidable": "^2.1.1",
     "framer-motion": "^10.0.1",
     "graphql-request": "^5.1.0",
+    "link-preview-js": "^3.0.4",
     "lodash.get": "^4.4.2",
     "lowlight": "^2.9.0",
     "lucide-react": "^0.171.0",

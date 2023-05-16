@@ -232,7 +232,7 @@ const DocumentPage: NextPage<Props> = () => {
     }
   );
 
-  if (isLoading) {
+  if (isLoading || pageQuery.isLoading) {
     return (
       <Layout className="pt-20" title="Loading...">
         <Skeleton className="mb-8 h-[60px] w-full rounded-lg" />
