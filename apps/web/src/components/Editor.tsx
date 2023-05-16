@@ -34,11 +34,6 @@ import {
 import { TrailingNode } from "../lib/tiptap/extensions/trailing-node";
 import * as IpfsImage from "../components/commands/ipfs-image";
 
-lowlight.registerLanguage("html", html);
-lowlight.registerLanguage("css", css);
-lowlight.registerLanguage("js", js);
-lowlight.registerLanguage("ts", ts);
-
 type BubbleMenuButtonProps = {
   onClick: () => void;
   isActive: boolean;
