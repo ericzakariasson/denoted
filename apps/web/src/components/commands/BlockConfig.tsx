@@ -36,7 +36,7 @@ export function BlockConfigForm({
 }: {
   fields: FormField[];
   onSubmit: FormSubmitHandler;
-  align: PopperContentProps["align"];
+  align?: PopperContentProps["align"];
 }) {
   return (
     <PopoverContent align={align}>
