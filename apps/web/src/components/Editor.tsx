@@ -14,11 +14,11 @@ import { Command } from "../lib/tiptap/command/command-extension";
 import { commandSuggestions } from "../lib/tiptap/command/command-suggestions";
 import { getCommandExtensions } from "../lib/tiptap/tiptap";
 import { Toggle } from "./ui/toggle";
-import css from "highlight.js/lib/languages/css";
-import js from "highlight.js/lib/languages/javascript";
-import ts from "highlight.js/lib/languages/typescript";
-import html from "highlight.js/lib/languages/xml";
 import { lowlight } from "lowlight";
+import "highlight.js/lib/languages/css";
+import "highlight.js/lib/languages/javascript";
+import "highlight.js/lib/languages/typescript";
+import "highlight.js/lib/languages/xml";
 
 import {
   AlignCenter,
@@ -70,6 +70,9 @@ export const extensions = [
       width: 4,
       class: "text-slate-400",
     },
+    codeBlock: {
+      lowlight,
+    } as any,
   }),
   Highlight,
   Typography,
