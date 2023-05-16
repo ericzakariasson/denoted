@@ -37,55 +37,43 @@ type Props = {
   page: Page;
 };
 
-export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
-  const pageId = ctx.params?.document?.toString();
-
-  if (!pageId) {
-    return {
-      notFound: true,
-    };
-  }
-
-  const pageQuery = await getPageQuery(pageId);
-  const page = pageQuery.data?.node;
-
-  if (!page) {
-    return {
-      notFound: true,
-    };
-  }
-
-  return {
-    props: {
-      page,
-    },
-  };
-};
-
-const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
+const DocumentPage: NextPage<Props> = () => {
   const [isEditing, setIsEditing] = useState(false);
   const { address } = useAccount();
 
   const router = useRouter();
 
-  const PAGE_QUERY_KEY = [
-    "DESERIALIZED_PAGE",
-    initialPage.id,
-    initialPage.key,
-    address,
-  ];
   const queryClient = useQueryClient();
 
   const ceramic = useCeramic();
+
+  const pageId = router.query.document?.toString() ?? "";
+
+  const pageQuery = useQuery(
+    [pageId],
+    async () => {
+      const { data } = await getPageQuery(pageId);
+      return data?.node;
+    },
+    { enabled: Boolean(pageId) }
+  );
+
+  const DESERIALIZED_PAGE_QUERY_KEY = [
+    "DESERIALIZED_PAGE",
+    pageQuery.data?.id,
+    pageQuery.data?.key,
+    address,
+  ];
 
   const { data, isLoading } = useQuery<{
     page: DeserializedPage;
     key?: CryptoKey;
   }>(
-    PAGE_QUERY_KEY,
+    DESERIALIZED_PAGE_QUERY_KEY,
     async () => {
-      if (!initialPage.key) {
-        const deserializedPage = deserializePage(initialPage);
+      const serializedPage = pageQuery.data!;
+      if (!serializedPage.key) {
+        const deserializedPage = deserializePage(serializedPage);
         return { page: deserializedPage };
       }
 
@@ -93,8 +81,12 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
         throw new Error("No address");
       }
 
-      const { key } = await importStoredEncryptionKey(initialPage.key!, address);
-      const decryptedPage = await decryptPage(initialPage, key);
+      const { key } = await importStoredEncryptionKey(
+        serializedPage.key!,
+        address
+      );
+
+      const decryptedPage = await decryptPage(serializedPage, key);
       const deserializedPage = deserializePage(decryptedPage);
 
       return {
@@ -102,6 +94,7 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
         key,
       };
     },
+    { enabled: pageQuery.isSuccess }
   );
 
   const page = data?.page;
@@ -110,7 +103,12 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
   const isOwner = page?.createdBy.id === composeClient.id;
 
   const updatePageMutation = useMutation(
-    async ({ page: updatedPage, address, isPublic, encryptionKey }: SavePageData) => {
+    async ({
+      page: updatedPage,
+      address,
+      isPublic,
+      encryptionKey,
+    }: SavePageData) => {
       const pageInput = serializePage(
         "PAGE",
         updatedPage.title,
@@ -124,7 +122,9 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
 
       const updateResult = await updatePage(
         page!.id,
-        isPublic ? pageInput : await encryptPage(pageInput, address, encryptionKey)
+        isPublic
+          ? pageInput
+          : await encryptPage(pageInput, address, encryptionKey)
       );
 
       return updateResult;
@@ -133,15 +133,19 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
       onMutate: ({ page }) => {
         trackEvent("Page Save Clicked");
 
-        const previousPage =
-          queryClient.getQueryData<DeserializedPage>(PAGE_QUERY_KEY);
+        const previousPage = queryClient.getQueryData<DeserializedPage>(
+          DESERIALIZED_PAGE_QUERY_KEY
+        );
 
         if (previousPage) {
-          queryClient.setQueryData<DeserializedPage>(PAGE_QUERY_KEY, {
-            ...previousPage,
-            title: page.title,
-            data: page.content,
-          });
+          queryClient.setQueryData<DeserializedPage>(
+            DESERIALIZED_PAGE_QUERY_KEY,
+            {
+              ...previousPage,
+              title: page.title,
+              data: page.content,
+            }
+          );
         }
 
         return { previousPage };
@@ -151,7 +155,7 @@ const DocumentPage: NextPage<Props> = ({ page: initialPage }) => {
 
         if (context?.previousPage) {
           queryClient.setQueryData<DeserializedPage>(
-            PAGE_QUERY_KEY,
+            DESERIALIZED_PAGE_QUERY_KEY,
             context.previousPage
           );
         }

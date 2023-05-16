@@ -38,7 +38,7 @@ export const PageCard = ({ publication }: PageCardProps) => {
             size={24}
             address={publication.publisher_address as Address}
           />
-          {ens.isSuccess ? ens.data : truncate(publication.publisher_address)}
+          {ens.data ? ens.data : truncate(publication.publisher_address)}
         </div>
         <Link
           href={`/p/${publication.id}`}
