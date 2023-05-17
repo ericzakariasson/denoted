@@ -55,8 +55,8 @@ export const DataStack = ({
 
   return (
     <div className={cn(base, "bg-slate-100", className)}>
-      <ul className="list-none divide-y divide-solid divide-slate-200 px-0 dark:divide-slate-700">
-        <li className="px-0 py-3 sm:py-4">{children}</li>
+      <ul className="list-none divide-y divide-solid divide-slate-200 my-4 px-0 dark:divide-slate-700">
+        <li className="px-0 py-3 sm:py-4 my-0">{children}</li>
       </ul>
     </div>
   );
