@@ -42,7 +42,7 @@ export const DuneConfig = (props: CommandExtensionProps<DuneProps>) => {
   return (
     <NodeViewWrapper>
       {isConfigured && (
-        <div className="h-64 w-full">
+        <div className="aspect-video">
           <iframe src={src} className="h-full w-full"></iframe>
         </div>
       )}
