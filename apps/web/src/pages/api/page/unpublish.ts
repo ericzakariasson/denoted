@@ -39,6 +39,12 @@ export default async function handler(
   } catch (error) {
     Sentry.captureException(error);
     console.error(error);
-    return res.status(500).json({ success: false });
+    if (error instanceof Error) {
+      return res.status(500).json({ success: false, error: error.message });
+    } else {
+      return res
+        .status(500)
+        .json({ success: false, error: "Internal Server Error" });
+    }
   }
 }

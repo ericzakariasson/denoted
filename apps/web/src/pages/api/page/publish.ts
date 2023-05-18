@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { DeserializedPage } from "../../../utils/page-helper";
 import { supabase } from "../../../lib/supabase/supabase";
 import PinataSDK from "@pinata/sdk";
+import * as Sentry from "@sentry/nextjs";
 
 const pinata = new PinataSDK({
   pinataApiKey: process.env.PINATA_API_KEY,
@@ -39,7 +40,14 @@ export default async function handler(
 
     return res.status(200).json(insert.data);
   } catch (error) {
+    Sentry.captureException(error);
     console.error(error);
-    return res.status(500).json({ success: false });
+    if (error instanceof Error) {
+      return res.status(500).json({ success: false, error: error.message });
+    } else {
+      return res
+        .status(500)
+        .json({ success: false, error: "Internal Server Error" });
+    }
   }
 }

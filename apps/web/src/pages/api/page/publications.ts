@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "../../../lib/supabase/supabase";
+import * as Sentry from "@sentry/nextjs";
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,6 +12,7 @@ export default async function handler(
     const select = await supabase
       .from("page_publication")
       .select("*")
+      .order("created_at", { ascending: false })
       .eq("page_id", pageId);
 
     if (select.error) {
@@ -20,7 +22,14 @@ export default async function handler(
 
     return res.status(200).json(select.data);
   } catch (error) {
+    Sentry.captureException(error);
     console.error(error);
-    return res.status(500).json({ success: false });
+    if (error instanceof Error) {
+      return res.status(500).json({ success: false, error: error.message });
+    } else {
+      return res
+        .status(500)
+        .json({ success: false, error: "Internal Server Error" });
+    }
   }
 }
