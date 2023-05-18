@@ -48,6 +48,9 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ page, encryptionKey })
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 3000);
   };
 
   const { toast } = useToast();
