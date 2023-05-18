@@ -139,10 +139,15 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({
 
             return (
               <div className="flex w-full flex-col gap-3" key={publication.id}>
-                <h3 className="text-sm text-slate-500">
-                  Latest publication (
-                  <ReactTimeago date={publication.created_at} />)
-                </h3>
+                <div>
+                  <h3 className="mb-2 text-sm text-slate-500">
+                    Latest publication
+                  </h3>
+                  Version {publicationsQuery.data.length}{" "}
+                  <span className="text-sm text-slate-500">
+                    (<ReactTimeago date={publication.created_at} />)
+                  </span>
+                </div>
                 <Button
                   variant={"outline"}
                   onClick={() => copyToClipboard(url)}
