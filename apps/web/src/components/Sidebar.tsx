@@ -106,14 +106,16 @@ export function Sidebar({ className }: SidebarProps) {
                           url === router.asPath && "border-slate-600"
                         )}
                       >
-                        {page.key ? (
-                          <DecryptedText
-                            encryptionKey={page.key}
-                            value={page.title}
-                          />
-                        ) : (
-                          page.title
-                        )}
+                        <span className="truncate">
+                          {page.key ? (
+                            <DecryptedText
+                              encryptionKey={page.key}
+                              value={page.title}
+                            />
+                          ) : (
+                            page.title
+                          )}
+                        </span>
                       </Link>
                     </li>
                   );
