@@ -22,7 +22,7 @@ export function Layout({ children, className, title }: LayoutProps) {
     <>
       {title && (
         <Head>
-          <title className="break-all">{title ? formatTitle(title) : "denoted"}</title>
+          <title>{title ? formatTitle(title) : "denoted"}</title>
         </Head>
       )}
       <div className={cn("grid min-h-screen")}>

@@ -17,6 +17,14 @@ export type NftWidgetProps = {
   tokenId?: number;
 };
 
+type NftImageProps = {
+  data: {
+    id: string;
+    image: string;
+    collectionName: string;
+  };
+};
+
 export const NftWidget = ({ property, ...props }: NftWidgetProps) => {
   switch (property) {
     case "floor":
@@ -170,45 +178,39 @@ const NftParentImageWidget = ({
   chain,
   tokenId,
 }: Pick<NftWidgetProps, "address" | "chain" | "tokenId">) => {
-  const query = useQuery(["NFT", "IMAGE", address, chain, tokenId], async () => {
-    const chainName = SUPPORTED_CHAINS.find(
-      (c) => c.id === Number(chain)
-    )?.name.toLowerCase();
-    const url = `https://api.simplehash.com/api/v0/nfts/${chainName}/${address}/${tokenId}`;
-    const response = await fetch(url, {
-      headers: {
-        "X-API-KEY": process.env.NEXT_PUBLIC_SIMPLEHASH_API_KEY as string,
-        accept: "application/json",
-      },
-    });
+  const query = useQuery(
+    ["NFT", "IMAGE", address, chain, tokenId],
+    async () => {
+      const chainName = SUPPORTED_CHAINS.find(
+        (c) => c.id === Number(chain)
+      )?.name.toLowerCase();
+      const url = `https://api.simplehash.com/api/v0/nfts/${chainName}/${address}/${tokenId}`;
+      const response = await fetch(url, {
+        headers: {
+          "X-API-KEY": process.env.NEXT_PUBLIC_SIMPLEHASH_API_KEY as string,
+          accept: "application/json",
+        },
+      });
 
-    if (!response.ok) {
-      throw new Error(
-        `SimpleHash API error. Status: ${response.status} ${response.statusText}`
-      );
+      if (!response.ok) {
+        throw new Error(
+          `SimpleHash API error. Status: ${response.status} ${response.statusText}`
+        );
+      }
+      const json: SimpleHashNFTDetailsResponse = await response.json();
+
+      return {
+        id: json.token_id,
+        image: json.image_url,
+        collectionName: json.collection.name,
+      };
     }
-    const json: SimpleHashNFTDetailsResponse = await response.json();
-
-    return {
-      id: json.token_id,
-      image: json.image_url,
-      collectionName: json.collection.name,
-    };
-  });
-  if (!query.data) return null;
-  return (
-    <NftImageWidget data={query.data}
-    />
   );
+  if (!query.data) return null;
+  return <NftImageWidget data={query.data} />;
 };
 
-const NftImageWidget = ({ data }: {
-  data: {
-    id: string;
-    image: string;
-    collectionName: string;
-  }
-}) => {
+const NftImageWidget = ({ data }: NftImageProps) => {
   return (
     <Image
       key={data.id}
@@ -216,6 +218,7 @@ const NftImageWidget = ({ data }: {
       alt={data.collectionName}
       width={100}
       height={100}
-      style={{ margin: 0 }} />
-  )
-}
+      style={{ margin: 0 }}
+    />
+  );
+};
