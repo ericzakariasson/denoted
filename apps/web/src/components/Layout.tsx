@@ -5,15 +5,19 @@ import { Sidebar } from "./Sidebar";
 import Head from "next/head";
 
 export function formatTitle(title: string) {
+  const maxLength = 50;
+  if (title.length > maxLength) {
+    return `${title.slice(0, maxLength - 3)}... — denoted`;
+  }
   return `${title.trim().length > 0 ? title : "Untitled"} — denoted`;
 }
 
-type LayuotProps = PropsWithChildren<{
+type LayoutProps = PropsWithChildren<{
   className?: string;
   title?: string;
 }>;
 
-export function Layout({ children, className, title }: LayuotProps) {
+export function Layout({ children, className, title }: LayoutProps) {
   return (
     <>
       {title && (
