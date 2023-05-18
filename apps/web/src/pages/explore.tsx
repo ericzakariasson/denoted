@@ -7,15 +7,22 @@ import { supabase } from "../lib/supabase/supabase";
 import { Database } from "../lib/supabase/supabase.types";
 import { cn } from "../utils/classnames";
 import { Layout } from "../components/Layout";
+import * as Sentry from "@sentry/nextjs";
+
+type PagePublication = Database["public"]["Tables"]["page_publication"]["Row"];
 
 type Props = {
-  pagePublications: Database["public"]["Tables"]["page_publication"]["Row"][];
+  pagePublications: PagePublication[];
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async () => {
-  const { data, error } = await supabase.from("page_publication").select("*");
+  const { data, error } = await supabase
+    .from("page_publication")
+    .select("*")
+    .order("created_at", { ascending: false });
 
   if (error) {
+    Sentry.captureException(error);
     console.error(error);
     return {
       notFound: true,
@@ -24,13 +31,24 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
 
   if (!data) {
     return {
-      notFound: true,
+      props: {
+        pagePublications: [],
+      },
     };
   }
 
+  const lastestPagePublicationMap = data.reduce((map, publication) => {
+    if (!map.has(publication.page_id)) {
+      map.set(publication.page_id, publication);
+    }
+    return map;
+  }, new Map<string, PagePublication>());
+
+  const pagePublications = Array.from(lastestPagePublicationMap.values());
+
   return {
     props: {
-      pagePublications: data,
+      pagePublications,
     },
   };
 };

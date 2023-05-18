@@ -1,4 +1,5 @@
 import { NextApiHandler } from "next";
+import * as Sentry from "@sentry/nextjs";
 
 const handler: NextApiHandler = async (req, res) => {
   try {
@@ -31,6 +32,7 @@ const handler: NextApiHandler = async (req, res) => {
 
     return res.status(201).json({ success: true, message: "signed up" });
   } catch (error) {
+    Sentry.captureException(error);
     console.error(error);
     return res
       .status(500)

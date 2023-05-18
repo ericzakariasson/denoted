@@ -13,10 +13,12 @@ import { Avatar } from "connectkit";
 import { Address, useEnsName } from "wagmi";
 import TimeAgo from "react-timeago";
 import { ExternalLink } from "lucide-react";
+import { Badge } from "../../components/ui/badge";
 
 type Props = {
   page: DeserializedPage;
   url: string;
+  cid: string;
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
@@ -58,11 +60,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     props: {
       page,
       url,
+      cid: data.ipfs_cid,
     },
   };
 };
 
-const DocumentPage: NextPage<Props> = ({ page, url }) => {
+const DocumentPage: NextPage<Props> = ({ page, url, cid }) => {
   const metaTags = formatMetaTags(page);
 
   const createdByAddress = page.createdBy.id.split(":")[4] as Address;
@@ -114,14 +117,25 @@ const DocumentPage: NextPage<Props> = ({ page, url }) => {
           <ExternalLink className="ml-2 h-4 w-4" />
         </Link>
       </header>
-      <div className="mb-6 flex gap-4">
-        <div className="flex items-center gap-2">
-          <Avatar address={createdByAddress} size={24} />
-          <p className="text-slate-600">
-            {ens.isSuccess ? ens.data : createdByAddress}
-          </p>
+      <div className="mb-6 flex flex-col items-start gap-4">
+        <div className="flex gap-4">
+          <div className="flex items-center gap-2">
+            <Avatar address={createdByAddress} size={24} />
+            <p className="text-slate-600">
+              {ens.data ? ens.data : createdByAddress}
+            </p>
+          </div>
+          <TimeAgo className="text-slate-400" date={page.createdAt} />
         </div>
-        <TimeAgo className="text-slate-400" date={page.createdAt} />
+        <Badge className="text-xs text-slate-500" variant={"outline"}>
+          ipfs:
+          <Link
+            target="_blank"
+            href={`https://cloudflare-ipfs.com/ipfs/${cid}`}
+          >
+            {cid}
+          </Link>
+        </Badge>
       </div>
       <h1 className="mb-8 text-5xl font-bold">{page.title}</h1>
       <Viewer key={page.id} json={json} />

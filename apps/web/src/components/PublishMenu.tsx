@@ -10,21 +10,27 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button, buttonVariants } from "./ui/button";
 import { cn } from "../lib/utils";
 import { useToast } from "./ui/use-toast";
-import * as IpfsImage from './commands/ipfs-image';
+import * as IpfsImage from "./commands/ipfs-image";
 import { JSONContent } from "@tiptap/react";
+import ReactTimeago from "react-timeago";
 
-async function onPublishContent(blocks: JSONContent[], encryptionKey: CryptoKey | undefined) : Promise<JSONContent[]> {
-  return await Promise.all(blocks.map(async (block) => {
-    if (block.content) {
-      block.content = await onPublishContent(block.content, encryptionKey);
-    }
+async function onPublishContent(
+  blocks: JSONContent[],
+  encryptionKey: CryptoKey | undefined
+): Promise<JSONContent[]> {
+  return await Promise.all(
+    blocks.map(async (block) => {
+      if (block.content) {
+        block.content = await onPublishContent(block.content, encryptionKey);
+      }
 
-    if (block.type === IpfsImage.extension.name) {
-      block.attrs = await IpfsImage.onPublish(block.attrs, encryptionKey);
-    }
+      if (block.type === IpfsImage.extension.name) {
+        block.attrs = await IpfsImage.onPublish(block.attrs, encryptionKey);
+      }
 
-    return block;
-  }));
+      return block;
+    })
+  );
 }
 
 const generateTweetLink = (title: string, url: string) => {
@@ -43,7 +49,10 @@ export type PublishmenuProps = {
   encryptionKey: CryptoKey | undefined;
 };
 
-export const PublishMenu: React.FC<PublishmenuProps> = ({ page, encryptionKey }) => {
+export const PublishMenu: React.FC<PublishmenuProps> = ({
+  page,
+  encryptionKey,
+}) => {
   const [isCopied, setIsCopied] = useState(false);
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -59,7 +68,10 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ page, encryptionKey })
     async () => {
       const pageToPublish = structuredClone(page);
 
-      pageToPublish.data = await onPublishContent(pageToPublish.data, encryptionKey);
+      pageToPublish.data = await onPublishContent(
+        pageToPublish.data,
+        encryptionKey
+      );
 
       const response = await fetch("/api/page/publish", {
         method: "POST",
@@ -127,7 +139,10 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ page, encryptionKey })
 
             return (
               <div className="flex w-full flex-col gap-3" key={publication.id}>
-                <h3 className="text-sm text-slate-500">Latest publication</h3>
+                <h3 className="text-sm text-slate-500">
+                  Latest publication (
+                  <ReactTimeago date={publication.created_at} />)
+                </h3>
                 <Button
                   variant={"outline"}
                   onClick={() => copyToClipboard(url)}
@@ -166,6 +181,27 @@ export const PublishMenu: React.FC<PublishmenuProps> = ({ page, encryptionKey })
               </div>
             );
           })}
+          {(publicationsQuery.data ?? []).length > 1 && (
+            <div>
+              <h3 className="mb-2 text-sm text-slate-500">
+                Previous publications
+              </h3>
+              <ol className="grid gap-1">
+                {publicationsQuery.data
+                  ?.slice(1)
+                  .map((publication, index, array) => (
+                    <li key={publication.id}>
+                      <Link href={`/p/${publication.id}`} target="_blank">
+                        Version {array.length - index}{" "}
+                        <span className="text-sm text-slate-500">
+                          (<ReactTimeago date={publication.created_at} />)
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+              </ol>
+            </div>
+          )}
         </div>
       </PopoverContent>
     </Popover>
