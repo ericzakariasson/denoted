@@ -67,7 +67,7 @@ export function ConfigForm({ fields, onSubmit }: ConfigFormProps) {
                 <Input
                   id={field.name}
                   name={field.name}
-                  placeholder="erci.eth or 0x123abc..."
+                  placeholder="vitalik.eth or 0x123abc..."
                   defaultValue={field.defaultValue ?? ""}
                   required
                 />

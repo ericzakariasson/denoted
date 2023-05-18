@@ -52,7 +52,7 @@ export function PageEditor({ page, encryptionKey, renderSubmit }: PageEditorProp
   const lit = useLit();
   const account = useAccount();
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -79,7 +79,7 @@ export function PageEditor({ page, encryptionKey, renderSubmit }: PageEditorProp
   const isEnabled =
     isAuthenticated && title.length > 0 && (json?.content ?? []).length > 0;
 
-  const onEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const onEnter = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter") {
       event.preventDefault();
       setFocusEditor(true);
@@ -105,7 +105,7 @@ export function PageEditor({ page, encryptionKey, renderSubmit }: PageEditorProp
           },
         })}
         <AuthDialog open={!isLoading && !isAuthenticated} />
-        <input
+        <textarea
           ref={inputRef}
           placeholder="Untitled"
           className="mb-8 w-full text-5xl font-bold leading-tight placeholder:text-slate-200 focus:outline-none"
