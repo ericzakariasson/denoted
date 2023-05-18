@@ -26,7 +26,7 @@ export const NftWidget = ({ property, ...props }: NftWidgetProps) => {
     case "total-sales-volume":
       return <NftTotalSalesVolumeWidget {...props} />;
     case "image":
-      return <NftImageWidget {...props} />;
+      return <NftParentImageWidget {...props} />;
     default:
       return null;
   }
@@ -165,12 +165,12 @@ const NftTotalSalesVolumeWidget = ({
   );
 };
 
-const NftImageWidget = ({
+const NftParentImageWidget = ({
   address,
   chain,
   tokenId,
 }: Pick<NftWidgetProps, "address" | "chain" | "tokenId">) => {
-  const query = useQuery(["NFT", "IMAGE", address, chain], async () => {
+  const query = useQuery(["NFT", "IMAGE", address, chain, tokenId], async () => {
     const chainName = SUPPORTED_CHAINS.find(
       (c) => c.id === Number(chain)
     )?.name.toLowerCase();
@@ -190,18 +190,32 @@ const NftImageWidget = ({
     const json: SimpleHashNFTDetailsResponse = await response.json();
 
     return {
+      id: json.token_id,
       image: json.image_url,
       collectionName: json.collection.name,
     };
   });
   if (!query.data) return null;
   return (
-    <Image
-      src={query.data.image}
-      alt={query.data.collectionName}
-      width={100}
-      height={100}
-      style={{ margin: 0 }}
+    <NftImageWidget data={query.data}
     />
   );
 };
+
+const NftImageWidget = ({ data }: {
+  data: {
+    id: string;
+    image: string;
+    collectionName: string;
+  }
+}) => {
+  return (
+    <Image
+      key={data.id}
+      src={data.image}
+      alt={data.collectionName}
+      width={100}
+      height={100}
+      style={{ margin: 0 }} />
+  )
+}
