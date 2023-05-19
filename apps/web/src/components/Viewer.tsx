@@ -1,6 +1,6 @@
 import type { JSONContent } from "@tiptap/core";
-import { EditorContent, useEditor } from "@tiptap/react";
-import { extensions } from "./Editor";
+import { EditorContent } from "@tiptap/react";
+import { usePageEditorViewer } from "../hooks/usePageEditor";
 
 type ViewerProps = {
   json: JSONContent;
@@ -8,9 +8,8 @@ type ViewerProps = {
 };
 
 export const Viewer = ({ json, encryptionKey }: ViewerProps) => {
-  const editor = useEditor({
+  const { editor } = usePageEditorViewer({
     editable: false,
-    extensions: [...extensions],
     content: json,
     editorProps: {
       attributes: {
@@ -19,8 +18,12 @@ export const Viewer = ({ json, encryptionKey }: ViewerProps) => {
     },
   });
 
+  if (!editor) {
+    return null;
+  }
+
   if (editor) {
-    editor.storage.encryptionKey = encryptionKey; 
+    editor.storage.encryptionKey = encryptionKey;
   }
 
   return <EditorContent editor={editor} />;

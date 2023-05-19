@@ -1,16 +1,20 @@
 import { JSONContent } from "@tiptap/react";
-import { Edit, Loader2, Router, Save } from "lucide-react";
-import { GetServerSideProps, NextPage } from "next";
+import { Edit, Loader2, Save } from "lucide-react";
+import { NextPage } from "next";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import { useAccount, useMutation } from "wagmi";
+import { DeletePageDialog } from "../components/DeletePageDialog";
 import { Layout } from "../components/Layout";
 import { PageEditor, SavePageData } from "../components/PageEditor";
 import { Viewer } from "../components/Viewer";
 import { Button } from "../components/ui/button";
 import { Skeleton } from "../components/ui/skeleton";
+import { toast } from "../components/ui/use-toast";
 import { Page, getPageQuery, updatePage } from "../composedb/page";
+import { useCeramic } from "../hooks/useCeramic";
 import { trackEvent } from "../lib/analytics";
 import { composeClient } from "../lib/compose";
 import {
@@ -19,13 +23,9 @@ import {
   deletePage,
   deserializePage,
   encryptPage,
-  serializePage,
   importStoredEncryptionKey,
+  serializePage,
 } from "../utils/page-helper";
-import { DeletePageDialog } from "../components/DeletePageDialog";
-import { useRouter } from "next/router";
-import { toast } from "../components/ui/use-toast";
-import { useCeramic } from "../hooks/useCeramic";
 
 const PublishMenu = dynamic(
   async () =>
@@ -103,12 +103,7 @@ const DocumentPage: NextPage<Props> = () => {
   const isOwner = page?.createdBy.id === composeClient.id;
 
   const updatePageMutation = useMutation(
-    async ({
-      page: updatedPage,
-      address,
-      isPublic,
-      encryptionKey,
-    }: SavePageData) => {
+    async ({ page: updatedPage, address, encryptionKey }: SavePageData) => {
       const pageInput = serializePage(
         "PAGE",
         updatedPage.title,
@@ -122,9 +117,7 @@ const DocumentPage: NextPage<Props> = () => {
 
       const updateResult = await updatePage(
         page!.id,
-        isPublic
-          ? pageInput
-          : await encryptPage(pageInput, address, encryptionKey)
+        await encryptPage(pageInput, address, encryptionKey)
       );
 
       return updateResult;
@@ -255,12 +248,13 @@ const DocumentPage: NextPage<Props> = () => {
     return (
       <Layout>
         <PageEditor
+          mode="UPDATE"
           page={page}
           encryptionKey={key}
-          renderSubmit={({ isDisabled, data }) => (
+          renderSubmit={({ isDisabled, getData }) => (
             <div className="mb-10 flex gap-4">
               <Button
-                onClick={() => updatePageMutation.mutate(data)}
+                onClick={() => updatePageMutation.mutate(getData())}
                 disabled={isDisabled || updatePageMutation.isLoading}
               >
                 {updatePageMutation.isLoading ? (

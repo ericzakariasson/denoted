@@ -17,14 +17,12 @@ const CreatePage: NextPage = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  const generateKeyMutation = useMutation(
-    async () => {
-      return await generateEncryptionKey();
-    },
-  );
+  const generateKeyMutation = useMutation(async () => {
+    return await generateEncryptionKey();
+  });
 
   const createPageMutation = useMutation(
-    async ({ page, address, encryptionKey, isPublic }: SavePageData) => {
+    async ({ page, address, encryptionKey }: SavePageData) => {
       const pageInput = serializePage(
         "PAGE",
         page.title,
@@ -37,7 +35,7 @@ const CreatePage: NextPage = () => {
       }
 
       return await createPage(
-        isPublic ? pageInput : await encryptPage(pageInput, address, encryptionKey)
+        await encryptPage(pageInput, address, encryptionKey)
       );
     },
     {
@@ -70,11 +68,12 @@ const CreatePage: NextPage = () => {
   return (
     <Layout>
       <PageEditor
+        mode="CREATE"
         encryptionKey={generateKeyMutation.data}
-        renderSubmit={({ isDisabled, data }) => (
+        renderSubmit={({ isDisabled, getData }) => (
           <div className="mb-10 flex gap-4">
             <Button
-              onClick={() => createPageMutation.mutate(data)}
+              onClick={() => createPageMutation.mutate(getData())}
               disabled={isDisabled || createPageMutation.isLoading}
             >
               {createPageMutation.isLoading ? (
