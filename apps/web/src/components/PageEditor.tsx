@@ -4,11 +4,13 @@ import { useEffect, useState, useRef } from "react";
 import { useAccount } from "wagmi";
 import { useCeramic } from "../hooks/useCeramic";
 import { useLit } from "../hooks/useLit";
-import { deserializePage } from '../utils/page-helper';
+import { deserializePage } from "../utils/page-helper";
 import { Editor } from "./Editor";
 import { useQuery } from "react-query";
 import Head from "next/head";
 import { formatTitle } from "./Layout";
+import TextareaAutosize from "react-textarea-autosize";
+import { usePageEditor } from "../hooks/usePageEditor";
 
 const AuthDialog = dynamic(
   async () =>
@@ -23,7 +25,6 @@ export type SavePageData = {
   };
   address?: string;
   encryptionKey?: CryptoKey;
-  isPublic: boolean;
 };
 
 type PageEditorProps = {
@@ -31,32 +32,44 @@ type PageEditorProps = {
   encryptionKey?: CryptoKey;
   renderSubmit: (props: {
     isDisabled: boolean;
-    data: SavePageData;
+    getData: () => SavePageData;
   }) => React.ReactNode;
+  mode: "CREATE" | "UPDATE";
 };
 
-export function PageEditor({ page, encryptionKey, renderSubmit }: PageEditorProps) {
+export function PageEditor({
+  page,
+  encryptionKey,
+  renderSubmit,
+  mode,
+}: PageEditorProps) {
   const [title, setTitle] = useState(page?.title ?? "");
-  const [json, setJson] = useState<JSONContent>(
-    page
+
+  const titleRef = useRef<HTMLTextAreaElement>(null);
+
+  const { editor } = usePageEditor({
+    content: page
       ? {
           type: "doc",
           content: page.data ?? [],
         }
-      : []
-  );
-
-  const [focusEditor, setFocusEditor] = useState(false);
+      : [],
+    encryptionKey,
+  });
 
   const ceramic = useCeramic();
   const lit = useLit();
   const account = useAccount();
 
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-
   useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+    if (mode === "CREATE") {
+      titleRef.current?.focus();
+    }
+
+    if (mode === "UPDATE") {
+      editor?.commands.focus("end");
+    }
+  }, [mode, editor]);
 
   const ceramicSessionQuery = useQuery(
     [],
@@ -76,13 +89,13 @@ export function PageEditor({ page, encryptionKey, renderSubmit }: PageEditorProp
     ceramicSessionQuery.data &&
     lit.isLitAuthenticated;
 
-  const isEnabled =
-    isAuthenticated && title.length > 0 && (json?.content ?? []).length > 0;
+  const isEnabled = isAuthenticated && title.length > 0 && !editor?.isEmpty;
 
   const onEnter = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter") {
       event.preventDefault();
-      setFocusEditor(true);
+      editor?.commands.focus();
+      return false;
     }
   };
 
@@ -94,41 +107,26 @@ export function PageEditor({ page, encryptionKey, renderSubmit }: PageEditorProp
       <div className="flex h-full flex-col">
         {renderSubmit({
           isDisabled: !isEnabled,
-          data: {
+          getData: () => ({
             page: {
               title,
-              content: json?.content ?? [],
+              content: editor?.getJSON().content ?? [],
             },
             address: account.address,
             encryptionKey,
-            isPublic: false,
-          },
+          }),
         })}
         <AuthDialog open={!isLoading && !isAuthenticated} />
-        <textarea
-          ref={inputRef}
+        <TextareaAutosize
+          ref={titleRef}
           placeholder="Untitled"
-          className="mb-8 w-full text-5xl font-bold leading-tight placeholder:text-slate-200 focus:outline-none"
+          className="mb-8 w-full resize-none text-5xl font-bold leading-tight placeholder:text-slate-200 focus:outline-none"
           value={title}
           onChange={(event) => setTitle(event.target.value)}
-          onClick={() => setFocusEditor(false)}
-          onKeyUp={onEnter}
+          onKeyDown={onEnter}
           required
         />
-        <Editor
-          className="flex-grow"
-          initialContent={
-            page
-              ? {
-                  type: "doc",
-                  content: page.data ?? [],
-                }
-              : []
-          }
-          encryptionKey={encryptionKey}
-          onUpdate={(json) => setJson(json)}
-          focusedEditorState={[focusEditor, setFocusEditor]}
-        />
+        {editor && <Editor className="flex-grow" editor={editor} />}
       </div>
     </>
   );
