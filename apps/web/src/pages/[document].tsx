@@ -60,6 +60,11 @@ const DocumentPage: NextPage<Props> = () => {
     { enabled: Boolean(pageId) }
   );
 
+  type DeserializedPageQueryData = {
+    page: DeserializedPage;
+    key?: CryptoKey;
+  };
+
   const DESERIALIZED_PAGE_QUERY_KEY = [
     "DESERIALIZED_PAGE",
     pageQuery.data?.id,
@@ -67,10 +72,7 @@ const DocumentPage: NextPage<Props> = () => {
     address,
   ];
 
-  const deserializedPageQuery = useQuery<{
-    page: DeserializedPage;
-    key?: CryptoKey;
-  }>(
+  const deserializedPageQuery = useQuery<DeserializedPageQueryData>(
     DESERIALIZED_PAGE_QUERY_KEY,
     async () => {
       const serializedPage = pageQuery.data!;
@@ -128,9 +130,10 @@ const DocumentPage: NextPage<Props> = () => {
       onMutate: ({ page }) => {
         trackEvent("Page Save Clicked");
 
-        const previousPage = queryClient.getQueryData<{
-          page: DeserializedPage;
-        }>(DESERIALIZED_PAGE_QUERY_KEY);
+        const previousPage =
+          queryClient.getQueryData<DeserializedPageQueryData>(
+            DESERIALIZED_PAGE_QUERY_KEY
+          );
 
         if (previousPage) {
           const optimisticallyUpdatedPage: DeserializedPage = {
@@ -139,7 +142,7 @@ const DocumentPage: NextPage<Props> = () => {
             data: page.content,
           };
 
-          queryClient.setQueryData<{ page: DeserializedPage }>(
+          queryClient.setQueryData<DeserializedPageQueryData>(
             DESERIALIZED_PAGE_QUERY_KEY,
             { ...previousPage, page: optimisticallyUpdatedPage }
           );
@@ -151,7 +154,7 @@ const DocumentPage: NextPage<Props> = () => {
         console.error("Update Page Error", error);
 
         if (context?.previousPage) {
-          queryClient.setQueryData<{ page: DeserializedPage }>(
+          queryClient.setQueryData<DeserializedPageQueryData>(
             DESERIALIZED_PAGE_QUERY_KEY,
             context.previousPage
           );
