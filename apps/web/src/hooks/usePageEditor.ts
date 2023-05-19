@@ -126,7 +126,7 @@ type UsePageEditorProps = Partial<EditorOptions> & {
   encryptionKey?: CryptoKey;
 };
 
-export function usePageEdtiorViewer(
+export function usePageEditorViewer(
   props: Omit<UsePageEditorProps, "extensions">
 ) {
   return useTiptapEditor({
