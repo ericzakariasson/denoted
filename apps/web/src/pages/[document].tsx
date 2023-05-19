@@ -49,8 +49,10 @@ const DocumentPage: NextPage<Props> = () => {
 
   const pageId = router.query.document?.toString() ?? "";
 
+  const PAGE_QUERY_KEY = ["PAGE", pageId];
+
   const pageQuery = useQuery(
-    [pageId],
+    PAGE_QUERY_KEY,
     async () => {
       const { data } = await getPageQuery(pageId);
       return data?.node;
@@ -65,7 +67,7 @@ const DocumentPage: NextPage<Props> = () => {
     address,
   ];
 
-  const { data, isLoading } = useQuery<{
+  const deserializedPageQuery = useQuery<{
     page: DeserializedPage;
     key?: CryptoKey;
   }>(
@@ -97,8 +99,8 @@ const DocumentPage: NextPage<Props> = () => {
     { enabled: pageQuery.isSuccess }
   );
 
-  const page = data?.page;
-  const key = data?.key;
+  const page = deserializedPageQuery.data?.page;
+  const key = deserializedPageQuery.data?.key;
 
   const isOwner = page?.createdBy.id === composeClient.id;
 
@@ -126,18 +128,20 @@ const DocumentPage: NextPage<Props> = () => {
       onMutate: ({ page }) => {
         trackEvent("Page Save Clicked");
 
-        const previousPage = queryClient.getQueryData<DeserializedPage>(
-          DESERIALIZED_PAGE_QUERY_KEY
-        );
+        const previousPage = queryClient.getQueryData<{
+          page: DeserializedPage;
+        }>(DESERIALIZED_PAGE_QUERY_KEY);
 
         if (previousPage) {
-          queryClient.setQueryData<DeserializedPage>(
+          const optimisticallyUpdatedPage: DeserializedPage = {
+            ...previousPage.page,
+            title: page.title,
+            data: page.content,
+          };
+
+          queryClient.setQueryData<{ page: DeserializedPage }>(
             DESERIALIZED_PAGE_QUERY_KEY,
-            {
-              ...previousPage,
-              title: page.title,
-              data: page.content,
-            }
+            { ...previousPage, page: optimisticallyUpdatedPage }
           );
         }
 
@@ -147,7 +151,7 @@ const DocumentPage: NextPage<Props> = () => {
         console.error("Update Page Error", error);
 
         if (context?.previousPage) {
-          queryClient.setQueryData<DeserializedPage>(
+          queryClient.setQueryData<{ page: DeserializedPage }>(
             DESERIALIZED_PAGE_QUERY_KEY,
             context.previousPage
           );
@@ -159,9 +163,7 @@ const DocumentPage: NextPage<Props> = () => {
         const page = data?.updatePage?.document ?? null;
 
         if (page) {
-          queryClient.invalidateQueries({
-            queryKey: ["PAGES", composeClient.id],
-          });
+          queryClient.invalidateQueries(["PAGES", composeClient.id]);
           trackEvent("Page Saved", { pageId: page.id });
           setIsEditing(false);
         }
@@ -225,7 +227,11 @@ const DocumentPage: NextPage<Props> = () => {
     }
   );
 
-  if (isLoading || pageQuery.isLoading || pageQuery.isIdle) {
+  if (
+    pageQuery.isLoading ||
+    pageQuery.isIdle ||
+    deserializedPageQuery.isLoading
+  ) {
     return (
       <Layout className="pt-20" title="Loading...">
         <Skeleton className="mb-8 h-[60px] w-full rounded-lg" />
