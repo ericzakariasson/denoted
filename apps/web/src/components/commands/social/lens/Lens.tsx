@@ -1,4 +1,7 @@
-import { Publication, Profile, Theme } from "@lens-protocol/widgets-react";
+import { Profile, Publication, Theme } from "@lens-protocol/widgets-react";
+import { useQuery } from "react-query";
+import { lensClient } from "../../../../lib/lens";
+import { DataPill } from "../../../DataPill";
 
 export type LensWidgetProps = {
   property: "publicationId" | "handle";
@@ -21,6 +24,20 @@ export const LensWidget = ({ property, ...props }: LensWidgetProps) => {
 export const LensHandleWidget = ({
   handle,
 }: Pick<LensWidgetProps, "publicationId" | "handle">) => {
+  const profileQuery = useQuery(["PROFILE", handle], async () => {
+    const profile = await lensClient.profile.fetch({ handle: handle.replace(".lens", "") + ".lens" });
+
+    if (!profile) {
+      throw new Error("No Lens profile found");
+    }
+
+    return profile;
+  });
+
+  if (profileQuery.isLoading || profileQuery.isIdle || profileQuery.isError) {
+    return <DataPill query={profileQuery} />;
+  }
+
   return (
     <Profile
       handle={handle.replace(".lens", "")}
