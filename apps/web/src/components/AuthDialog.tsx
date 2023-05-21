@@ -20,10 +20,6 @@ export function AuthDialog({ open }: AuthDialogProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Setup account</DialogTitle>
-          <DialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
-          </DialogDescription>
         </DialogHeader>
         <AuthSteps />
       </DialogContent>

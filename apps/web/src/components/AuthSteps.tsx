@@ -13,9 +13,10 @@ type AuthStepProps = PropsWithChildren<{
   title: string;
   description: string;
   completed: boolean;
+  index: number;
 }>;
 
-function AuthStep({ title, description, completed, children }: AuthStepProps) {
+function AuthStep({ title, description, completed, index, children }: AuthStepProps) {
   return (
     <li className="flex items-start gap-4">
       <span
@@ -25,9 +26,12 @@ function AuthStep({ title, description, completed, children }: AuthStepProps) {
         )}
       >
         {completed ? (
-          <CheckCircle2 className="h-4 w-4" />
+          <CheckCircle2 className="h-5 w-5" />
         ) : (
-          <Circle className="h-4 w-4" />
+          <>
+            <Circle className="h-5 w-5" />
+            <span className="absolute text-xs font-bold">{index}</span>
+          </>
         )}
       </span>
       <div className="flex flex-col items-start gap-4">
@@ -49,9 +53,6 @@ export function AuthSteps() {
   const { isConnected } = useAccount();
   const [isCeramicSessionValid, setIsCeramicSessionValid] =
     useState<boolean>(false);
-
-  // store the connected state in a ref to prevent it from being removed when connecting from the modal
-  const connectedRef = useRef(isConnected);
 
   const { connect, isLoading, connectors } = useCustomConnect({
     eventProperties: fromAuthSteps,
@@ -94,23 +95,28 @@ export function AuthSteps() {
   return (
     <div className="mb-2 rounded-3xl">
       <ul className="flex flex-col gap-12">
-        {!connectedRef.current && (
-          <AuthStep
-            title="Connect wallet"
-            description="You need to connect your wallet in order to continue!"
-            completed={isConnected}
-          >
-            <Button
-              disabled={isConnected}
-              onClick={() => connect({ connector: connectors[0] })}
-            >
-              {isLoading ? "Connecting..." : "Connect"}
-            </Button>
-          </AuthStep>
-        )}
         <AuthStep
+          index={1}
+          title="Connect wallet"
+          description="You need to connect your wallet in order to continue!"
+          completed={isConnected}
+        >
+          <Button
+            disabled={isConnected}
+            onClick={() => connect({ connector: connectors[0] })}
+          >
+            {isLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Wallet className="mr-2 h-4 w-4" />
+            )}
+            {isLoading ? "Connecting..." : "Connect"}
+          </Button>
+        </AuthStep>
+        <AuthStep
+          index={2}
           title="Enable storage of pages"
-          description="This ensures the integrity and immutability of your data by proving that you are the owner and authorizing any changes."
+          description="Allows you to persist data on the decentralized storage network. You will become the owner of your data which is stored immutably."
           completed={isConnected && isCeramicConnected}
         >
           <Button
@@ -131,6 +137,7 @@ export function AuthSteps() {
           </Button>
         </AuthStep>
         <AuthStep
+          index={3}
           title="Enable private pages"
           description="This ensures that even though your data is stored on the blockchain, it remains private and secure, with only authorized users having access to it."
           completed={isConnected && lit.isLitAuthenticated}
