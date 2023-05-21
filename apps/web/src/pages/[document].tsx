@@ -130,33 +130,33 @@ const DocumentPage: NextPage<Props> = () => {
       onMutate: ({ page }) => {
         trackEvent("Page Save Clicked");
 
-        const previousPage =
+        const previous =
           queryClient.getQueryData<DeserializedPageQueryData>(
             DESERIALIZED_PAGE_QUERY_KEY
           );
 
-        if (previousPage) {
+        if (previous) {
           const optimisticallyUpdatedPage: DeserializedPage = {
-            ...previousPage.page,
+            ...previous.page,
             title: page.title,
             data: page.content,
           };
 
           queryClient.setQueryData<DeserializedPageQueryData>(
             DESERIALIZED_PAGE_QUERY_KEY,
-            { ...previousPage, page: optimisticallyUpdatedPage }
+            { ...previous, page: optimisticallyUpdatedPage }
           );
         }
 
-        return { previousPage };
+        return { previous };
       },
       onError: (error, _, context) => {
         console.error("Update Page Error", error);
 
-        if (context?.previousPage) {
+        if (context?.previous) {
           queryClient.setQueryData<DeserializedPageQueryData>(
             DESERIALIZED_PAGE_QUERY_KEY,
-            context.previousPage
+            context.previous
           );
         }
       },
