@@ -124,12 +124,12 @@ const Page: NextPage<Props> = ({ examples }) => {
             Own your digital creations through the power of decentralization.
           </h1>
           <p className="max-w-3xl">
-            Embrace the future of content creation with our innovative web3
+            {`Embrace the future of content creation with our innovative web3
             authoring application. We are redefining what it means to write in
             the decentralized era, where data ownership, transparency, and user
             experience converge. Unleash your potential in a platform where your
             words, your control, and your privacy come first. It's time to own
-            your narrative in Web3.
+            your narrative in Web3.`}
           </p>
           <div className="flex gap-2">
             <Link href="/create" className={cn(buttonVariants({}))}>
