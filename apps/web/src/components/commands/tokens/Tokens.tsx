@@ -3,8 +3,8 @@ import { useQuery } from "react-query";
 import { PortalsResponse, Token } from "./types";
 import { findToken } from "./helpers";
 import Image from "next/image";
-import { SUPPORTED_CHAINS } from "../../../supported-chains";
-
+import * as chains from "wagmi/chains";
+ 
 export type TokenWidgetProps = {
   property: "price";
   chainId: number;
@@ -25,18 +25,26 @@ const TokenPriceWidget = ({
   token,
 }: Pick<TokenWidgetProps, "chainId" | "token">) => {
   const query = useQuery(["TOKEN", "PRICE", chainId, token], async () => {
-    let platforms;
-    if (token.toLowerCase().trim() === "eth") {
-      platforms = "native";
-    }
-    if (token.toLowerCase().trim() !== "eth") {
-      platforms = "basic";
-    }
-    const chain = SUPPORTED_CHAINS.find(
+    const SUPPORTED_CHAINS: Record<number, string> = {
+      [chains.mainnet.id]: "ethereum",
+      [chains.avalanche.id]: "avalanche",
+      [chains.polygon.id]: "polygon",
+      [chains.bsc.id]: "bsc",
+      [chains.optimism.id]: "optimism",
+      [chains.arbitrum.id]: "arbitrum",
+    };
+
+    const chainName = SUPPORTED_CHAINS[chainId] ?? "ethereum";
+
+    const chain = Object.values(chains).find(
       (chain) => Number(chainId) === chain.id
     );
 
-    const url = `https://api.portals.fi/v2/tokens?search=${token}&platforms=${platforms}&networks=${chain?.name.toLowerCase()}`;
+    const platforms = chain?.nativeCurrency.symbol === token.trim()
+      ? "native"
+      : "basic";
+
+    const url = `https://api.portals.fi/v2/tokens?search=${token}&platforms=${platforms}&networks=${chainName}`;
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(
