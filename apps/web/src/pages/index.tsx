@@ -104,7 +104,7 @@ const Page: NextPage<Props> = ({ examples }) => {
       <Head>
         <title>denoted</title>
       </Head>
-      <div className="m-auto flex max-w-6xl flex-col items-start gap-24 p-4">
+      <div className="m-auto flex max-w-6xl flex-col items-start gap-24 p-4 pb-32">
         <header className="flex w-full items-center justify-between">
           <Link href="/">
             <Logo />
@@ -121,7 +121,7 @@ const Page: NextPage<Props> = ({ examples }) => {
         </header>
         <div className="flex flex-col gap-8">
           <h1 className="max-w-4xl text-6xl font-bold">
-            Own your digital creations through the power of decentralization.
+            Own your digital creations through the power of decentralization
           </h1>
           <p className="max-w-3xl">
             {`Embrace the future of content creation with our innovative web3
@@ -177,6 +177,16 @@ const Page: NextPage<Props> = ({ examples }) => {
               </article>
             );
           })}
+          <div className="mt-8 flex flex-col items-center gap-2">
+            <h2 className="text-2xl">View more examples</h2>
+            <Link
+              href="/explore"
+              target="_blank"
+              className={cn(buttonVariants({}))}
+            >
+              Examples {"->"}
+            </Link>
+          </div>
         </section>
         <section className="flex w-full flex-col gap-8">
           <h1 className="text-5xl font-semibold">Plugins</h1>
