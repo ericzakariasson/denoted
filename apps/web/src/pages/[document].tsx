@@ -49,14 +49,21 @@ const DocumentPage: NextPage<Props> = () => {
 
   const pageId = router.query.document?.toString() ?? "";
 
+  const PAGE_QUERY_KEY = ["PAGE", pageId];
+
   const pageQuery = useQuery(
-    [pageId],
+    PAGE_QUERY_KEY,
     async () => {
       const { data } = await getPageQuery(pageId);
       return data?.node;
     },
     { enabled: Boolean(pageId) }
   );
+
+  type DeserializedPageQueryData = {
+    page: DeserializedPage;
+    key?: CryptoKey;
+  };
 
   const DESERIALIZED_PAGE_QUERY_KEY = [
     "DESERIALIZED_PAGE",
@@ -65,10 +72,7 @@ const DocumentPage: NextPage<Props> = () => {
     address,
   ];
 
-  const { data, isLoading } = useQuery<{
-    page: DeserializedPage;
-    key?: CryptoKey;
-  }>(
+  const deserializedPageQuery = useQuery<DeserializedPageQueryData>(
     DESERIALIZED_PAGE_QUERY_KEY,
     async () => {
       const serializedPage = pageQuery.data!;
@@ -97,8 +101,8 @@ const DocumentPage: NextPage<Props> = () => {
     { enabled: pageQuery.isSuccess }
   );
 
-  const page = data?.page;
-  const key = data?.key;
+  const page = deserializedPageQuery.data?.page;
+  const key = deserializedPageQuery.data?.key;
 
   const isOwner = page?.createdBy.id === composeClient.id;
 
@@ -126,30 +130,33 @@ const DocumentPage: NextPage<Props> = () => {
       onMutate: ({ page }) => {
         trackEvent("Page Save Clicked");
 
-        const previousPage = queryClient.getQueryData<DeserializedPage>(
-          DESERIALIZED_PAGE_QUERY_KEY
-        );
+        const previous =
+          queryClient.getQueryData<DeserializedPageQueryData>(
+            DESERIALIZED_PAGE_QUERY_KEY
+          );
 
-        if (previousPage) {
-          queryClient.setQueryData<DeserializedPage>(
+        if (previous) {
+          const optimisticallyUpdatedPage: DeserializedPage = {
+            ...previous.page,
+            title: page.title,
+            data: page.content,
+          };
+
+          queryClient.setQueryData<DeserializedPageQueryData>(
             DESERIALIZED_PAGE_QUERY_KEY,
-            {
-              ...previousPage,
-              title: page.title,
-              data: page.content,
-            }
+            { ...previous, page: optimisticallyUpdatedPage }
           );
         }
 
-        return { previousPage };
+        return { previous };
       },
       onError: (error, _, context) => {
         console.error("Update Page Error", error);
 
-        if (context?.previousPage) {
-          queryClient.setQueryData<DeserializedPage>(
+        if (context?.previous) {
+          queryClient.setQueryData<DeserializedPageQueryData>(
             DESERIALIZED_PAGE_QUERY_KEY,
-            context.previousPage
+            context.previous
           );
         }
       },
@@ -159,9 +166,7 @@ const DocumentPage: NextPage<Props> = () => {
         const page = data?.updatePage?.document ?? null;
 
         if (page) {
-          queryClient.invalidateQueries({
-            queryKey: ["PAGES", composeClient.id],
-          });
+          queryClient.invalidateQueries(["PAGES", composeClient.id]);
           trackEvent("Page Saved", { pageId: page.id });
           setIsEditing(false);
         }
@@ -225,7 +230,11 @@ const DocumentPage: NextPage<Props> = () => {
     }
   );
 
-  if (isLoading || pageQuery.isLoading || pageQuery.isIdle) {
+  if (
+    pageQuery.isLoading ||
+    pageQuery.isIdle ||
+    deserializedPageQuery.isLoading
+  ) {
     return (
       <Layout className="pt-20" title="Loading...">
         <Skeleton className="mb-8 h-[60px] w-full rounded-lg" />
