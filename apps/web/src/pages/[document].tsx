@@ -305,7 +305,7 @@ const DocumentPage: NextPage<Props> = () => {
           <DeletePageDialog onDelete={deletePageMutation.mutate} />
         </div>
       )}
-      <h1 className="mb-8 text-5xl font-bold leading-tight">{page.title}</h1>
+      <h1 className="mb-8 text-5xl font-bold leading-tight break-words">{page.title}</h1>
       <Viewer key={page.id} encryptionKey={key} json={json} />
     </Layout>
   );
