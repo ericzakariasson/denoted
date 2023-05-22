@@ -7,7 +7,4 @@ export const SUPPORTED_CHAINS = [
   chains.arbitrum,
   chains.avalanche,
   chains.bsc,
-  chains.zkSync,
-  chains.dogechain,
-  chains.filecoin,
 ];
