@@ -104,7 +104,7 @@ const Page: NextPage<Props> = ({ examples }) => {
       <Head>
         <title>denoted</title>
       </Head>
-      <div className="m-auto flex max-w-6xl flex-col items-start gap-24 p-4 pb-32">
+      <div className="m-auto flex md:max-w-6xl flex-col items-start gap-12 md:gap-24 p-4 pb-32">
         <header className="flex w-full items-center justify-between">
           <Link href="/">
             <Logo />
@@ -119,8 +119,8 @@ const Page: NextPage<Props> = ({ examples }) => {
             {" ->"}
           </Link>
         </header>
-        <div className="flex flex-col gap-8">
-          <h1 className="max-w-4xl text-6xl font-bold">
+        <div className="flex flex-col w-full gap-4 md:gap-8">
+          <h1 className="max-w-4xl leading-tight text-[1.75rem] md:text-6xl font-bold">
             Own your digital creations through the power of decentralization
           </h1>
           <p className="max-w-3xl">
@@ -144,26 +144,26 @@ const Page: NextPage<Props> = ({ examples }) => {
             </Link>
           </div>
         </div>
-        <section className="flex w-full flex-col gap-8">
+        <section className="flex w-full flex-col gap-12 md:gap-8">
           {examples.map((example, i) => {
             const isEven = i % 2 === 0;
             return (
-              <article className={cn("flex max-w-full items-center gap-12")}>
+              <article className={cn("flex flex-col md:flex-row max-w-full items-center gap-4 md:gap-12")}>
                 <div
-                  className={cn("w-1/2", isEven ? "order-first" : "order-last")}
+                  className={cn("w-full md:w-1/2", isEven ? "md:order-first" : "md:order-last")}
                 >
-                  <h1 className="mb-4 text-5xl font-semibold">
+                  <h1 className="mb-2 md:mb-4 leading-tight text-2xl md:text-5xl font-semibold">
                     {example.title}
                   </h1>
                   <p>{example.description}</p>
                 </div>
                 <div
                   className={cn(
-                    "flex aspect-square w-1/2 overflow-scroll rounded-2xl border shadow-md"
+                    "flex aspect-square w-full md:w-1/2 overflow-scroll rounded-2xl border shadow-md"
                   )}
                 >
                   <div className="w-full scale-75">
-                    <h1 className="mb-8 text-5xl font-bold leading-tight">
+                    <h1 className="mb-8 text-4xl md:text-5xl font-bold leading-tight">
                       {example.page.title}
                     </h1>
                     <Viewer
@@ -177,8 +177,8 @@ const Page: NextPage<Props> = ({ examples }) => {
               </article>
             );
           })}
-          <div className="mt-8 flex flex-col items-center gap-2">
-            <h2 className="text-2xl">View more examples</h2>
+          <div className="md:mt-8 flex flex-col items-center gap-2">
+            <h2 className="text-xl md:text-2xl">View more examples</h2>
             <Link
               href="/explore"
               target="_blank"
@@ -189,19 +189,19 @@ const Page: NextPage<Props> = ({ examples }) => {
           </div>
         </section>
         <section className="flex w-full flex-col gap-8">
-          <h1 className="text-5xl font-semibold">Plugins</h1>
+          <h1 className="text-2xl md:text-5xl font-semibold">Plugins</h1>
           {COMMANDS.map((group) => {
             return (
               <article key={group.name}>
                 <h1 className="mb-2 text-lg">{group.name}</h1>
-                <ul className="grid grid-cols-3 gap-4">
+                <ul className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {group.items.map((command) => {
                     return (
                       <li key={command.command}>
-                        <Card>
-                          <CardHeader>
+                        <Card className="h-full">
+                          <CardHeader className="p-3 md:p-6">
                             <div className="flex items-center gap-2">
-                              <CardTitle>{command.title}</CardTitle>{" "}
+                              <CardTitle className="text-md md:text-lg">{command.title}</CardTitle>{" "}
                               {command.icon && (
                                 <Image
                                   {...command.icon}
@@ -216,12 +216,12 @@ const Page: NextPage<Props> = ({ examples }) => {
                               {command.description}
                             </CardDescription>
                           </CardHeader>
-                          <CardContent>
-                            <div className="flex gap-2">
-                              <Badge variant={"outline"} className="font-mono">
+                          <CardContent className="p-3 md:p-6">
+                            <div className="flex flex-wrap gap-2">
+                              <Badge variant={"outline"} className="text-[0.6rem] md:text-xs w-auto font-mono">
                                 /{command.command}
                               </Badge>
-                              <Badge variant={"outline"}>
+                              <Badge variant={"outline"} className="text-[0.6rem] md:text-xs w-auto">
                                 {command.blockType}
                               </Badge>
                             </div>
@@ -236,9 +236,9 @@ const Page: NextPage<Props> = ({ examples }) => {
           })}
         </section>
         <section className="flex w-full flex-col gap-8">
-          <h1 className="text-5xl font-semibold">Stay up to date</h1>
+          <h1 className="text-2xl md:text-5xl font-semibold">Stay up to date</h1>
           <Form.Root
-            className="flex w-full max-w-sm items-end gap-2 "
+            className="flex w-full max-w-sm items-end gap-2"
             onSubmit={(event) => {
               event.preventDefault();
               const data = Object.fromEntries(
