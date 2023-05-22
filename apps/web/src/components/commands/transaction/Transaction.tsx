@@ -111,7 +111,7 @@ export const TransactionWidget = ({
   return (
     <>
       <DataStack query={query}>
-        <div className="flex items-center space-x-6 text-sm">
+        <div className="flex items-center flex-wrap lg:flex-nowrap justify-center gap-3 text-sm">
           <div className="text-left text-black">
             <span className="text-xs text-slate-700 dark:text-white">
               Transaction
@@ -162,7 +162,7 @@ export const TransactionWidget = ({
             {erc20Transfers}
           </div>
         )}
-        <div className="mt-3 flex items-center text-xs">
+        <div className="mt-3 flex flex-col md:flex-row items-center gap-2 flex-wrap text-xs">
           <span
             className={
               tx.successful
@@ -172,7 +172,7 @@ export const TransactionWidget = ({
           >
             {tx.successful ? "✅ Success" : "❌ Failed"}
           </span>
-          <span className="flex-inline ml-2">
+          <span className="flex-inline">
             {new Date(tx.block_signed_at).toLocaleDateString("sv-SE", {
               dateStyle: "short",
             })}
@@ -183,7 +183,7 @@ export const TransactionWidget = ({
             })}
             &nbsp;
           </span>
-          <span className="flex-inline ml-2">
+          <span className="flex-inline">
             {explorerUrl ? (
               <a
                 href={explorerUrl}
