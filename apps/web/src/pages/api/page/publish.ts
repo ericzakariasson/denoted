@@ -20,7 +20,11 @@ export default async function handler(
   try {
     const { page } = JSON.parse(req.body) as Payload;
 
-    const result = await pinata.pinJSONToIPFS(page);
+    const result = await pinata.pinJSONToIPFS(page, {
+      pinataMetadata: {
+        name: page.title,
+      },
+    });
 
     const insert = await supabase
       .from("page_publication")
