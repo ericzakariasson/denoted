@@ -49,7 +49,7 @@ export const BookmarkConfig = (props: CommandExtensionProps<BookmarkProps>) => {
     { enabled: isValid }
   );
 
-  const image = linkPreviewQuery.data?.images.at(0) ?? null;
+  const image = linkPreviewQuery.data?.images?.at(0) ?? null;
 
   return (
     <NodeViewWrapper as="div">
@@ -101,7 +101,7 @@ export const BookmarkConfig = (props: CommandExtensionProps<BookmarkProps>) => {
                 <img
                   width={16}
                   height={16}
-                  src={linkPreviewQuery.data?.favicons.at(0) ?? ""}
+                  src={linkPreviewQuery.data?.favicons?.at(0) ?? ""}
                   alt="Favicon"
                   className="m-0"
                 />
