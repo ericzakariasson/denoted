@@ -137,7 +137,7 @@ const DocumentPage: NextPage<Props> = ({ page, url, cid }) => {
           </Link>
         </Badge>
       </div>
-      <h1 className="mb-8 text-5xl font-bold">{page.title}</h1>
+      <h1 className="mb-8 text-5xl font-bold break-words">{page.title}</h1>
       <Viewer key={page.id} json={json} />
     </div>
   );
