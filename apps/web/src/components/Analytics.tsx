@@ -23,9 +23,13 @@ export function Analytics() {
   }, [router.isReady]);
 
   useEffect(() => {
-    router.events.on("routeChangeComplete", trackPage);
+    const handler = (url: string) => {
+      trackPage(url);
+    };
+
+    router.events.on("routeChangeComplete", handler);
     return () => {
-      router.events.off("routeChangeComplete", trackPage);
+      router.events.off("routeChangeComplete", handler);
     };
   }, [router.events]);
 
