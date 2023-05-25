@@ -53,7 +53,7 @@ export function PageEditor({
           type: "doc",
           content: page.data ?? [],
         }
-      : [],
+      : undefined,
     encryptionKey,
   });
 
