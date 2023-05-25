@@ -1,8 +1,9 @@
 import * as dotenv from "dotenv";
 dotenv.config();
+import pMap from 'p-map';
 import { createClient } from "@supabase/supabase-js";
-import { Database } from "../src/lib/supabase/supabase.types";
 import PinataSDK from "@pinata/sdk";
+import { Database } from "../../../apps/web/src/lib/supabase/supabase.types";
 
 const pinata = new PinataSDK({
   pinataApiKey: process.env.PINATA_API_KEY,
@@ -11,7 +12,7 @@ const pinata = new PinataSDK({
 
 const supabase = createClient<Database>(
   process.env.SUPABASE_API_URL as string,
-  process.env.SUPABASE_API_KEY as string
+  process.env.SUPABASE_API_KEY as string,
 );
 
 async function fetchPage(cid: string) {
@@ -45,20 +46,28 @@ async function traverseBlocks(blocks: any[], callback: (block: any) => void) {
     throw new Error("Failed to fetch latest published pages");
   }
 
-  const usedCids = new Set<string>();
+  const usedCids = new Set<string>([
+    "QmUr5sygQ8tG8wkVS3EaMn2JvB83nsj1deQeFkA8ack8na",
+    "QmaEZ6NmcpMSDDVzv4cS2Qm8ybd8Vt6AJYkxxHFGg7ZWhd",
+    "QmQJzywKkrS5AC7dEAiSsx8mvsWbBHxHW5dJxiqSkMSdKo",
+  ]);
 
-  for (const { ipfs_cid } of latestPublishedPages) {
-    const page = await fetchPage(ipfs_cid);
+  await pMap(
+    latestPublishedPages,
+    async ({ ipfs_cid }) => {
+      const page = await fetchPage(ipfs_cid);
 
-    await traverseBlocks(
-      page.data,
-      async (block: any) => {
-        if (block?.type === "ipfs-image") {
-          usedCids.add(block!.attrs!.cid);
+      await traverseBlocks(
+        page.data,
+        async (block: any) => {
+          if (block?.type === "ipfs-image") {
+            usedCids.add(block!.attrs!.cid);
+          }
         }
-      }
-    )
-  }
+      )
+    },
+    { concurrency: 2 }
+  );
 
   const latestPublishedPageIds = latestPublishedPages.map(({ id }) => id);
 
@@ -90,15 +99,20 @@ async function traverseBlocks(blocks: any[], callback: (block: any) => void) {
       }
     );
 
-    console.log(`Unpinning & deleting page with CID ${ipfs_cid} and page ID ${page_id}`);
+    console.log(`[${id}] Deleting page with page ID ${page_id}`);
+    const deleteResults = await supabase
+      .from("page_publication")
+      .delete()
+      .eq("id", id);
+    console.log(JSON.stringify(deleteResults));
 
-    await Promise.allSettled([
-      pinata.unpin(ipfs_cid),
-      supabase
-        .from("page_publication")
-        .delete()
-        .eq("id", id)
-    ]);
+    if (deleteResults.error) {
+      throw new Error(deleteResults.error.message);
+    }
+
+    console.log(`[${id}] Unpinning page with CID ${ipfs_cid}`);
+    const unpinResults = await pinata.unpin(ipfs_cid);
+    console.log(JSON.stringify(unpinResults));
   }
 })();
 
