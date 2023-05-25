@@ -121,11 +121,11 @@ const Page: NextPage<Props> = ({ examples }) => {
         </header>
         <div className="flex flex-col w-full gap-4 md:gap-8">
           <h1 className="max-w-4xl leading-tight text-[1.75rem] md:text-6xl font-bold">
-            Create with on-chain data at your fingertips
+            Write with data at your fingertips
           </h1>
           <p className="max-w-3xl">
             {`Meet the new standard for managing knowledge in real-time. Communicate
-            more efficiently & securely with next generation docs for the decentralized era.`}
+            more efficiently & securely with writing for the decentralized era.`}
           </p>
           <div className="flex gap-2">
             <Link href="/create" className={cn(buttonVariants({}))}>
