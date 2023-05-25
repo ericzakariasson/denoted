@@ -15,6 +15,14 @@ export function Analytics() {
   const router = useRouter();
 
   useEffect(() => {
+    if (router.isReady) {
+      trackPage(router.asPath);
+    }
+    // we only want to the initial track page here, rest is covered by the event listener
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.isReady]);
+
+  useEffect(() => {
     const handler = (url: string) => {
       trackPage(url);
     };
