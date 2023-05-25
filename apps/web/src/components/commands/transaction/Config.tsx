@@ -15,7 +15,7 @@ export const TransactionConfig = (
   const { txHash, chain } = props.node.attrs;
 
   return (
-    <NodeViewWrapper as="span">
+    <NodeViewWrapper as="div">
       {isConfigured && !props.editor.isEditable && (
         <TransactionWidget txHash={txHash} chain={Number(chain)} />
       )}
