@@ -14,7 +14,7 @@
     "@didtools/pkh-ethereum": "^0.1.0",
     "@lens-protocol/client": "^0.1.0",
     "@lens-protocol/widgets-react": "^0.0.10",
-    "@lit-protocol/lit-node-client": "^2.1.123",
+    "@lit-protocol/lit-node-client": "^2.2.10",
     "@pinata/sdk": "^2.1.0",
     "@radix-ui/react-alert-dialog": "^1.0.3",
     "@radix-ui/react-dialog": "^1.0.3",

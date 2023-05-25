@@ -23,9 +23,7 @@ export const defaultExtensions = [
       width: 4,
       class: "text-slate-400",
     },
-    codeBlock: {
-      lowlight,
-    } as any,
+    codeBlock: false,
   }),
   Highlight,
   Typography,
