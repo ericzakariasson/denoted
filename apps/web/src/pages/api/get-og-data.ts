@@ -9,7 +9,9 @@ export default async function handler(
   try {
     const url = new URL(req.query.url?.toString() ?? "");
 
-    const preview = await getLinkPreview(url.href);
+    const preview = await getLinkPreview(url.href, {
+      followRedirects: "follow",
+    });
     return res.status(200).json(preview);
   } catch (error) {
     Sentry.captureException(error);
