@@ -1,6 +1,7 @@
 import * as dotenv from "dotenv";
 dotenv.config();
-import pMap from 'p-map';
+import pMap from "p-map";
+import fetch from "node-fetch";
 import { createClient } from "@supabase/supabase-js";
 import PinataSDK from "@pinata/sdk";
 import { Database } from "../../../apps/web/src/lib/supabase/supabase.types";
@@ -19,7 +20,7 @@ async function fetchPage(cid: string) {
   const res = await fetch(`https://cloudflare-ipfs.com/ipfs/${cid}`);
 
   if (!res.ok) {
-    throw new Error(`Failed to fetch image with CID ${cid} from IPFS`);
+    throw new Error(`Failed to fetch page with CID ${cid} from IPFS`);
   }
 
   return await res.json();
