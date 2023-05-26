@@ -121,19 +121,15 @@ const Page: NextPage<Props> = ({ examples }) => {
         </header>
         <div className="flex flex-col w-full gap-4 md:gap-8">
           <h1 className="max-w-4xl leading-tight text-[1.75rem] md:text-6xl font-bold">
-            Own your digital creations through the power of decentralization
+            Write with data at your fingertips
           </h1>
           <p className="max-w-3xl">
-            {`Embrace the future of content creation with our innovative web3
-            knowledge management editor. We are redefining what it means to write in
-            the decentralized era, where data ownership, transparency, and user
-            experience converge. Unleash your potential in a platform where your
-            words, your control, and your privacy come first. It's time to own
-            your narrative in Web3.`}
+            {`Meet the new standard for managing knowledge in real-time. Communicate
+            more efficiently & securely with writing for the decentralized era.`}
           </p>
           <div className="flex gap-2">
             <Link href="/create" className={cn(buttonVariants({}))}>
-              Try now {"->"}
+              Get started {"->"}
             </Link>
             <Link
               href="https://t.me/+21U-bg0SJAM2MmI0"
